@@ -710,6 +710,15 @@ html, body {
   color:var(--red-dark); font-size:22px;
   background:#060202;
 }
+.credits-photo-vader {
+  width: auto;
+  height: 200px;
+  border: none;
+  box-shadow: none;
+  display: block;
+  margin: 20px auto 0; /* centers it */
+  transform: none;
+}
 
 /* group cast list */
 .credits-cast {
@@ -935,7 +944,7 @@ html, body {
         there arose a soul whose power rivals the greatest Sith Lords of legend.
         <br><br>
         Known to her closest allies and feared by her enemies,
-        <strong>KIRSTIEN</strong> has walked this galaxy for twenty-two
+        <strong>KIRSTIEN DOMINIQUE N. SANTOS</strong> has walked this galaxy for twenty-two
         magnificent years, leaving a trail of brilliance, laughter, and
         unforgettable memories in her wake.
         <br><br>
@@ -970,7 +979,7 @@ html, body {
 
   <!-- Portrait photo — put kirstien.jpg / kirstien.png in the same folder -->
   <div class="landing-photo-wrap" id="landing-photo">
-    <img src="kirstien.jpg"
+    <img src="tenten.jpg"
          alt="Kirstien"
          onerror="this.style.display='none';document.getElementById('photo-ph').style.display='flex'">
     <div class="landing-photo-placeholder" id="photo-ph" style="display:none">⊛</div>
@@ -1080,13 +1089,15 @@ html, body {
          Remove the -ph placeholder divs once you have real photos.
     -->
     <div class="credits-photo-strip">
-      <img class="credits-photo" src="credits1.jpg" alt="Kirstien"
+      <img class="credits-photo" src="credits1.jpeg" alt="Kirstien"
            onerror="this.outerHTML='<div class=credits-photo-ph>◈</div>'">
       <img class="credits-photo" src="credits2.jpg" alt="Kirstien"
            onerror="this.outerHTML='<div class=credits-photo-ph>◈</div>'">
-      <img class="credits-photo" src="credits3.jpg" alt="Kirstien"
+      <img class="credits-photo" src="credits3.jpeg" alt="Kirstien"
            onerror="this.outerHTML='<div class=credits-photo-ph>◈</div>'">
-      <img class="credits-photo" src="credits4.jpg" alt="Kirstien"
+      <img class="credits-photo" src="credits4.jpeg" alt="Kirstien"
+           onerror="this.outerHTML='<div class=credits-photo-ph>◈</div>'">
+      <img class="credits-photo" src="credits5.jpeg" alt="Kirstien"
            onerror="this.outerHTML='<div class=credits-photo-ph>◈</div>'">
     </div>
 
@@ -1147,8 +1158,9 @@ html, body {
     </div>
 
     <!-- ── The End ── -->
-    <p class="credits-the-end">Happy 22nd Birthday</p>
+    <p class="credits-the-end">Happy 22nd Birthday Kirstien</p>
     <p class="credits-year">&mdash; MMXXVI &mdash;</p>
+    <img class="credits-photo credits-photo-vader" id="darth-vader" src="darth-vader.png" alt="darth-vader" onerror="this.outerHTML='<div class=credits-photo-ph>◈</div>'">
 
   </div><!-- /credits-track -->
 
@@ -1197,19 +1209,7 @@ const messages = [
   { sender:"Sandrugs",  message:"The galaxy is a better place because you're in it. Never change. Happy birthday!" },
   { sender:"Kimberlog/Bunso",  message:"Hi sexbomb kirs, isang spaghetting pababa nga jan. Now that ur 22 (insert mareng taylor) soaper tanda mo na teh eme. I’ll keep this short, u know the rest naman na. Always know that ur bunso will always be proud of u. I will always root for u, and I know u will achieve more in life (omsim desisyon ako). I am excited to see what’s in store for u after grad, and advance congratulations! U did well my friend. I am honored to be one of the people who gets to be by ur side and see u grow from the earliest day of our education ‘till the very end. Love you Kirs! " },
   { sender:"Pia",  message:"Happy birthday sexbom kirstien, im proud of all that youve accomplished and done. If you’d like, I can also make it funny, heartfelt, short, or best-friend style." },
-  { sender:"Friend 8",  message:"From one gamer to another — you are the final boss and we're all just NPCs in your story." },
-  { sender:"Friend 9",  message:"Taylor Swift would write a song about your greatness if she knew you. Happy birthday!" },
-  { sender:"Friend 10", message:"You and Djinn are the most iconic duo in the galaxy. Happy birthday to the Sith half of that pair!" },
-  { sender:"Friend 11", message:"Here's to chocolate, Taylor Swift playlists, and another year of you being absolutely iconic. 🖤" },
-  { sender:"Friend 12", message:"We are so lucky to orbit in your galaxy. Happy birthday, Kirstien. The force is strong with you." },
-  { sender:"Friend 13", message:"Dr. Spencer Reid and Taylor Swift fans have the best taste — which is exactly why we love you." },
-  { sender:"Friend 14", message:"You deserve every good thing the universe has to offer. Happy birthday, Sith Queen!" },
-  { sender:"Friend 15", message:"22 is your year. Go out there and terrify the galaxy. We'll be cheering you on." },
-  { sender:"Friend 16", message:"Happy birthday! May your life always be as sweet as the chocolate you love." },
-  { sender:"Friend 17", message:"A year older, a year more powerful. The dark side thanks you for your service, Kirstien." },
-  { sender:"Friend 18", message:"To the most passionate, brilliant person we know — happy 22nd birthday!" },
-  { sender:"Friend 19", message:"You radiate Sith energy in the best possible way. Happy birthday, may the force be with you always." },
-  { sender:"Friend 20", message:"The galaxy will never be the same because you exist in it. Happy birthday! We love you." },
+  { sender:"Djinn",  message:"Happy Birthday Kirstien <33!! Meeting you this year has been the greatest gift 2026 has given me and I hope to create more happy memories with you. I wish you the best always and know I will be one of your support. Happy Birthday po beloved!!" },
 ];
 
 // ✏️ Photos — filenames relative to this HTML file
@@ -1220,6 +1220,7 @@ const photos = [
   { src: "photo3.jpg", caption: "We go way back" },
   { src: "photo4.jpg", caption: "Chaos in human form" },
   { src: "photo5.jpg", caption: "Happy memories" },
+  { src: "photo6.jpg", caption: "Late nights, good company" },
   // Add more: { src: "photo6.jpg", caption: "..." },
 ];
 
@@ -1487,9 +1488,12 @@ function buildCarousel(){
   const frame=document.getElementById('carousel-frame');
   const dotsEl=document.getElementById('carousel-dots');
   const items=photos.length>0?photos:[
-    {src:null,caption:'Add photo1.jpg to this folder'},
-    {src:null,caption:'Add photo2.jpg to this folder'},
-    {src:null,caption:'Add photo3.jpg to this folder'},
+    { src: "photo1.jpeg", caption: "The crew, always" },
+    { src: "photo2.jpeg", caption: "That one unforgettable night" },
+    { src: "photo3.jpg", caption: "We go way back" },
+    { src: "photo4.jpg", caption: "Chaos in human form" },
+    { src: "photo5.jpg", caption: "Happy memories" },
+    { src: "photo6.jpg", caption: "Late nights, good company" },
   ];
   items.forEach((p,i)=>{
     const slide=document.createElement('div');
@@ -1557,11 +1561,15 @@ function renderStats(){
   const age=now.getFullYear()-bd.getFullYear()-(now<new Date(now.getFullYear(),bd.getMonth(),bd.getDate())?1:0);
   const sleepHrs=Math.round(daysLived*8);
   const chocolates=Math.round(daysLived*0.8);
-  const tsSongs=Math.round(daysLived*2.5); 
+  const tsSongs=Math.round(daysLived*2.5);  // Taylor Swift songs listened to (approx)
   const gamingHrs=Math.round(daysLived*1.2);
   // Relationship: March 25, 2026
   const relStart=new Date(2026,2,25);
   const relDays=Math.max(0,Math.floor((now-relStart)/msDay));
+  const crewStart=new Date(2008,1,1);
+  const crewDays=Math.max(0,Math.floor((now-crewStart)/msDay));
+  const squadstart=new Date(2022,1,1);
+  const squadDays=Math.max(0,Math.floor((now-squadstart)/msDay));
 
   const stats=[
     {icon:'☀️', label:'Days in the Galaxy',      value:daysLived.toLocaleString(),  unit:'days lived'},
@@ -1573,7 +1581,9 @@ function renderStats(){
     {icon:'🔪', label:'Criminal Minds Episodes',   value:'∞', unit:'(all rewatched with MGG)'},
     {icon:'⚡', label:'Midichlorian Count',         value:'20,450', unit:'per cell — off the charts', cls:'sith-stat'},
     {icon:'✦',  label:'Years of Legend',            value:age, unit:'orbits around the sun'},
-    {icon:'🖤', label:'Days with Djinn',            value:relDays.toLocaleString(), unit:`since Mar 25, 2026`, cls:'love-stat'},
+    {icon:'🖤', label:'Days with Jahrax',            value:crewDays.toLocaleString(), unit:`since 2008`, cls:'crew-stat'},
+    {icon:'🖤', label:'Days with Chin-Peejay-Nadz',            value:squadDays.toLocaleString(), unit:`since 2022`, cls:'squad-stat'},
+    {icon:'🖤', label:'Days with Djinn',            value:relDays.toLocaleString(), unit:`since 2026`, cls:'love-stat'},
   ];
   stats.forEach(s=>{
     const el=document.createElement('div');
@@ -1613,8 +1623,8 @@ function startCredits(){
   const track = document.getElementById('credits-track');
   track.classList.remove('rolling');
   track.style.animation = 'none';
-  track.style.transform = '';          
-  void track.offsetWidth;              
+  track.style.transform = '';          // clear leftover inline transform so it resets to title
+  void track.offsetWidth;              // flush — forces animation reset
   track.style.animation = '';
   track.classList.add('rolling');
   creditsRolling = true;
