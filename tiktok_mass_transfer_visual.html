@@ -1,0 +1,423 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{display:flex;justify-content:center;gap:24px;padding:1.5rem 0;flex-wrap:wrap}
+.phone{width:300px;height:620px;background:#0a0a0a;border-radius:40px;border:3px solid #2a2a2a;position:relative;overflow:hidden;flex-shrink:0}
+.screen{width:100%;height:100%;position:relative;overflow:hidden}
+.scene{position:absolute;inset:0;display:none;align-items:center;justify-content:center}
+.scene.active{display:flex}
+
+.prog{position:absolute;top:0;left:0;right:0;height:3px;background:rgba(255,255,255,0.15);z-index:10}
+.prog-fill{height:100%;background:#fff;transition:width .35s ease}
+
+.tt-ui{position:absolute;bottom:0;left:0;right:0;padding:10px 10px 20px;background:linear-gradient(transparent,rgba(0,0,0,0.75));z-index:9}
+.tt-handle{color:#fff;font-size:11px;font-weight:700;font-family:var(--font-sans)}
+.tt-tag{color:#81b3ff;font-size:10px;font-family:var(--font-sans);margin-top:2px}
+.tt-side{position:absolute;right:8px;bottom:70px;display:flex;flex-direction:column;align-items:center;gap:16px;z-index:9}
+.tt-btn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+.tt-btn svg{width:26px;height:26px;fill:#fff}
+.tt-count{color:#fff;font-size:9px;font-family:var(--font-sans)}
+
+.nav{display:flex;justify-content:center;gap:10px;margin-top:1rem}
+.nb{padding:6px 20px;border-radius:20px;border:.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-primary);font-size:13px;cursor:pointer;font-family:var(--font-sans)}
+.nb:hover{background:var(--color-background-tertiary)}
+.scount{text-align:center;font-size:12px;color:var(--color-text-secondary);margin-top:8px;font-family:var(--font-sans)}
+
+canvas{display:block}
+
+.dots-canvas{position:absolute;inset:0}
+.big-emoji{font-size:72px;animation:pop .6s infinite alternate}
+@keyframes pop{from{transform:scale(1)}to{transform:scale(1.1)}}
+.caption{position:absolute;bottom:90px;left:12px;right:44px;color:#fff;font-size:13px;font-weight:700;font-family:var(--font-sans);line-height:1.4;text-shadow:0 1px 4px rgba(0,0,0,.8)}
+.viral-badge{position:absolute;top:14px;left:12px;background:#ff2d55;color:#fff;font-size:10px;font-weight:700;font-family:var(--font-sans);padding:3px 8px;border-radius:20px;z-index:10}
+
+.s1-bg{background:#1a0033}
+.s2-bg{background:#001a33}
+.s3-bg{background:#001a0d}
+.s4-bg{background:#1a0a00}
+.s5-bg{background:#1a001a}
+.s6-bg{background:#000d1a}
+.s7-bg{background:#0d0d00}
+.s8-bg{background:#1a000d}
+
+.quiz-wrap{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px}
+.quiz-q{color:#fff;font-size:14px;font-weight:700;font-family:var(--font-sans);text-align:center;margin-bottom:14px;line-height:1.4;padding:0 8px}
+.qopt{width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#e0e7ff;font-size:12px;font-family:var(--font-sans);cursor:pointer;text-align:left;margin-bottom:8px;transition:background .2s}
+.qopt:hover{background:rgba(255,255,255,.18)}
+.qopt.ok{background:#166534;border-color:#4ade80;color:#bbf7d0}
+.qopt.no{background:#7f1d1d;border-color:#f87171;color:#fecaca}
+.res{color:#86efac;font-size:13px;font-weight:700;font-family:var(--font-sans);text-align:center;margin-top:8px;opacity:0;transition:opacity .4s}
+.res.show{opacity:1}
+
+.sticker{position:absolute;font-size:22px;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-10px) rotate(5deg)}}
+
+.duet-label{position:absolute;top:14px;right:12px;background:rgba(255,255,255,.15);color:#fff;font-size:9px;font-weight:700;font-family:var(--font-sans);padding:3px 8px;border-radius:20px;border:1px solid rgba(255,255,255,.3)}
+
+.comment-pop{position:absolute;left:10px;background:rgba(255,255,255,.12);border-radius:12px;padding:5px 10px;display:flex;align-items:center;gap:6px;animation:slideUp 2.5s ease-in-out infinite}
+@keyframes slideUp{0%{opacity:0;transform:translateY(20px)}15%{opacity:1;transform:translateY(0)}80%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
+.comment-pop .av{width:18px;height:18px;border-radius:50%;background:#534AB7;display:flex;align-items:center;justify-content:center;font-size:9px;color:#CECBF6;font-weight:700;font-family:var(--font-sans);flex-shrink:0}
+.comment-pop .ct{color:#fff;font-size:10px;font-family:var(--font-sans)}
+
+.soundbar{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);display:flex;align-items:flex-end;gap:3px}
+.bar{width:4px;background:rgba(255,255,255,.6);border-radius:2px;animation:eq 0.6s ease-in-out infinite alternate}
+.bar:nth-child(1){height:8px;animation-delay:0s}
+.bar:nth-child(2){height:14px;animation-delay:.1s}
+.bar:nth-child(3){height:20px;animation-delay:.2s}
+.bar:nth-child(4){height:12px;animation-delay:.3s}
+.bar:nth-child(5){height:18px;animation-delay:.15s}
+.bar:nth-child(6){height:8px;animation-delay:.05s}
+@keyframes eq{from{transform:scaleY(1)}to{transform:scaleY(0.3)}}
+
+.trend-arrow{position:absolute;top:12px;right:48px;color:#ff6b6b;font-size:22px;animation:bounce2 .5s infinite alternate}
+@keyframes bounce2{from{transform:translateY(0)}to{transform:translateY(-4px)}}
+</style>
+
+<h2 class="sr-only">8-scene TikTok video mockup showing mass transfer phenomena for kids, with animated molecules, viral design elements, and interactive quiz</h2>
+
+<div class="wrap">
+  <div class="phone" id="ph">
+    <div class="screen">
+      <div class="prog"><div class="prog-fill" id="pf" style="width:12.5%"></div></div>
+
+      <div id="s0" class="scene s1-bg active">
+        <canvas id="c0" class="dots-canvas" width="300" height="620"></canvas>
+        <div class="big-emoji" style="position:absolute;top:140px">🤯</div>
+        <div class="sticker" style="top:80px;left:20px;animation-delay:.5s">💨</div>
+        <div class="sticker" style="top:90px;right:24px;animation-delay:1s">✨</div>
+        <div class="sticker" style="top:220px;right:16px;animation-delay:1.5s">👃</div>
+        <div class="caption" style="bottom:96px">How does smell travel across the whole room? 👇</div>
+        <div class="viral-badge">🔥 trending</div>
+        <div class="trend-arrow">↑</div>
+        <div class="comment-pop" style="bottom:188px;animation-delay:0s">
+          <div class="av">K</div><div class="ct">omg never thought about this</div>
+        </div>
+        <div class="tt-ui">
+          <div class="tt-handle">@sciencekid.lab</div>
+          <div class="tt-tag">#learnontiktok #science #foryou</div>
+        </div>
+        <div class="tt-side">
+          <div class="tt-btn"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><div class="tt-count">248K</div></div>
+          <div class="tt-btn"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg><div class="tt-count">4.1K</div></div>
+          <div class="tt-btn"><svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg><div class="tt-count">89K</div></div>
+        </div>
+        <div class="soundbar"></div>
+      </div>
+
+      <div id="s1" class="scene s2-bg">
+        <canvas id="c1" class="dots-canvas" width="300" height="620"></canvas>
+        <div style="position:absolute;top:60px;left:0;right:0;text-align:center;color:#7dd3fc;font-size:32px;font-weight:900;font-family:var(--font-sans)">CROWDED</div>
+        <div style="position:absolute;top:60px;right:50px;color:#7dd3fc;font-size:32px;font-family:var(--font-sans)">→</div>
+        <div style="position:absolute;top:60px;right:12px;color:#fed7aa;font-size:22px;font-weight:900;font-family:var(--font-sans)">EMPTY</div>
+        <div class="viral-badge">💡 viral element 1: bold contrast words</div>
+        <div class="caption">Molecules are hyperactive — they MUST spread out</div>
+        <div class="tt-ui"><div class="tt-handle">@sciencekid.lab</div></div>
+        <div class="tt-side">
+          <div class="tt-btn"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div>
+        </div>
+        <div class="soundbar"></div>
+      </div>
+
+      <div id="s2" class="scene s3-bg">
+        <canvas id="c2" class="dots-canvas" width="300" height="620"></canvas>
+        <div style="position:absolute;top:50px;left:10px;font-size:72px">🍪</div>
+        <div style="position:absolute;top:50px;right:10px;font-size:60px">🧒</div>
+        <div style="position:absolute;top:90px;left:80px;right:80px;text-align:center;color:#fde68a;font-size:48px;font-weight:900;font-family:var(--font-sans)">→→→</div>
+        <div class="viral-badge">🍪 viral element 2: food = views</div>
+        <div class="sticker" style="top:170px;left:30px;animation-delay:.3s">😋</div>
+        <div class="sticker" style="top:160px;right:30px;animation-delay:.8s">🎉</div>
+        <div class="comment-pop" style="bottom:180px">
+          <div class="av">M</div><div class="ct">wait this is actually crazy 🤯</div>
+        </div>
+        <div class="caption">Cookie smell = millions of tiny balls flying to your nose</div>
+        <div class="tt-ui"><div class="tt-handle">@sciencekid.lab</div></div>
+        <div class="soundbar"></div>
+      </div>
+
+      <div id="s3" class="scene s4-bg">
+        <canvas id="c3" class="dots-canvas" width="300" height="620"></canvas>
+        <div style="position:absolute;top:100px;left:0;right:0;text-align:center">
+          <div style="color:#fde68a;font-size:11px;font-weight:700;font-family:var(--font-sans);letter-spacing:2px">THE SCIENCE WORD IS</div>
+          <div style="color:#fff;font-size:44px;font-weight:900;font-family:var(--font-sans);margin-top:6px;line-height:1">DIFFUSION</div>
+          <div style="display:flex;justify-content:center;gap:6px;margin-top:10px">
+            <div style="background:#854F0B;color:#fde68a;font-size:10px;font-weight:700;font-family:var(--font-sans);padding:4px 10px;border-radius:20px">stuff</div>
+            <div style="background:#854F0B;color:#fde68a;font-size:10px;font-weight:700;font-family:var(--font-sans);padding:4px 10px;border-radius:20px">spreads</div>
+            <div style="background:#854F0B;color:#fde68a;font-size:10px;font-weight:700;font-family:var(--font-sans);padding:4px 10px;border-radius:20px">by itself</div>
+          </div>
+        </div>
+        <div class="viral-badge">🧠 viral element 3: word reveal</div>
+        <div style="position:absolute;top:270px;left:10px;right:44px;display:grid;grid-template-columns:1fr 1fr;gap:6px">
+          <div style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px;text-align:center">
+            <div style="font-size:26px">🫁</div>
+            <div style="color:#fed7aa;font-size:10px;font-weight:700;font-family:var(--font-sans);margin-top:2px">your lungs</div>
+          </div>
+          <div style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px;text-align:center">
+            <div style="font-size:26px">☕</div>
+            <div style="color:#fed7aa;font-size:10px;font-weight:700;font-family:var(--font-sans);margin-top:2px">coffee aroma</div>
+          </div>
+          <div style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px;text-align:center">
+            <div style="font-size:26px">🌊</div>
+            <div style="color:#fed7aa;font-size:10px;font-weight:700;font-family:var(--font-sans);margin-top:2px">ocean salt</div>
+          </div>
+          <div style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px;text-align:center">
+            <div style="font-size:26px">🩸</div>
+            <div style="color:#fed7aa;font-size:10px;font-weight:700;font-family:var(--font-sans);margin-top:2px">your blood</div>
+          </div>
+        </div>
+        <div class="tt-ui"><div class="tt-handle">@sciencekid.lab</div></div>
+        <div class="soundbar"></div>
+      </div>
+
+      <div id="s4" class="scene s5-bg">
+        <div class="quiz-wrap">
+          <div class="viral-badge" style="position:relative;top:auto;left:auto;display:inline-block;margin-bottom:10px">🎮 viral element 4: interactive quiz</div>
+          <div class="quiz-q">You spray perfume. It fills the whole room. That's…?</div>
+          <button class="qopt" onclick="ans(this,false)">A) Magic ✨</button>
+          <button class="qopt" onclick="ans(this,true)">B) Diffusion (mass transfer)! 💨</button>
+          <button class="qopt" onclick="ans(this,false)">C) Perfume is alive 🧴</button>
+          <div class="res" id="qres">🎉 Drop a 💨 if you got it!</div>
+        </div>
+        <div class="tt-ui"><div class="tt-handle">@sciencekid.lab</div><div class="tt-tag">#quiz #comment below</div></div>
+        <div class="soundbar"></div>
+      </div>
+
+      <div id="s5" class="scene s6-bg">
+        <canvas id="c5" class="dots-canvas" width="300" height="620"></canvas>
+        <div style="position:absolute;top:80px;left:0;right:0;text-align:center">
+          <div style="color:#7dd3fc;font-size:28px;font-weight:900;font-family:var(--font-sans)">MASS TRANSFER</div>
+          <div style="color:rgba(255,255,255,.5);font-size:11px;font-family:var(--font-sans);margin-top:4px">= diffusion + convection + more</div>
+        </div>
+        <div style="position:absolute;top:160px;left:10px;right:44px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <div style="width:32px;height:32px;border-radius:50%;background:#185FA5;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">💨</div>
+            <div style="background:rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;flex:1">
+              <div style="color:#7dd3fc;font-size:11px;font-weight:700;font-family:var(--font-sans)">Diffusion</div>
+              <div style="color:rgba(255,255,255,.6);font-size:10px;font-family:var(--font-sans)">molecules spread on their own</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <div style="width:32px;height:32px;border-radius:50%;background:#0F6E56;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🌀</div>
+            <div style="background:rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;flex:1">
+              <div style="color:#5DCAA5;font-size:11px;font-weight:700;font-family:var(--font-sans)">Convection</div>
+              <div style="color:rgba(255,255,255,.6);font-size:10px;font-family:var(--font-sans)">wind or stirring helps them move</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:32px;height:32px;border-radius:50%;background:#534AB7;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🧱</div>
+            <div style="background:rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;flex:1">
+              <div style="color:#AFA9EC;font-size:11px;font-weight:700;font-family:var(--font-sans)">Permeation</div>
+              <div style="color:rgba(255,255,255,.6);font-size:10px;font-family:var(--font-sans)">sneaking through tiny holes</div>
+            </div>
+          </div>
+        </div>
+        <div class="viral-badge">📚 viral element 5: 3-part list</div>
+        <div class="tt-ui"><div class="tt-handle">@sciencekid.lab</div></div>
+        <div class="soundbar"></div>
+      </div>
+
+      <div id="s6" class="scene s7-bg">
+        <canvas id="c6" class="dots-canvas" width="300" height="620"></canvas>
+        <div style="position:absolute;top:70px;left:0;right:0;text-align:center">
+          <div style="font-size:54px">🌡️</div>
+          <div style="color:#fde68a;font-size:15px;font-weight:900;font-family:var(--font-sans);margin-top:6px">heat = faster molecules</div>
+        </div>
+        <div style="position:absolute;top:210px;left:10px;right:44px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;height:80px;background:rgba(255,255,255,.06);border-radius:10px;padding:10px 14px">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+              <div style="width:18px;background:#378ADD;border-radius:3px;height:20px"></div>
+              <div style="color:rgba(255,255,255,.5);font-size:9px;font-family:var(--font-sans)">ice</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+              <div style="width:18px;background:#1D9E75;border-radius:3px;height:36px"></div>
+              <div style="color:rgba(255,255,255,.5);font-size:9px;font-family:var(--font-sans)">water</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+              <div style="width:18px;background:#D85A30;border-radius:3px;height:52px;animation:grow .8s ease-in-out infinite alternate"></div>
+              <div style="color:rgba(255,255,255,.5);font-size:9px;font-family:var(--font-sans)">steam</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+              <div style="width:18px;background:#E24B4A;border-radius:3px;height:60px;animation:grow .5s ease-in-out infinite alternate"></div>
+              <div style="color:rgba(255,255,255,.5);font-size:9px;font-family:var(--font-sans)">fire</div>
+            </div>
+          </div>
+        </div>
+        <div class="viral-badge">🌡️ viral element 6: surprising fact</div>
+        <div class="caption">the hotter it is, the FASTER the spread 🔥</div>
+        <div class="tt-ui"><div class="tt-handle">@sciencekid.lab</div></div>
+        <div class="soundbar"></div>
+      </div>
+
+      <div id="s7" class="scene s8-bg">
+        <canvas id="c7" class="dots-canvas" width="300" height="620"></canvas>
+        <div style="position:absolute;top:70px;left:0;right:0;text-align:center">
+          <div style="color:#f0abfc;font-size:20px;font-weight:900;font-family:var(--font-sans)">follow for more 🔬</div>
+          <div style="font-size:40px;margin-top:10px">🤯😱🧪</div>
+        </div>
+        <div style="position:absolute;top:180px;left:10px;right:44px;display:flex;flex-direction:column;gap:8px">
+          <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:8px">
+            <div style="font-size:18px">💾</div>
+            <div style="color:#fff;font-size:11px;font-weight:700;font-family:var(--font-sans)">Save to show your teacher</div>
+          </div>
+          <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:8px">
+            <div style="font-size:18px">💨</div>
+            <div style="color:#fff;font-size:11px;font-weight:700;font-family:var(--font-sans)">Drop 💨 if you get it now</div>
+          </div>
+          <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:8px">
+            <div style="font-size:18px">🔁</div>
+            <div style="color:#fff;font-size:11px;font-weight:700;font-family:var(--font-sans)">Send to a friend who hates science</div>
+          </div>
+          <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:8px">
+            <div style="font-size:18px">🎵</div>
+            <div style="color:#fff;font-size:11px;font-weight:700;font-family:var(--font-sans)">Duet with your teacher!</div>
+          </div>
+        </div>
+        <div class="duet-label">DUET</div>
+        <div class="viral-badge">📣 viral element 7: multi-CTA</div>
+        <div class="tt-ui"><div class="tt-handle">@sciencekid.lab</div><div class="tt-tag">#sciencetok #viral #foryoupage</div></div>
+        <div class="soundbar"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:10px;max-width:280px;padding-top:8px">
+    <div id="legend" style="background:var(--color-background-secondary);border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px">
+      <div id="leg-badge" style="display:inline-block;background:#ff2d55;color:#fff;font-size:10px;font-weight:700;font-family:var(--font-sans);padding:3px 8px;border-radius:20px;margin-bottom:8px">Scene 1 of 8</div>
+      <div id="leg-title" style="font-size:15px;font-weight:500;color:var(--color-text-primary);font-family:var(--font-sans);margin-bottom:4px">Hook — the mystery question</div>
+      <div id="leg-desc" style="font-size:13px;color:var(--color-text-secondary);font-family:var(--font-sans);line-height:1.5">Opens with a relatable mystery. Animated particles + trending badge trigger the "watch more" reflex within the first second.</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div style="background:var(--color-background-secondary);border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px;text-align:center">
+        <div style="font-size:20px;margin-bottom:2px">248K</div>
+        <div style="font-size:11px;color:var(--color-text-secondary);font-family:var(--font-sans)">likes</div>
+      </div>
+      <div style="background:var(--color-background-secondary);border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px;text-align:center">
+        <div style="font-size:20px;margin-bottom:2px">89K</div>
+        <div style="font-size:11px;color:var(--color-text-secondary);font-family:var(--font-sans)">saves</div>
+      </div>
+    </div>
+    <div id="viral-list" style="background:var(--color-background-secondary);border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px">
+      <div style="font-size:12px;font-weight:500;color:var(--color-text-primary);font-family:var(--font-sans);margin-bottom:10px">7 viral elements</div>
+      <div id="v0" style="display:flex;align-items:center;gap:8px;margin-bottom:7px;opacity:.4;transition:opacity .3s">
+        <div style="width:6px;height:6px;border-radius:50%;background:#ff2d55;flex-shrink:0"></div>
+        <div style="font-size:12px;color:var(--color-text-secondary);font-family:var(--font-sans)">Trending badge hook</div>
+      </div>
+      <div id="v1" style="display:flex;align-items:center;gap:8px;margin-bottom:7px;opacity:.4;transition:opacity .3s">
+        <div style="width:6px;height:6px;border-radius:50%;background:#ff2d55;flex-shrink:0"></div>
+        <div style="font-size:12px;color:var(--color-text-secondary);font-family:var(--font-sans)">Bold contrast text overlay</div>
+      </div>
+      <div id="v2" style="display:flex;align-items:center;gap:8px;margin-bottom:7px;opacity:.4;transition:opacity .3s">
+        <div style="width:6px;height:6px;border-radius:50%;background:#ff2d55;flex-shrink:0"></div>
+        <div style="font-size:12px;color:var(--color-text-secondary);font-family:var(--font-sans)">Food visual (dopamine)</div>
+      </div>
+      <div id="v3" style="display:flex;align-items:center;gap:8px;margin-bottom:7px;opacity:.4;transition:opacity .3s">
+        <div style="width:6px;height:6px;border-radius:50%;background:#ff2d55;flex-shrink:0"></div>
+        <div style="font-size:12px;color:var(--color-text-secondary);font-family:var(--font-sans)">Word reveal moment</div>
+      </div>
+      <div id="v4" style="display:flex;align-items:center;gap:8px;margin-bottom:7px;opacity:.4;transition:opacity .3s">
+        <div style="width:6px;height:6px;border-radius:50%;background:#ff2d55;flex-shrink:0"></div>
+        <div style="font-size:12px;color:var(--color-text-secondary);font-family:var(--font-sans)">Interactive quiz (comments)</div>
+      </div>
+      <div id="v5" style="display:flex;align-items:center;gap:8px;margin-bottom:7px;opacity:.4;transition:opacity .3s">
+        <div style="width:6px;height:6px;border-radius:50%;background:#ff2d55;flex-shrink:0"></div>
+        <div style="font-size:12px;color:var(--color-text-secondary);font-family:var(--font-sans)">3-part list (saves)</div>
+      </div>
+      <div id="v6" style="display:flex;align-items:center;gap:8px;margin-bottom:7px;opacity:.4;transition:opacity .3s">
+        <div style="width:6px;height:6px;border-radius:50%;background:#ff2d55;flex-shrink:0"></div>
+        <div style="font-size:12px;color:var(--color-text-secondary);font-family:var(--font-sans)">Surprising hot/cold fact</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="nb" onclick="prev()">← Prev</button>
+  <button class="nb" onclick="next()">Next →</button>
+</div>
+<div class="scount" id="sc">Scene 1 — Hook</div>
+
+<style>
+@keyframes grow{from{transform:scaleY(1)}to{transform:scaleY(1.3);transform-origin:bottom}}
+</style>
+
+<script>
+const sceneData = [
+  {title:'Hook — the mystery question', desc:'Opens with a relatable mystery. Animated particles + trending badge trigger the "watch more" reflex within the first second.', viral:0},
+  {title:'Molecules spreading out', desc:'Bold CROWDED → EMPTY contrast text. No reading required — the moving dots show the concept visually.', viral:1},
+  {title:'The cookie example', desc:'Food visuals trigger dopamine. The giant cookie + arrow + kid tells the whole story without a word of explanation.', viral:2},
+  {title:'The science word revealed', desc:'Satisfying reveal moment: you earned it by watching this far. The 4 real-life icon grid makes it feel useful.', viral:3},
+  {title:'Interactive quiz', desc:'Forces the viewer to make a choice — their comment drives the algorithm. "Drop 💨 if you get it" is a proven engagement hook.', viral:4},
+  {title:'Mass transfer types', desc:'Saveable list format. Three clean rows = easy to screenshot and share. Saves are the strongest algorithmic signal.', viral:5},
+  {title:'Heat = faster molecules', desc:'Surprising fact with a simple animated bar chart. Counterintuitive info gets the "wait, really?" comment flood.', viral:6},
+  {title:'CTA + outro', desc:'Four specific CTAs including Duet, which brings the creator into other accounts\' feeds.', viral:-1},
+];
+const scCount = document.getElementById('sc');
+const legBadge = document.getElementById('leg-badge');
+const legTitle = document.getElementById('leg-title');
+const legDesc = document.getElementById('leg-desc');
+let cur = 0;
+
+function showScene(n){
+  document.querySelectorAll('.scene').forEach((s,i)=>s.classList.toggle('active',i===n));
+  document.getElementById('pf').style.width = Math.round(((n+1)/8)*100)+'%';
+  scCount.textContent = 'Scene '+(n+1)+' of 8 — '+sceneData[n].title;
+  legBadge.textContent = 'Scene '+(n+1)+' of 8';
+  legTitle.textContent = sceneData[n].title;
+  legDesc.textContent = sceneData[n].desc;
+  for(let i=0;i<7;i++){
+    const el = document.getElementById('v'+i);
+    if(el) el.style.opacity = (sceneData[n].viral===i)?'1':'0.35';
+  }
+}
+
+function next(){cur=Math.min(cur+1,7);showScene(cur)}
+function prev(){cur=Math.max(cur-1,0);showScene(cur)}
+
+function ans(btn,ok){
+  document.querySelectorAll('.qopt').forEach(b=>{b.onclick=null});
+  btn.classList.add(ok?'ok':'no');
+  if(!ok) document.querySelectorAll('.qopt')[1].classList.add('ok');
+  const r=document.getElementById('qres');
+  r.textContent=ok?'🎉 Drop a 💨 if you got it!':'😅 It\'s diffusion — molecules spread!';
+  r.classList.add('show');
+}
+
+function initCanvas(id, cfg){
+  const cvs = document.getElementById(id);
+  if(!cvs) return;
+  const ctx = cvs.getContext('2d');
+  const W=cvs.width, H=cvs.height;
+  const pts = [];
+  for(let i=0;i<cfg.count;i++){
+    pts.push({
+      x: cfg.side==='left'? Math.random()*W*0.45 : Math.random()*W,
+      y: Math.random()*H,
+      vx: (Math.random()-0.5)*cfg.speed,
+      vy: (Math.random()-0.5)*cfg.speed,
+      r: 2+Math.random()*3,
+      c: cfg.colors[Math.floor(Math.random()*cfg.colors.length)]
+    });
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    for(const p of pts){
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0||p.x>W) p.vx*=-1;
+      if(p.y<0||p.y>H) p.vy*=-1;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.c;
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+initCanvas('c0',{count:60,speed:1.2,colors:['rgba(179,136,255,.7)','rgba(100,100,255,.5)','rgba(255,255,255,.3)'],side:'all'});
+initCanvas('c1',{count:80,speed:1.5,colors:['rgba(125,211,252,.6)','rgba(254,215,170,.5)','rgba(255,255,255,.2)'],side:'left'});
+initCanvas('c2',{count:50,speed:0.8,colors:['rgba(253,230,138,.7)','rgba(134,239,172,.5)','rgba(255,255,255,.3)'],side:'all'});
+initCanvas('c3',{count:40,speed:1.0,colors:['rgba(253,186,116,.6)','rgba(252,165,165,.5)'],side:'all'});
+initCanvas('c5',{count:55,speed:0.9,colors:['rgba(125,211,252,.5)','rgba(93,202,165,.5)','rgba(175,169,236,.5)'],side:'all'});
+initCanvas('c6',{count:35,speed:1.8,colors:['rgba(253,230,138,.7)','rgba(239,159,39,.6)','rgba(226,75,74,.5)'],side:'all'});
+initCanvas('c7',{count:50,speed:0.7,colors:['rgba(240,171,252,.6)','rgba(196,181,253,.5)'],side:'all'});
+</script>
