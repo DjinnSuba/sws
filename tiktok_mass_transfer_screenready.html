@@ -1,0 +1,468 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif}
+
+.stage{display:flex;justify-content:center;align-items:flex-start;padding:32px 0 24px;background:#0f0f0f;border-radius:16px;min-height:900px}
+
+.phone{width:380px;height:820px;background:#000;border-radius:52px;border:6px solid #2a2a2a;position:relative;overflow:hidden;outline:2px solid #111}
+
+.screen{width:100%;height:100%;position:relative;overflow:hidden;background:#111}
+
+.scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transform:translateX(100%);transition:opacity .38s ease, transform .42s cubic-bezier(.4,0,.2,1)}
+.scene.active{opacity:1;pointer-events:all;transform:translateX(0)}
+
+.prog{position:absolute;top:0;left:0;right:0;height:4px;background:rgba(255,255,255,.15);z-index:20;border-radius:0}
+.pfill{height:100%;background:#fff;transition:width .35s ease;border-radius:0}
+
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:30px;background:#000;border-radius:0 0 20px 20px;z-index:30;display:flex;align-items:center;justify-content:center;gap:8px}
+.notch-cam{width:10px;height:10px;border-radius:50%;background:#1a1a1a;border:1.5px solid #2a2a2a}
+.notch-time{color:#fff;font-size:11px;font-weight:600;letter-spacing:.5px}
+
+.tt-overlay{position:absolute;bottom:0;left:0;right:0;padding:14px 14px 28px;background:linear-gradient(transparent, rgba(0,0,0,.85));z-index:15;pointer-events:none}
+.tt-handle{color:#fff;font-size:14px;font-weight:700;letter-spacing:-.2px}
+.tt-tags{color:#6eb3ff;font-size:12px;margin-top:3px}
+.tt-caption{color:rgba(255,255,255,.75);font-size:12px;margin-top:2px;line-height:1.4}
+
+.tt-side{position:absolute;right:12px;bottom:90px;display:flex;flex-direction:column;align-items:center;gap:20px;z-index:15}
+.tt-action{display:flex;flex-direction:column;align-items:center;gap:3px}
+.tt-icon{width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:22px}
+.tt-count{color:#fff;font-size:11px;font-weight:600}
+
+.sbar{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;align-items:flex-end;gap:3px;z-index:15}
+.sb{width:3px;background:rgba(255,255,255,.5);border-radius:2px;animation:eq .6s ease-in-out infinite alternate}
+.sb:nth-child(1){height:8px;animation-delay:0s}.sb:nth-child(2){height:14px;animation-delay:.08s}.sb:nth-child(3){height:20px;animation-delay:.16s}.sb:nth-child(4){height:12px;animation-delay:.24s}.sb:nth-child(5){height:18px;animation-delay:.12s}.sb:nth-child(6){height:8px;animation-delay:.04s}
+@keyframes eq{from{transform:scaleY(1)}to{transform:scaleY(.25)}}
+
+.badge{display:inline-block;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.3px}
+
+.vtag{display:inline-block;background:rgba(255,255,255,.12);color:rgba(255,255,255,.9);font-size:12px;padding:5px 12px;border-radius:20px;margin:3px}
+
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes wgl{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
+@keyframes pop{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+@keyframes spn{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes riseup{0%{opacity:0;transform:translateY(16px)}100%{opacity:1;transform:translateY(0)}}
+
+canvas{position:absolute;inset:0;pointer-events:none;z-index:1}
+
+.content{position:relative;z-index:5;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:44px 16px 110px}
+
+.nav-wrap{display:flex;justify-content:center;align-items:center;gap:16px;margin-top:20px}
+.nbtn{padding:8px 28px;border-radius:24px;border:.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-primary);font-size:14px;cursor:pointer;font-family:sans-serif;transition:background .15s}
+.nbtn:hover{background:var(--color-background-tertiary)}
+.scene-ind{display:flex;gap:6px;align-items:center}
+.dot-ind{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.25);transition:background .3s}
+.dot-ind.on{background:#fff;width:18px;border-radius:3px}
+
+.qbtn{width:100%;padding:13px 16px;border-radius:14px;border:1.5px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:#fff;font-size:14px;cursor:pointer;text-align:left;margin-bottom:10px;transition:background .2s;font-family:sans-serif}
+.qbtn:hover{background:rgba(255,255,255,.2)}
+.qbtn.ok{background:#166534;border-color:#4ade80;color:#bbf7d0}
+.qbtn.no{background:#7f1d1d;border-color:#f87171;color:#fecaca}
+.qres{color:#86efac;font-size:14px;font-weight:700;text-align:center;margin-top:10px;opacity:0;transition:opacity .4s;min-height:22px}
+.qres.show{opacity:1}
+</style>
+
+<h2 class="sr-only">Full-screen TikTok-style video mockup teaching mass transfer phenomena to children, 9 scenes with animated molecules and interactive quiz</h2>
+
+<div class="stage">
+  <div>
+    <div class="phone">
+      <div class="screen">
+        <div class="prog"><div class="pfill" id="pf" style="width:11.1%"></div></div>
+        <div class="notch"><div class="notch-cam"></div><div class="notch-time" id="ntime">9:41</div></div>
+
+        <!-- SCENE 0: HOOK -->
+        <div class="scene active" id="s0" style="background:#18003a">
+          <canvas id="c0" width="380" height="820"></canvas>
+          <div class="content">
+            <div style="font-size:90px;animation:pop 1s infinite;margin-bottom:12px">🤯</div>
+            <div style="color:#e9d5ff;font-size:13px;font-weight:700;letter-spacing:2px;margin-bottom:10px;text-align:center">WAIT —</div>
+            <div style="background:rgba(255,255,255,.1);border-radius:18px;padding:18px 20px;border:1.5px solid rgba(255,255,255,.2);text-align:center;margin-bottom:18px">
+              <div style="color:#fff;font-size:20px;font-weight:700;line-height:1.35">How does your nose smell cookies from the next room?</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;justify-content:center">
+              <div style="background:rgba(255,200,80,.15);border-radius:14px;padding:12px 16px;text-align:center;border:1.5px solid rgba(255,200,80,.3)">
+                <div style="font-size:40px">🍪</div>
+                <div style="color:#fde68a;font-size:11px;font-weight:700;margin-top:4px">kitchen</div>
+              </div>
+              <div style="color:#fff;font-size:28px;font-weight:700">→→→</div>
+              <div style="background:rgba(100,200,255,.12);border-radius:14px;padding:12px 16px;text-align:center;border:1.5px solid rgba(100,200,255,.28)">
+                <div style="font-size:40px">🧒</div>
+                <div style="color:#7dd3fc;font-size:11px;font-weight:700;margin-top:4px">your room</div>
+              </div>
+            </div>
+            <div style="color:#f0abfc;font-size:14px;font-weight:700;margin-top:18px;animation:bob 1s infinite">👇 keep watching!</div>
+          </div>
+          <div class="tt-overlay">
+            <div class="tt-handle">@sciencekid.lab</div>
+            <div class="tt-caption">The answer will blow your mind 🤯</div>
+            <div class="tt-tags">#learnontiktok #science #foryou #diffusion</div>
+          </div>
+          <div class="tt-side">
+            <div class="tt-action"><div class="tt-icon">❤️</div><div class="tt-count">248K</div></div>
+            <div class="tt-action"><div class="tt-icon">💬</div><div class="tt-count">4.1K</div></div>
+            <div class="tt-action"><div class="tt-icon">🔖</div><div class="tt-count">89K</div></div>
+            <div class="tt-action"><div class="tt-icon">↗️</div><div class="tt-count">12K</div></div>
+          </div>
+          <div class="sbar"><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div></div>
+        </div>
+
+        <!-- SCENE 1: CROWDED→EMPTY -->
+        <div class="scene" id="s1" style="background:#001830">
+          <canvas id="c1" width="380" height="820"></canvas>
+          <div class="content">
+            <div style="display:inline-flex;align-items:center;gap:12px;background:rgba(255,255,255,.1);border-radius:24px;padding:8px 20px;border:1.5px solid rgba(255,255,255,.2);margin-bottom:18px">
+              <span style="color:#fde68a;font-size:16px;font-weight:700">CROWDED</span>
+              <span style="color:#fff;font-size:20px">→</span>
+              <span style="color:#7dd3fc;font-size:16px;font-weight:700">EMPTY</span>
+            </div>
+            <div style="display:flex;gap:10px;width:100%;margin-bottom:16px">
+              <div style="flex:1;background:rgba(253,230,138,.12);border-radius:16px;padding:14px 10px;text-align:center;border:1.5px solid rgba(253,230,138,.35)">
+                <div style="color:#fde68a;font-size:13px;font-weight:700;margin-bottom:8px">CROWDED 😵</div>
+                <div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center">
+                  <span style="font-size:18px">😬</span><span style="font-size:18px">😬</span><span style="font-size:18px">😬</span>
+                  <span style="font-size:18px">😬</span><span style="font-size:18px">😬</span><span style="font-size:18px">😬</span>
+                  <span style="font-size:18px">😬</span><span style="font-size:18px">😬</span><span style="font-size:18px">😬</span>
+                </div>
+                <div style="color:rgba(253,230,138,.65);font-size:11px;margin-top:8px">too many molecules!</div>
+              </div>
+              <div style="flex:1;background:rgba(125,211,252,.1);border-radius:16px;padding:14px 10px;text-align:center;border:1.5px solid rgba(125,211,252,.3)">
+                <div style="color:#7dd3fc;font-size:13px;font-weight:700;margin-bottom:8px">EMPTY 😌</div>
+                <div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center">
+                  <span style="font-size:18px">😊</span>
+                </div>
+                <div style="color:rgba(125,211,252,.65);font-size:11px;margin-top:8px">so much space!</div>
+              </div>
+            </div>
+            <div style="background:rgba(255,255,255,.08);border-radius:14px;padding:14px 16px;text-align:center;border:1px solid rgba(255,255,255,.12);width:100%">
+              <div style="font-size:28px;margin-bottom:6px">🏫</div>
+              <div style="color:#e0f2fe;font-size:14px;font-weight:700">like kids rushing out of school!</div>
+              <div style="color:rgba(255,255,255,.5);font-size:12px;margin-top:4px">crowded classroom → empty playground</div>
+            </div>
+          </div>
+          <div class="tt-overlay"><div class="tt-handle">@sciencekid.lab</div><div class="tt-tags">#molecules #science #kids</div></div>
+          <div class="tt-side"><div class="tt-action"><div class="tt-icon">❤️</div><div class="tt-count">248K</div></div><div class="tt-action"><div class="tt-icon">🔖</div><div class="tt-count">89K</div></div></div>
+          <div class="sbar"><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div></div>
+        </div>
+
+        <!-- SCENE 2: COOKIE -->
+        <div class="scene" id="s2" style="background:#001a0d">
+          <canvas id="c2" width="380" height="820"></canvas>
+          <div class="content">
+            <div style="font-size:88px;animation:wgl 1.4s infinite;margin-bottom:4px">🍪</div>
+            <div style="color:#fde68a;font-size:16px;font-weight:700;margin-bottom:12px">HOT COOKIE!</div>
+            <div style="color:#86efac;font-size:22px;font-weight:700;letter-spacing:4px;margin-bottom:4px">↓↓↓↓↓</div>
+            <div style="color:rgba(255,255,255,.55);font-size:12px;margin-bottom:12px">millions of smell molecules shoot out</div>
+            <div style="display:flex;justify-content:space-around;width:90%;margin-bottom:12px">
+              <span style="font-size:24px;animation:bob 1.5s infinite">🟡</span>
+              <span style="font-size:24px;animation:bob 1.5s infinite;animation-delay:.3s">🟡</span>
+              <span style="font-size:24px;animation:bob 1.5s infinite;animation-delay:.6s">🟡</span>
+              <span style="font-size:24px;animation:bob 1.5s infinite;animation-delay:.9s">🟡</span>
+              <span style="font-size:24px;animation:bob 1.5s infinite;animation-delay:1.2s">🟡</span>
+            </div>
+            <div style="color:#86efac;font-size:22px;font-weight:700;letter-spacing:4px;margin-bottom:4px">↓↓↓↓↓</div>
+            <div style="color:rgba(255,255,255,.55);font-size:12px;margin-bottom:14px">zoom through the whole house</div>
+            <div style="text-align:center">
+              <div style="font-size:64px;animation:bob 1s infinite">🧒</div>
+              <div style="font-size:28px;margin-top:-6px;animation:spn 1.2s linear infinite">😋</div>
+              <div style="color:#fff;font-size:16px;font-weight:700;margin-top:4px">YUMMY DETECTED! 🎉</div>
+            </div>
+            <div style="background:rgba(134,239,172,.12);border-radius:12px;padding:10px 16px;border:1.5px solid rgba(134,239,172,.3);margin-top:14px;text-align:center">
+              <span style="color:#86efac;font-size:13px;font-weight:700">this is called DIFFUSION ✨</span>
+            </div>
+          </div>
+          <div class="tt-overlay"><div class="tt-handle">@sciencekid.lab</div><div class="tt-tags">#cookies #diffusion #foryou</div></div>
+          <div class="tt-side"><div class="tt-action"><div class="tt-icon">❤️</div><div class="tt-count">248K</div></div><div class="tt-action"><div class="tt-icon">🔖</div><div class="tt-count">89K</div></div></div>
+          <div class="sbar"><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div></div>
+        </div>
+
+        <!-- SCENE 3: SCIENCE WORD -->
+        <div class="scene" id="s3" style="background:#1a0800">
+          <canvas id="c3" width="380" height="820"></canvas>
+          <div class="content">
+            <div style="color:#fde68a;font-size:12px;font-weight:700;letter-spacing:3px;margin-bottom:8px;text-align:center">THE SCIENCE WORD IS…</div>
+            <div style="color:#fff;font-size:52px;font-weight:700;animation:pop .9s infinite alternate;margin-bottom:10px;text-align:center">DIFFUSION</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:18px">
+              <span style="background:#854F0B;color:#fde68a;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px">stuff moves 📦</span>
+              <span style="background:#854F0B;color:#fde68a;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px">by itself 🤸</span>
+              <span style="background:#854F0B;color:#fde68a;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px">crowded→empty 💨</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%">
+              <div style="background:rgba(255,255,255,.09);border-radius:14px;padding:12px;text-align:center;border:1.5px solid rgba(255,255,255,.15)">
+                <div style="font-size:34px">🫁</div>
+                <div style="color:#fed7aa;font-size:12px;font-weight:700;margin-top:5px">your lungs</div>
+                <div style="color:rgba(255,255,255,.45);font-size:11px;margin-top:2px">O₂ in → CO₂ out</div>
+              </div>
+              <div style="background:rgba(255,255,255,.09);border-radius:14px;padding:12px;text-align:center;border:1.5px solid rgba(255,255,255,.15)">
+                <div style="font-size:34px">☕</div>
+                <div style="color:#fed7aa;font-size:12px;font-weight:700;margin-top:5px">coffee aroma</div>
+                <div style="color:rgba(255,255,255,.45);font-size:11px;margin-top:2px">📸 real photo here</div>
+              </div>
+              <div style="background:rgba(255,255,255,.09);border-radius:14px;padding:12px;text-align:center;border:1.5px solid rgba(255,255,255,.15)">
+                <div style="font-size:34px">🌊</div>
+                <div style="color:#fed7aa;font-size:12px;font-weight:700;margin-top:5px">ocean salt</div>
+                <div style="color:rgba(255,255,255,.45);font-size:11px;margin-top:2px">📸 real photo here</div>
+              </div>
+              <div style="background:rgba(255,255,255,.09);border-radius:14px;padding:12px;text-align:center;border:1.5px solid rgba(255,255,255,.15)">
+                <div style="font-size:34px">🩸</div>
+                <div style="color:#fed7aa;font-size:12px;font-weight:700;margin-top:5px">your blood</div>
+                <div style="color:rgba(255,255,255,.45);font-size:11px;margin-top:2px">use illustration</div>
+              </div>
+            </div>
+          </div>
+          <div class="tt-overlay"><div class="tt-handle">@sciencekid.lab</div><div class="tt-tags">#diffusion #sciencekids #masstransfer</div></div>
+          <div class="tt-side"><div class="tt-action"><div class="tt-icon">❤️</div><div class="tt-count">248K</div></div><div class="tt-action"><div class="tt-icon">🔖</div><div class="tt-count">89K</div></div></div>
+          <div class="sbar"><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div></div>
+        </div>
+
+        <!-- SCENE 4: LUNGS -->
+        <div class="scene" id="s4" style="background:#0a0018">
+          <canvas id="c4" width="380" height="820"></canvas>
+          <div class="content">
+            <div style="font-size:72px;animation:pop 1.5s infinite;margin-bottom:6px">🫁</div>
+            <div style="color:#c4b5fd;font-size:16px;font-weight:700;margin-bottom:16px;text-align:center">your body does this 60,000× a day!</div>
+            <div style="display:flex;flex-direction:column;gap:10px;width:100%;margin-bottom:14px">
+              <div style="display:flex;align-items:center;gap:12px;background:rgba(59,130,246,.16);border-radius:14px;padding:12px 14px;border:1.5px solid rgba(59,130,246,.3)">
+                <span style="font-size:32px;animation:bob 1s infinite">😮‍💨</span>
+                <div>
+                  <div style="color:#93c5fd;font-size:13px;font-weight:700">breathe IN → oxygen enters blood</div>
+                  <div style="color:rgba(255,255,255,.5);font-size:11px;margin-top:2px">O₂ crowded in air → moves into blood</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;background:rgba(239,68,68,.13);border-radius:14px;padding:12px 14px;border:1.5px solid rgba(239,68,68,.28)">
+                <span style="font-size:32px;animation:bob 1s infinite;animation-delay:.3s">💨</span>
+                <div>
+                  <div style="color:#fca5a5;font-size:13px;font-weight:700">breathe OUT → CO₂ leaves blood</div>
+                  <div style="color:rgba(255,255,255,.5);font-size:11px;margin-top:2px">CO₂ crowded in blood → escapes to air</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;background:rgba(236,72,153,.13);border-radius:14px;padding:12px 14px;border:1.5px solid rgba(236,72,153,.28)">
+                <span style="font-size:32px;animation:pop 1s infinite;animation-delay:.5s">🩸</span>
+                <div>
+                  <div style="color:#f9a8d4;font-size:13px;font-weight:700">blood delivers O₂ to every cell</div>
+                  <div style="color:rgba(255,255,255,.5);font-size:11px;margin-top:2px">your whole body runs on diffusion!</div>
+                </div>
+              </div>
+            </div>
+            <div style="background:rgba(167,139,250,.13);border-radius:16px;padding:12px 16px;border:2px solid rgba(167,139,250,.3);text-align:center;width:100%">
+              <div style="color:#c4b5fd;font-size:14px;font-weight:700">🤯 you are a walking mass-transfer machine!</div>
+              <div style="display:flex;justify-content:center;gap:8px;margin-top:10px;font-size:32px">
+                <span style="animation:bob 1s infinite">🧒</span>
+                <span style="animation:bob 1s infinite;animation-delay:.2s">💨</span>
+                <span style="animation:bob 1s infinite;animation-delay:.4s">🔵</span>
+                <span style="animation:bob 1s infinite;animation-delay:.6s">❤️</span>
+              </div>
+            </div>
+          </div>
+          <div class="tt-overlay"><div class="tt-handle">@sciencekid.lab</div><div class="tt-tags">#lungs #bodyscience #diffusion</div></div>
+          <div class="tt-side"><div class="tt-action"><div class="tt-icon">❤️</div><div class="tt-count">248K</div></div><div class="tt-action"><div class="tt-icon">🔖</div><div class="tt-count">89K</div></div></div>
+          <div class="sbar"><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div></div>
+        </div>
+
+        <!-- SCENE 5: QUIZ -->
+        <div class="scene" id="s5" style="background:#18001a">
+          <canvas id="c5" width="380" height="820"></canvas>
+          <div class="content" style="justify-content:flex-start;padding-top:80px">
+            <div style="font-size:64px;animation:bob 1s infinite;margin-bottom:10px">🧠</div>
+            <div style="color:#fff;font-size:17px;font-weight:700;text-align:center;line-height:1.4;margin-bottom:20px;padding:0 8px">You spray perfume. The whole room smells amazing. What just happened?</div>
+            <div style="width:100%">
+              <button class="qbtn" onclick="qa(this,false)">A) Magic ✨</button>
+              <button class="qbtn" onclick="qa(this,true)">B) Diffusion — mass transfer! 💨</button>
+              <button class="qbtn" onclick="qa(this,false)">C) The perfume bottle is alive 🧴</button>
+            </div>
+            <div class="qres" id="qr">🎉 Drop a 💨 if you got it!</div>
+          </div>
+          <div class="tt-overlay"><div class="tt-handle">@sciencekid.lab</div><div class="tt-caption">Drop 💨 in comments if you got it!</div><div class="tt-tags">#quiz #sciencekids</div></div>
+          <div class="tt-side"><div class="tt-action"><div class="tt-icon">❤️</div><div class="tt-count">248K</div></div><div class="tt-action"><div class="tt-icon">💬</div><div class="tt-count">4.1K</div></div></div>
+          <div class="sbar"><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div></div>
+        </div>
+
+        <!-- SCENE 6: TYPES -->
+        <div class="scene" id="s6" style="background:#000d1a">
+          <canvas id="c6" width="380" height="820"></canvas>
+          <div class="content">
+            <div style="color:#7dd3fc;font-size:24px;font-weight:700;margin-bottom:4px;text-align:center">MASS TRANSFER</div>
+            <div style="color:rgba(255,255,255,.4);font-size:13px;margin-bottom:20px;text-align:center">= all the ways tiny stuff moves around</div>
+            <div style="display:flex;flex-direction:column;gap:12px;width:100%;margin-bottom:16px">
+              <div style="display:flex;align-items:center;gap:14px;background:rgba(56,132,205,.16);border-radius:16px;padding:14px 16px;border:1.5px solid rgba(56,132,205,.3)">
+                <span style="font-size:36px;animation:bob 2s infinite">💨</span>
+                <div><div style="color:#7dd3fc;font-size:14px;font-weight:700">Diffusion</div><div style="color:rgba(255,255,255,.55);font-size:12px;margin-top:3px">molecules spread all by themselves</div></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:14px;background:rgba(15,110,86,.2);border-radius:16px;padding:14px 16px;border:1.5px solid rgba(29,158,117,.3)">
+                <span style="font-size:36px;animation:spn 3s linear infinite">🌀</span>
+                <div><div style="color:#5DCAA5;font-size:14px;font-weight:700">Convection</div><div style="color:rgba(255,255,255,.55);font-size:12px;margin-top:3px">wind or stirring helps them move</div></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:14px;background:rgba(83,74,183,.2);border-radius:16px;padding:14px 16px;border:1.5px solid rgba(127,119,221,.3)">
+                <span style="font-size:36px;animation:wgl 1.5s infinite">🧱</span>
+                <div><div style="color:#AFA9EC;font-size:14px;font-weight:700">Permeation</div><div style="color:rgba(255,255,255,.55);font-size:12px;margin-top:3px">sneaking through tiny holes</div></div>
+              </div>
+            </div>
+            <div style="background:rgba(255,255,255,.06);border-radius:14px;padding:12px 16px;border:1px dashed rgba(255,255,255,.2);text-align:center;width:100%">
+              <div style="color:#fde68a;font-size:13px;font-weight:700;margin-bottom:8px">spot them in real life! 🕵️</div>
+              <div style="display:flex;justify-content:space-around">
+                <div style="text-align:center"><div style="font-size:26px">🌊</div><div style="color:rgba(255,255,255,.5);font-size:11px;margin-top:3px">ocean</div></div>
+                <div style="text-align:center"><div style="font-size:26px">🫁</div><div style="color:rgba(255,255,255,.5);font-size:11px;margin-top:3px">lungs</div></div>
+                <div style="text-align:center"><div style="font-size:26px">☕</div><div style="color:rgba(255,255,255,.5);font-size:11px;margin-top:3px">coffee</div></div>
+                <div style="text-align:center"><div style="font-size:26px">🌸</div><div style="color:rgba(255,255,255,.5);font-size:11px;margin-top:3px">flowers</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="tt-overlay"><div class="tt-handle">@sciencekid.lab</div><div class="tt-tags">#masstransfer #sciencetok</div></div>
+          <div class="tt-side"><div class="tt-action"><div class="tt-icon">❤️</div><div class="tt-count">248K</div></div><div class="tt-action"><div class="tt-icon">🔖</div><div class="tt-count">89K</div></div></div>
+          <div class="sbar"><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div></div>
+        </div>
+
+        <!-- SCENE 7: HEAT -->
+        <div class="scene" id="s7" style="background:#0d0d00">
+          <canvas id="c7" width="380" height="820"></canvas>
+          <div class="content">
+            <div style="font-size:72px;animation:bob 1s infinite;margin-bottom:8px">🌡️</div>
+            <div style="color:#fde68a;font-size:18px;font-weight:700;margin-bottom:18px;text-align:center">heat = FASTER molecules!</div>
+            <div style="display:flex;align-items:flex-end;justify-content:space-around;background:rgba(255,255,255,.06);border-radius:16px;padding:16px 20px;height:120px;width:100%;margin-bottom:16px;border:1px solid rgba(255,255,255,.1)">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+                <div style="width:26px;background:#378ADD;border-radius:4px;height:22px"></div>
+                <div style="font-size:20px">🧊</div>
+                <div style="color:rgba(255,255,255,.45);font-size:11px">ice</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+                <div style="width:26px;background:#1D9E75;border-radius:4px;height:42px"></div>
+                <div style="font-size:20px">💧</div>
+                <div style="color:rgba(255,255,255,.45);font-size:11px">water</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+                <div style="width:26px;background:#D85A30;border-radius:4px;height:60px;animation:eq .6s infinite alternate"></div>
+                <div style="font-size:20px">♨️</div>
+                <div style="color:rgba(255,255,255,.45);font-size:11px">steam</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+                <div style="width:26px;background:#E24B4A;border-radius:4px;height:76px;animation:eq .4s infinite alternate"></div>
+                <div style="font-size:20px">🔥</div>
+                <div style="color:rgba(255,255,255,.45);font-size:11px">fire</div>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-around;width:100%;margin-bottom:14px">
+              <div style="text-align:center;animation:bob 2.2s infinite"><div style="font-size:48px">🐌</div><div style="color:rgba(255,255,255,.5);font-size:12px;margin-top:4px">cold: slow</div></div>
+              <div style="color:#fff;font-size:28px;align-self:center;font-weight:700">→</div>
+              <div style="text-align:center;animation:bob .7s infinite"><div style="font-size:48px">🐇</div><div style="color:rgba(255,255,255,.5);font-size:12px;margin-top:4px">hot: fast!</div></div>
+            </div>
+            <div style="background:rgba(253,230,138,.1);border-radius:14px;padding:12px 16px;border:1.5px solid rgba(253,230,138,.25);text-align:center;width:100%">
+              <div style="color:#fde68a;font-size:14px;font-weight:700">hotter cookie = smells from farther away! 🤯</div>
+            </div>
+          </div>
+          <div class="tt-overlay"><div class="tt-handle">@sciencekid.lab</div><div class="tt-tags">#heat #molecules #mindblown</div></div>
+          <div class="tt-side"><div class="tt-action"><div class="tt-icon">❤️</div><div class="tt-count">248K</div></div><div class="tt-action"><div class="tt-icon">🔖</div><div class="tt-count">89K</div></div></div>
+          <div class="sbar"><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div></div>
+        </div>
+
+        <!-- SCENE 8: CTA -->
+        <div class="scene" id="s8" style="background:#1a000e">
+          <canvas id="c8" width="380" height="820"></canvas>
+          <div class="content">
+            <div style="display:flex;justify-content:center;gap:8px;font-size:44px;margin-bottom:10px">
+              <span style="animation:bob 1s infinite">🤯</span>
+              <span style="animation:bob 1s infinite;animation-delay:.15s">😱</span>
+              <span style="animation:bob 1s infinite;animation-delay:.3s">🧪</span>
+              <span style="animation:bob 1s infinite;animation-delay:.45s">🌟</span>
+            </div>
+            <div style="color:#f0abfc;font-size:20px;font-weight:700;line-height:1.35;text-align:center;margin-bottom:18px;padding:0 10px">your nose is a mass-transfer detector!</div>
+            <div style="display:flex;flex-direction:column;gap:10px;width:100%">
+              <div style="background:rgba(255,255,255,.1);border-radius:14px;padding:13px 16px;display:flex;align-items:center;gap:12px;border:1.5px solid rgba(255,255,255,.2)">
+                <span style="font-size:28px;animation:bob 1s infinite">💾</span>
+                <span style="color:#fff;font-size:14px;font-weight:700">Save to show your teacher</span>
+              </div>
+              <div style="background:rgba(255,255,255,.1);border-radius:14px;padding:13px 16px;display:flex;align-items:center;gap:12px;border:1.5px solid rgba(255,255,255,.2)">
+                <span style="font-size:28px;animation:wgl 1.5s infinite">💨</span>
+                <span style="color:#fff;font-size:14px;font-weight:700">Drop 💨 if you get it now</span>
+              </div>
+              <div style="background:rgba(255,255,255,.1);border-radius:14px;padding:13px 16px;display:flex;align-items:center;gap:12px;border:1.5px solid rgba(255,255,255,.2)">
+                <span style="font-size:28px;animation:spn 3s linear infinite">🔁</span>
+                <span style="color:#fff;font-size:14px;font-weight:700">Send to a friend who hates science</span>
+              </div>
+              <div style="background:rgba(255,255,255,.1);border-radius:14px;padding:13px 16px;display:flex;align-items:center;gap:12px;border:1.5px solid rgba(255,255,255,.2)">
+                <span style="font-size:28px;animation:bob 1.2s infinite">🎵</span>
+                <span style="color:#fff;font-size:14px;font-weight:700">Duet with your teacher!</span>
+              </div>
+            </div>
+          </div>
+          <div class="tt-overlay"><div class="tt-handle">@sciencekid.lab</div><div class="tt-tags">#sciencetok #viral #foryoupage #masstransfer</div></div>
+          <div class="tt-side"><div class="tt-action"><div class="tt-icon">❤️</div><div class="tt-count">248K</div></div><div class="tt-action"><div class="tt-icon">💬</div><div class="tt-count">4.1K</div></div><div class="tt-action"><div class="tt-icon">🔖</div><div class="tt-count">89K</div></div></div>
+          <div class="sbar"><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-wrap">
+      <button class="nbtn" onclick="prev()">← Prev</button>
+      <div class="scene-ind" id="dots"></div>
+      <button class="nbtn" onclick="next()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const N=9;let cur=0;
+const labels=['Hook','Crowded→Empty','Cookie Example','Science Word','Lungs & Blood','Quiz','Types','Heat','CTA'];
+
+function mkDots(){
+  const c=document.getElementById('dots');
+  for(let i=0;i<N;i++){
+    const d=document.createElement('div');
+    d.className='dot-ind'+(i===0?' on':'');
+    d.id='d'+i;
+    c.appendChild(d);
+  }
+}
+mkDots();
+
+function cfg(id,n,spd,cols){
+  const cv=document.getElementById(id);
+  if(!cv)return;
+  const ctx=cv.getContext('2d'),W=cv.width,H=cv.height,pts=[];
+  for(let i=0;i<n;i++) pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*spd,vy:(Math.random()-.5)*spd,r:2.5+Math.random()*3.5,c:cols[i%cols.length]});
+  (function loop(){ctx.clearRect(0,0,W,H);for(const p of pts){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=p.c;ctx.fill();}requestAnimationFrame(loop);})();
+}
+cfg('c0',65,1.3,['rgba(179,136,255,.6)','rgba(100,100,255,.4)','rgba(255,255,255,.25)']);
+cfg('c1',75,1.5,['rgba(253,230,138,.5)','rgba(125,211,252,.4)','rgba(255,255,255,.2)']);
+cfg('c2',55,1.0,['rgba(253,230,138,.55)','rgba(134,239,172,.4)','rgba(255,255,255,.2)']);
+cfg('c3',45,1.0,['rgba(253,186,116,.5)','rgba(252,165,165,.4)']);
+cfg('c4',50,0.9,['rgba(196,181,253,.5)','rgba(249,168,212,.4)','rgba(255,255,255,.2)']);
+cfg('c5',55,0.9,['rgba(240,171,252,.5)','rgba(196,181,253,.4)','rgba(255,255,255,.18)']);
+cfg('c6',52,0.9,['rgba(125,211,252,.45)','rgba(93,202,165,.4)','rgba(175,169,236,.4)']);
+cfg('c7',40,2.0,['rgba(253,230,138,.6)','rgba(239,159,39,.5)','rgba(226,75,74,.4)']);
+cfg('c8',58,0.75,['rgba(240,171,252,.5)','rgba(196,181,253,.4)','rgba(255,255,255,.2)']);
+
+function show(n,dir){
+  const prev=document.getElementById('s'+cur);
+  const next=document.getElementById('s'+n);
+  prev.style.transition='opacity .38s ease, transform .42s cubic-bezier(.4,0,.2,1)';
+  prev.style.opacity='0';
+  prev.style.transform=dir>0?'translateX(-100%)':'translateX(100%)';
+  prev.classList.remove('active');
+  prev.style.pointerEvents='none';
+  setTimeout(()=>{prev.style.transition='none';prev.style.transform=dir>0?'translateX(100%)':'translateX(-100%)';},450);
+  next.style.transition='none';
+  next.style.opacity='0';
+  next.style.transform=dir>0?'translateX(100%)':'translateX(-100%)';
+  next.classList.add('active');
+  next.style.pointerEvents='all';
+  setTimeout(()=>{next.style.transition='opacity .38s ease, transform .42s cubic-bezier(.4,0,.2,1)';next.style.opacity='1';next.style.transform='translateX(0)';},20);
+  document.getElementById('pf').style.width=Math.round(((n+1)/N)*100)+'%';
+  for(let i=0;i<N;i++){const d=document.getElementById('d'+i);if(d){d.className='dot-ind'+(i===n?' on':'');}}
+  cur=n;
+  const h=document.getElementById('ntime');
+  const now=new Date();h.textContent=now.getHours()+':'+(now.getMinutes()<10?'0':'')+now.getMinutes();
+}
+
+function next(){if(cur<N-1)show(cur+1,1)}
+function prev(){if(cur>0)show(cur-1,-1)}
+
+function qa(btn,ok){
+  document.querySelectorAll('.qbtn').forEach(b=>b.onclick=null);
+  btn.classList.add(ok?'ok':'no');
+  if(!ok)document.querySelectorAll('.qbtn')[1].classList.add('ok');
+  const r=document.getElementById('qr');
+  r.textContent=ok?'🎉 Drop a 💨 if you got it!':'😅 Diffusion — molecules spread!';
+  r.classList.add('show');
+}
+</script>
