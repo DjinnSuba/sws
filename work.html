@@ -1,0 +1,2048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kirstien Dominique Santos — Reporter Portfolio</title>
+<meta name="description" content="Investigative & features reporting portfolio — housing, labor, and the systems that shape everyday life.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+  /* ============================================================
+     TOKENS
+     ============================================================ */
+  :root{
+    --cream:#FFD9DA;
+    --rose:#EA638C;
+    --wine:#89023E;
+    --slate:#30343F;
+    --ink:#1B2021;
+
+    --paper:#FFEFEF;      /* tinted white, warmer than pure #fff */
+    --ink-soft:#8b9099;   /* muted text on dark */
+
+    --display:'Fraunces', Georgia, serif;
+    --body:'Inter', -apple-system, sans-serif;
+    --mono:'Space Mono', 'Courier New', monospace;
+    --marker:'Caveat', cursive;
+
+    --tape:rgba(255,217,218,.5);
+    --tape-edge:rgba(27,32,33,.08);
+    --paper-shadow:0 14px 30px rgba(0,0,0,.35), 0 3px 8px rgba(0,0,0,.25);
+
+    --wrap: min(1180px, 92vw);
+    --ease: cubic-bezier(.22,.61,.36,1);
+
+    /* Section "wire-service" tags — newsrooms colour-code beats
+       (Metro, Business, Sports…); each page gets one tag colour,
+       carried from its subnav tab down into its own hero wash. */
+    --acc-home:#EA638C;
+    --acc-experience:#3FA7D6;
+    --acc-work:#8D7FCB;
+    --acc-design:#4FB68A;
+    --acc-skills:#E0793C;
+    --acc-contact:#D6C33F;
+    --page-accent: var(--acc-home);
+    --header-h: 49px;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; }
+  }
+
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--paper);
+    font-family:var(--body);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  img{ max-width:100%; display:block; }
+  a{ color:inherit; }
+
+  ::selection{ background:var(--wine); color:var(--cream); }
+
+  .wrap{ width:var(--wrap); margin:0 auto; }
+
+  /* ============================================================
+     GRAIN TEXTURE (shared subtle overlay, adds a print feel)
+     ============================================================ */
+  .grain{
+    position:fixed; inset:0; pointer-events:none; z-index:500;
+    opacity:.05; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ============================================================
+     NAV
+     ============================================================ */
+  header.site-nav{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    background:rgba(27,32,33,.92);
+    backdrop-filter:blur(8px);
+    box-shadow:0 12px 30px rgba(0,0,0,.3);
+  }
+  .nav-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 0;
+  }
+  .brand{
+    font-family:var(--mono); font-size:13px; letter-spacing:.08em;
+    text-decoration:none; color:var(--cream); font-weight:700;
+    display:flex; align-items:center; gap:8px;
+  }
+  .brand .dot{ width:7px; height:7px; border-radius:50%; background:var(--rose); transition:transform .3s var(--ease), box-shadow .3s var(--ease); }
+  .brand:hover .dot{ transform:scale(1.5); box-shadow:0 0 0 4px rgba(234,99,140,.2); }
+
+  /* ------------------------------------------------------------
+     SUBNAV — a single row of wire-service section tags directly
+     under the header. Each tag carries its own beat colour (see
+     --acc-* tokens). The active tag sits flush with the page —
+     its bottom border drops out and its colour is picked up by
+     the hero wash right underneath, so the tab visibly "grows
+     into" the page it belongs to instead of just marking it.
+     ------------------------------------------------------------ */
+  .subnav{
+    position:fixed; left:0; right:0; top:var(--header-h, 49px); z-index:99;
+    background:var(--ink);
+    border-bottom:1px solid rgba(255,217,218,.14);
+    overflow-x:auto; overflow-y:visible; -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .subnav::-webkit-scrollbar{ display:none; }
+  .subnav-inner{ display:flex; }
+  .tab{
+    --accent:var(--rose);
+    flex:0 0 auto;
+    font-family:var(--mono); font-size:11px; letter-spacing:.05em;
+    text-transform:uppercase; color:var(--ink);
+    background:var(--accent); filter:brightness(.62) saturate(.85);
+    border:1px solid rgba(0,0,0,.4); border-bottom:none;
+    padding:9px 20px 8px;
+    cursor:pointer; position:relative; top:0;
+    transform:translateY(7px);
+    transition:filter .25s var(--ease), transform .4s cubic-bezier(.34,1.3,.5,1), box-shadow .25s var(--ease);
+  }
+  .tab + .tab{ margin-left:-1px; }
+  .tab span{ position:relative; z-index:2; pointer-events:none; font-weight:700; }
+  .tab:hover{ filter:brightness(.85) saturate(1); }
+  .tab:not(.is-active):hover{ transform:translateY(3px); }
+  .tab:focus-visible{ outline:2px solid var(--paper); outline-offset:-3px; }
+  .tab.is-active{
+    filter:none; z-index:3;
+    transform:translateY(0);
+    box-shadow:0 8px 18px rgba(0,0,0,.35);
+    border-bottom:1px solid var(--accent); /* seams into the wash below */
+    margin-bottom:-1px;
+  }
+  .tab[data-page="home"]{ --accent:var(--acc-home); }
+  .tab[data-page="experience"]{ --accent:var(--acc-experience); }
+  .tab[data-page="work"]{ --accent:var(--acc-work); }
+  .tab[data-page="design"]{ --accent:var(--acc-design); }
+  .tab[data-page="skills"]{ --accent:var(--acc-skills); }
+  .tab[data-page="contact"]{ --accent:var(--acc-contact); }
+
+  /* Thin cascade rule spanning the page, in the active section's
+     colour — the literal thread from tab down into content. */
+  .accent-rule{
+    position:fixed; left:0; right:0; top:calc(var(--header-h, 49px) + 37px); z-index:98;
+    height:3px; background:var(--page-accent);
+    transition:background .35s var(--ease);
+  }
+  /* In-flow spacer: pushes every page's content clear of the fixed
+     header + subnav + accent rule, so no per-page padding math needed. */
+  .nav-spacer{ height:calc(var(--header-h, 49px) + 40px); }
+
+  /* ============================================================
+     PAGE SIDEBAR — in-page section jump list, shown on the
+     multi-section pages (Home, Experience, Work). Styled as a
+     small pinned index-tab card, echoing the folder-tab nav above
+     it. Hidden by JS on the other pages; only hidden by CSS on
+     truly narrow phone widths where it would overlap content.
+     ============================================================ */
+  .page-sidebar{
+    position:fixed; left:20px; top:50%; transform:translateY(-50%) rotate(-1deg);
+    display:flex; flex-direction:column;
+    z-index:90;
+    background:var(--cream);
+    border:1px solid rgba(27,32,33,.2);
+    padding:10px 4px;
+    box-shadow:var(--paper-shadow);
+    transition:transform .3s var(--ease), left .3s var(--ease);
+  }
+  .page-sidebar:hover{ transform:translateY(-50%) rotate(0deg); }
+  .page-sidebar::before{
+    content:''; position:absolute; top:-10px; left:50%; transform:translateX(-50%) rotate(-4deg);
+    width:44px; height:15px;
+    background:var(--tape); border:1px solid var(--tape-edge);
+    opacity:.85;
+  }
+  .page-sidebar .ps-link{
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.05em; text-transform:uppercase;
+    color:var(--ink); text-decoration:none;
+    padding:8px 12px; white-space:nowrap;
+    border-bottom:1px dashed rgba(27,32,33,.18);
+    transition:color .25s var(--ease), background .25s var(--ease), padding-left .25s var(--ease);
+  }
+  .page-sidebar .ps-link:last-child{ border-bottom:none; }
+  .page-sidebar .ps-link:hover{ color:var(--wine); padding-left:18px; }
+  .page-sidebar .ps-link.active{ color:var(--cream); background:var(--wine); }
+  @media (max-width:860px){
+    .page-sidebar{ left:8px; padding:8px 3px; }
+    .page-sidebar .ps-link{ font-size:9.5px; padding:7px 9px; }
+  }
+  @media (max-width:480px){ .page-sidebar{ display:none !important; } }
+
+  /* ============================================================
+     HERO
+     ============================================================ */
+  .hero{
+    min-height:100vh;
+    display:flex; flex-direction:column; justify-content:center;
+    position:relative;
+    padding-top:20px;
+    transition:background .4s var(--ease);
+  }
+  .hero::before{
+    content:'';
+    position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse 60% 50% at 85% 15%, color-mix(in srgb, var(--page-accent) 55%, transparent), transparent 60%),
+      radial-gradient(ellipse 50% 40% at 10% 90%, color-mix(in srgb, var(--page-accent) 40%, var(--wine)), transparent 60%);
+    opacity:.4;
+    transition:background .4s var(--ease);
+    pointer-events:none;
+  }
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:.18em;
+    color:var(--rose); text-transform:uppercase;
+    display:flex; align-items:center; gap:12px; margin-bottom:22px;
+  }
+  .eyebrow .rule{ width:40px; height:1px; background:var(--rose); display:inline-block; }
+
+  h1.masthead{
+    font-family:var(--display);
+    font-optical-sizing:auto;
+    font-weight:600;
+    font-size:clamp(3rem, 9vw, 7.2rem);
+    line-height:.95;
+    margin:0 0 20px;
+    color:var(--paper);
+    letter-spacing:-.01em;
+  }
+  h1.masthead em{
+    font-style:italic; font-weight:500; color:var(--rose);
+  }
+
+  .hero-sub{
+    font-size:clamp(1.05rem, 1.6vw, 1.35rem);
+    color:var(--ink-soft);
+    max-width:36ch;
+    margin:0 0 34px;
+    font-weight:400;
+  }
+
+  .dateline{
+    font-family:var(--mono); font-size:13px; line-height:1.7;
+    color:var(--paper); background:rgba(255,217,218,.05);
+    border-left:2px solid var(--wine);
+    padding:14px 18px; max-width:52ch;
+  }
+  .dateline b{ color:var(--rose); letter-spacing:.05em; }
+
+  /* ------------------------------------------------------------
+     HERO PORTRAIT + LAYOUT SWITCH
+     ------------------------------------------------------------
+     .hero-body has THREE children: .hero-text-a, .hero-portrait-wrap,
+     .hero-text-b. Which layout you get is controlled entirely by
+     whether .hero-body also carries the "hero-body--right" class:
+
+       DEFAULT (no extra class)  -> centered photo, text on both sides
+       + "hero-body--right"      -> photo on the right, both text
+                                     blocks stacked on the left
+
+     To switch versions, edit ONE thing in the HTML: change
+       <div class="hero-body">                     (centered - current)
+     to
+       <div class="hero-body hero-body--right">     (photo on the right)
+     ------------------------------------------------------------ */
+  .hero-body{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    grid-template-areas:"a photo b";
+    column-gap:56px;
+    align-items:center;
+    margin-top:52px;
+  }
+  .hero-text-a{ grid-area:a; }
+  .hero-text-b{ grid-area:b; }
+  .hero-portrait-wrap{ grid-area:photo; justify-self:center; }
+
+  .hero-body.hero-body--right{
+    grid-template-columns:1fr auto;
+    grid-template-areas:
+      "a photo"
+      "b photo";
+    row-gap:26px;
+    column-gap:64px;
+  }
+  .hero-body.hero-body--right .hero-portrait-wrap{ justify-self:end; align-self:center; }
+
+  .hero-portrait-wrap{ position:relative; width:clamp(160px, 20vw, 240px); transform:rotate(-2deg); }
+  .hero-portrait-wrap::before{
+    content:''; position:absolute; top:-8px; left:50%; transform:translateX(-50%) rotate(-5deg);
+    width:64px; height:20px;
+    background:var(--tape); border:1px solid var(--tape-edge);
+    opacity:.85; z-index:3;
+  }
+  .hero-portrait{
+    aspect-ratio:1/1; border-radius:50%; overflow:hidden; position:relative;
+    background:linear-gradient(165deg, var(--wine), var(--ink) 75%);
+    border:1px solid rgba(255,217,218,.22);
+    background-image: url("assets/profile.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition:transform .4s var(--ease);
+  }
+  .hero-portrait-wrap:hover .hero-portrait{ transform:scale(1.04); }
+  .hero-portrait-wrap:hover .hero-portrait-ring{ transform:rotate(18deg) scale(1.03); border-color:rgba(234,99,140,.7); }
+  .hero-portrait::after{
+    content:'K.S.'; position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--display); font-size:2.4rem; font-weight:600;
+    color:rgba(255,217,218,.16);
+  }
+  .hero-portrait-ring{
+    position:absolute; inset:-10px; border:1px dashed rgba(234,99,140,.4);
+    border-radius:50%; pointer-events:none;
+    transition:transform .4s var(--ease), border-color .4s var(--ease);
+  }
+  .hero-portrait-tag{
+    position:absolute; bottom:-12px; left:50%; transform:translateX(-50%);
+    font-family:var(--mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--cream); background:var(--ink);
+    border:1px solid rgba(255,217,218,.25);
+    padding:4px 10px; white-space:nowrap;
+  }
+
+  .scroll-cue{
+    position:absolute; bottom:40px; left:0;
+    display:flex; align-items:center; gap:10px;
+    font-family:var(--mono); font-size:11px; letter-spacing:.1em;
+    color:var(--ink-soft); text-transform:uppercase;
+  }
+  .scroll-cue .line{
+    width:1px; height:34px; background:linear-gradient(var(--rose), transparent);
+    animation:scrollpulse 1.8s infinite var(--ease);
+  }
+  @keyframes scrollpulse{
+    0%{ transform:scaleY(0); transform-origin:top; }
+    50%{ transform:scaleY(1); transform-origin:top; }
+    50.01%{ transform-origin:bottom; }
+    100%{ transform:scaleY(0); transform-origin:bottom; }
+  }
+
+  /* ============================================================
+     SECTION SCAFFOLD
+     ============================================================ */
+  section{ position:relative; padding:130px 0; }
+  section.tight{ padding:90px 0; }
+  .section-head{ margin-bottom:64px; max-width:60ch; }
+  .kicker{
+    font-family:var(--mono); font-size:12px; letter-spacing:.15em;
+    color:var(--rose); text-transform:uppercase; display:block; margin-bottom:14px;
+  }
+  h2.head{
+    font-family:var(--display); font-weight:600;
+    font-size:clamp(2.1rem, 4vw, 3.2rem);
+    margin:0; line-height:1.05; color:var(--paper);
+  }
+  .lede{ color:var(--ink-soft); font-size:1.05rem; line-height:1.7; margin-top:18px; max-width:56ch; }
+
+  .reveal{ opacity:0; transform:translateY(28px); transition:opacity .8s var(--ease), transform .8s var(--ease); }
+  .reveal.in-view{ opacity:1; transform:translateY(0); }
+
+  /* ============================================================
+     COVERAGE / BEATS — index-style list
+     ============================================================ */
+  .beats{
+    border-top:1px solid rgba(255,217,218,.14);
+  }
+  .beat-row{
+    display:grid;
+    grid-template-columns:70px 1fr 1.4fr;
+    gap:28px;
+    align-items:baseline;
+    padding:30px 0;
+    border-bottom:1px solid rgba(255,217,218,.14);
+    transition:padding-left .35s var(--ease), background .35s var(--ease);
+  }
+  .beat-row:hover{ padding-left:14px; background:rgba(234,99,140,.05); }
+  .beat-num{ font-family:var(--mono); color:var(--wine); font-size:14px; }
+  .beat-name{
+    font-family:var(--display); font-weight:600; font-size:1.5rem; color:var(--paper);
+  }
+  .beat-desc{ color:var(--ink-soft); font-size:.96rem; line-height:1.6; }
+
+  /* ============================================================
+     PAN SECTION — signature element: scroll-linked contact-sheet reel
+     ============================================================ */
+  .pan-section{
+    position:relative;
+    /* height set by JS based on panel count for scroll room */
+  }
+  .pan-sticky{
+    position:sticky; top:0;
+    height:100vh;
+    overflow:hidden;
+    display:flex; align-items:center;
+    /* Explicit cross-browser scrollbar styling for the mobile fallback,
+       where JS sets overflow-x:auto. Without this, each Chromium-based
+       browser (Edge, Opera, Chrome) falls back to its own scrollbar
+       skin, so they visibly differ even on identical markup. */
+    scrollbar-width:thin;
+    scrollbar-color:var(--rose) rgba(255,217,218,.1);
+  }
+  .pan-sticky::-webkit-scrollbar{ height:4px; }
+  .pan-sticky::-webkit-scrollbar-track{ background:rgba(255,217,218,.1); }
+  .pan-sticky::-webkit-scrollbar-thumb{ background:var(--rose); border-radius:4px; }
+  .pan-sticky::-webkit-scrollbar-thumb:hover{ background:var(--wine); }
+  .pan-track{
+    display:flex;
+    gap:4vw;
+    padding:0 6vw;
+    will-change:transform;
+    padding-top: 5%;
+  }
+  .story-panel{
+    flex:0 0 auto;
+    width:min(78vw, 620px);
+    display:grid;
+    grid-template-rows:auto 1fr;
+    position:relative;
+  }
+  .story-panel::before{
+    content:''; position:absolute; top:-10px; left:36px; width:60px; height:20px;
+    background:var(--tape); border:1px solid var(--tape-edge);
+    transform:rotate(-5deg); opacity:.85; z-index:3;
+  }
+  .story-panel:nth-child(odd){ transform:rotate(-.6deg); }
+  .story-panel:nth-child(even){ transform:rotate(.5deg); }
+  .story-media{
+    aspect-ratio:4/3;
+    border-radius:2px;
+    position:relative;
+    overflow:hidden;
+    background:
+      repeating-linear-gradient(135deg, rgba(255,217,218,.06) 0 2px, transparent 2px 6px),
+      linear-gradient(155deg, var(--slate), var(--ink) 70%);
+    border:1px solid rgba(255,217,218,.14);
+    box-shadow:var(--paper-shadow);
+    transition:border-color .3s var(--ease);
+  }
+  .story-media:hover{ border-color:rgba(234,99,140,.5); }
+  .story-media:hover::after{ transform:scale(1.08); }
+  .story-media::after{ transition:transform .5s var(--ease); }
+  .story-panel:hover .frame-tag{ background:var(--wine); }
+  .story-media::after{
+    content:'';
+    position:absolute; inset:0;
+    background:radial-gradient(circle at 30% 20%, rgba(234,99,140,.35), transparent 55%);
+    mix-blend-mode:screen;
+  }
+  .frame-tag{
+    position:absolute; top:14px; left:14px;
+    font-family:var(--mono); font-size:11px; letter-spacing:.08em;
+    color:var(--cream); background:rgba(27,32,33,.55);
+    padding:4px 8px; border:1px solid rgba(255,217,218,.25);
+    z-index:2;
+    transition:background .3s var(--ease);
+  }
+  .frame-sprocket{
+    position:absolute; top:0; bottom:0; width:16px;
+    background-image:repeating-linear-gradient(180deg, transparent 0 10px, rgba(255,217,218,.18) 10px 14px);
+  }
+  .frame-sprocket.left{ left:0; }
+  .frame-sprocket.right{ right:0; }
+
+  .story-meta{ padding-top:22px; }
+  .story-pub{
+    font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--rose); margin-bottom:8px;
+  }
+  .story-title{
+    font-family:var(--display); font-weight:600; font-size:1.7rem; color:var(--paper);
+    margin:0 0 10px; line-height:1.15;
+  }
+  .story-dek{ color:var(--ink-soft); font-size:.95rem; line-height:1.6; }
+
+  .pan-progress{
+    position:absolute; left:6vw; bottom:56px; right:6vw;
+    height:2px; background:rgba(255,217,218,.14);
+  }
+  .pan-progress-bar{
+    height:100%; width:0%; background:var(--rose);
+  }
+  .pan-hint{
+    position:absolute; right:6vw; top:36px;
+    font-family:var(--mono); font-size:11px; letter-spacing:.08em;
+    color:var(--ink-soft); text-transform:uppercase;
+  }
+
+  /* ============================================================
+     BYLINES
+     ============================================================ */
+  .byline-strip{
+    border-top:1px solid rgba(255,217,218,.14);
+    border-bottom:1px solid rgba(255,217,218,.14);
+    display:flex; flex-wrap:wrap; gap:0;
+  }
+  .byline-item{
+    flex:1 1 200px;
+    padding:34px 24px;
+    border-right:1px solid rgba(255,217,218,.14);
+    font-family:var(--display); font-size:1.15rem; font-weight:500;
+    color:var(--ink-soft);
+    transition:color .3s var(--ease), background .3s var(--ease);
+  }
+  .byline-item:hover{ color:var(--cream); background:rgba(137,2,62,.15); }
+
+  /* ============================================================
+     ABOUT
+     ============================================================ */
+  .about-grid{
+    display:grid; grid-template-columns:.8fr 1.2fr; gap:64px; align-items:start;
+  }
+  .about-portrait {
+    aspect-ratio: 3 / 4;
+    background: linear-gradient(165deg, var(--wine), var(--ink) 75%);
+    border: 1px solid rgba(255, 217, 218, .16);
+    position: relative;
+    overflow: hidden;
+
+    background-image: url("assets/profile.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  .about-portrait::after{
+    content:'K.S.'; position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--display); font-size:5rem; font-weight:600;
+    color:rgba(255,217,218,.14);
+  }
+  .about-copy p{ color:var(--ink-soft); line-height:1.8; font-size:1.02rem; }
+  .about-copy p strong{ color:var(--paper); font-weight:600; }
+
+  .stat-row{ display:flex; gap:40px; margin-top:36px; flex-wrap:wrap; }
+  .stat{ transition:transform .3s var(--ease); }
+  .stat:hover{ transform:translateY(-4px); }
+  .stat b{
+    font-family:var(--display); font-size:2.1rem; color:var(--rose); display:block; font-weight:600;
+    transition:color .3s var(--ease);
+  }
+  .stat:hover b{ color:var(--cream); }
+  .stat span{ font-family:var(--mono); font-size:11px; color:var(--ink-soft); letter-spacing:.06em; text-transform:uppercase; }
+
+  /* ============================================================
+     CONTACT
+     ============================================================ */
+  .contact{
+    background:linear-gradient(180deg, var(--ink), var(--slate));
+    text-align:left;
+  }
+  .contact-inner{ display:flex; justify-content:space-between; align-items:flex-end; gap:40px; flex-wrap:wrap; }
+  .contact h2.head{ font-size:clamp(2.4rem, 6vw, 4.4rem); }
+  .contact-links{ display:flex; flex-direction:column; gap:6px; }
+  .contact-links a{
+    font-family:var(--mono); font-size:14px; text-decoration:none; color:var(--ink-soft);
+    border-bottom:1px solid transparent; transition:color .25s var(--ease), border-color .25s var(--ease);
+    width:fit-content;
+  }
+  .contact-links a:hover{ color:var(--rose); border-color:var(--rose); }
+
+  footer{
+    padding:30px 0 50px;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px;
+    font-family:var(--mono); font-size:11px; color:var(--ink-soft); letter-spacing:.04em;
+  }
+
+  /* ============================================================
+     SUMMARY
+     ============================================================ */
+  .summary-text{
+    font-size:1.15rem; line-height:1.85; color:var(--ink-soft); max-width:70ch;
+    border-left:2px solid var(--wine); padding-left:24px;
+  }
+  .summary-text strong{ color:var(--paper); font-weight:600; }
+
+  /* ============================================================
+     EXPERIENCE / EDUCATION — timeline rows
+     ============================================================ */
+  .timeline{ border-top:1px solid rgba(255,217,218,.14); }
+  .tl-row{
+    display:grid;
+    grid-template-columns:160px 1fr;
+    gap:28px;
+    padding:34px 0 34px 22px;
+    border-bottom:1px dashed rgba(255,217,218,.25);
+    position:relative;
+    transition:padding-left .35s var(--ease), background .35s var(--ease);
+  }
+  .tl-row::before{
+    content:''; position:absolute; left:0; top:38px; width:8px; height:8px;
+    border-radius:50%; background:var(--rose);
+    box-shadow:0 0 0 3px rgba(234,99,140,.18);
+  }
+  .tl-row:hover{ padding-left:34px; background:rgba(234,99,140,.05); }
+  .tl-date{
+    font-family:var(--mono); font-size:12px; letter-spacing:.05em;
+    color:var(--rose); text-transform:uppercase; padding-top:4px;
+  }
+  .tl-role{
+    font-family:var(--display); font-weight:600; font-size:1.4rem; color:var(--paper);
+    margin:0 0 4px;
+  }
+  .tl-org{
+    font-family:var(--mono); font-size:12px; letter-spacing:.04em;
+    color:var(--ink-soft); text-transform:uppercase; margin-bottom:14px;
+  }
+  .tl-points{ margin:0; padding-left:18px; color:var(--ink-soft); font-size:.95rem; line-height:1.7; }
+  .tl-points li{ margin-bottom:6px; }
+
+  /* ============================================================
+     SKILLS
+     ============================================================ */
+  .skills-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:56px;
+  }
+  .skills-col > .kicker{ margin-bottom:18px; }
+  .skill-tags{ display:flex; flex-wrap:wrap; gap:10px; }
+  .skill-tag{
+    font-family:var(--mono); font-size:12px; letter-spacing:.03em;
+    color:var(--paper); background:rgba(255,217,218,.06);
+    border:1px solid rgba(255,217,218,.18);
+    padding:8px 14px; border-radius:2px;
+    transition:border-color .25s var(--ease), color .25s var(--ease), background .25s var(--ease), transform .25s var(--ease);
+  }
+  .skill-tag:nth-child(3n){ transform:rotate(-1.5deg); }
+  .skill-tag:nth-child(3n+1){ transform:rotate(1deg); }
+  .skill-tag:hover{ border-color:var(--rose); color:var(--rose); background:rgba(234,99,140,.08); transform:rotate(0deg) translateY(-2px); }
+
+  /* ============================================================
+     PREVIOUS WORKS — resume-style publication list
+     ============================================================ */
+  .works-list{ border-top:1px solid rgba(255,217,218,.14); }
+  .work-row{
+    display:grid;
+    grid-template-columns:70px 1fr auto;
+    gap:24px;
+    align-items:baseline;
+    padding:22px 0;
+    border-bottom:1px solid rgba(255,217,218,.14);
+    transition:padding-left .3s var(--ease), background .3s var(--ease);
+  }
+  .work-row:hover{ padding-left:14px; background:rgba(234,99,140,.05); }
+  .work-year{ font-family:var(--mono); font-size:12px; color:var(--wine); }
+  .work-title{ font-family:var(--display); font-weight:500; font-size:1.15rem; color:var(--paper); }
+  .work-pub{ font-family:var(--mono); font-size:11px; letter-spacing:.05em; color:var(--ink-soft); text-transform:uppercase; text-align:right; }
+
+  /* ============================================================
+     FOLDER TABS + INLINE PANEL (Previous Works)
+     ============================================================ */
+  .folder-tabs{
+    display:flex; flex-wrap:wrap; gap:10px; margin-bottom:0;
+  }
+  .folder-tab{
+    font-family:var(--mono); font-size:12px; letter-spacing:.04em;
+    color:var(--ink-soft); background:rgba(255,217,218,.05);
+    border:1px solid rgba(255,217,218,.18); border-bottom:none;
+    padding:12px 18px 14px; cursor:pointer;
+    display:flex; align-items:center; gap:9px;
+    border-radius:3px 3px 0 0;
+    transition:color .25s var(--ease), background .25s var(--ease);
+  }
+  .folder-tab-icon{
+    width:11px; height:9px; background:var(--rose); display:inline-block;
+    clip-path:polygon(0 0, 40% 0, 50% 20%, 100% 20%, 100% 100%, 0 100%);
+    opacity:.55; transition:opacity .25s var(--ease);
+  }
+  .folder-tab:hover{ color:var(--paper); background:rgba(255,217,218,.09); }
+  .folder-tab:hover .folder-tab-icon{ opacity:.8; }
+  .folder-tab.active{
+    color:var(--paper); background:var(--slate);
+    border-color:rgba(255,217,218,.28);
+  }
+  .folder-tab.active .folder-tab-icon{ background:var(--cream); opacity:1; }
+
+  .folder-panel{
+    max-height:0; overflow:hidden;
+    background:var(--slate);
+    border:1px solid rgba(255,217,218,.28); border-top:none;
+    transition:max-height .5s var(--ease);
+  }
+  .folder-panel-inner{ padding:32px; }
+  .folder-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:18px;
+  }
+  .folder-card{
+    text-align:left; cursor:pointer;
+    background:rgba(255,217,218,.04);
+    border:1px solid rgba(255,217,218,.14);
+    padding:18px; border-radius:2px;
+    position:relative;
+    transition:border-color .25s var(--ease), transform .25s var(--ease), background .25s var(--ease), box-shadow .25s var(--ease);
+    animation:cardIn .5s var(--ease) backwards;
+    box-shadow:var(--paper-shadow);
+  }
+  .folder-card:nth-child(3n){ transform:rotate(-1.1deg); }
+  .folder-card:nth-child(3n+1){ transform:rotate(.8deg); }
+  .folder-card:nth-child(3n+2){ transform:rotate(-.4deg); }
+  .folder-card::before{
+    content:''; position:absolute; top:-9px; left:22px; width:52px; height:18px;
+    background:var(--tape); border:1px solid var(--tape-edge);
+    transform:rotate(-6deg); opacity:.85; z-index:2;
+  }
+  @keyframes cardIn{
+    from{ opacity:0; transform:translateY(16px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  .folder-card:hover{
+    border-color:var(--rose); transform:translateY(-3px) rotate(0deg);
+    background:rgba(234,99,140,.06);
+    box-shadow:0 10px 24px rgba(137,2,62,.18);
+  }
+  .folder-card .work-year{ font-family:var(--mono); font-size:11px; color:var(--wine); display:block; margin-bottom:8px; }
+  .folder-card .work-title{
+    font-family:var(--display); font-weight:500; font-size:1.05rem; color:var(--paper);
+    display:block; line-height:1.3; margin-bottom:8px;
+  }
+  .folder-card .work-pub{ font-family:var(--mono); font-size:10px; letter-spacing:.05em; color:var(--ink-soft); text-transform:uppercase; }
+
+  /* ============================================================
+     DIALOGS — shared base (case file + filmstrip)
+     ------------------------------------------------------------
+     Close buttons live inside <form method="dialog">, which the
+     browser closes natively on submit — no JS required, so the
+     close control can never silently fail even if something else
+     on the page throws a script error.
+     ============================================================ */
+  dialog{
+    border:none; padding:0; background:transparent; color:inherit;
+    max-width:none; max-height:none;
+  }
+  dialog::backdrop{
+    background:rgba(27,32,33,0); backdrop-filter:blur(0px);
+    transition:background .35s var(--ease), backdrop-filter .35s var(--ease);
+  }
+  dialog.is-open::backdrop{ background:rgba(27,32,33,.82); backdrop-filter:blur(4px); }
+  .dialog-close-form{ position:absolute; top:18px; right:18px; z-index:5; margin:0; }
+  .dialog-close{
+    width:38px; height:38px; border-radius:50%;
+    background:rgba(27,32,33,.6); border:1px solid rgba(255,217,218,.3);
+    color:var(--cream); font-size:16px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:background .25s var(--ease), border-color .25s var(--ease), transform .25s var(--ease);
+  }
+  .dialog-close:hover{ background:var(--wine); border-color:var(--wine); transform:scale(1.08) rotate(90deg); }
+
+  /* Case file modal */
+  .case-file-dialog{
+    width:min(560px, 88vw);
+    background:var(--ink);
+    border:1px solid rgba(255,217,218,.22);
+    position:fixed; inset:0; margin:auto; height:fit-content;
+    opacity:0; transform:translateY(18px) scale(.96);
+    transition:opacity .35s var(--ease), transform .35s var(--ease);
+    box-shadow:var(--paper-shadow);
+  }
+  .case-file-dialog::before{
+    content:''; position:absolute; top:-11px; left:50%; transform:translateX(-50%) rotate(-3deg);
+    width:80px; height:22px;
+    background:var(--tape); border:1px solid var(--tape-edge);
+    opacity:.85; z-index:3;
+  }
+  .case-file-dialog.is-open{ opacity:1; transform:translateY(0) scale(1); }
+  .case-file-body{ padding:44px 40px; position:relative; }
+  .case-file-title{
+    font-family:var(--display); font-weight:600; font-size:1.8rem; color:var(--paper);
+    margin:12px 0 14px; line-height:1.2;
+  }
+  .case-file-meta{
+    font-family:var(--mono); font-size:12px; color:var(--ink-soft);
+    text-transform:uppercase; letter-spacing:.05em; margin-bottom:20px;
+    padding-bottom:20px; border-bottom:1px solid rgba(255,217,218,.14);
+  }
+  .case-file-dek{ color:var(--ink-soft); line-height:1.75; font-size:.98rem; }
+
+  /* ============================================================
+     DESIGN GALLERY + FILMSTRIP LIGHTBOX
+     ============================================================ */
+  .design-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:22px;
+  }
+  .design-card{
+    cursor:pointer; text-align:left; padding:0; border:none; background:none;
+    display:block; width:100%; position:relative;
+    transition:transform .3s var(--ease);
+  }
+  .design-card:nth-child(4n){ transform:rotate(-1deg); }
+  .design-card:nth-child(4n+1){ transform:rotate(.9deg); }
+  .design-card:nth-child(4n+2){ transform:rotate(-.5deg); }
+  .design-card:nth-child(4n+3){ transform:rotate(.4deg); }
+  .design-card:hover{ transform:rotate(0deg); }
+  .design-card::before{
+    content:''; position:absolute; top:-9px; left:50%; transform:translateX(-50%) rotate(-4deg);
+    width:56px; height:18px;
+    background:var(--tape); border:1px solid var(--tape-edge);
+    opacity:.85; z-index:3;
+  }
+  .design-thumb{
+    aspect-ratio:4/3; position:relative; overflow:hidden;
+    border:1px solid rgba(255,217,218,.16);
+    background:linear-gradient(150deg, var(--slate), var(--ink) 70%);
+    transition:border-color .25s var(--ease), transform .25s var(--ease);
+    box-shadow:var(--paper-shadow);
+  }
+  .design-thumb::after{
+    content:''; position:absolute; inset:0;
+    background:radial-gradient(circle at 25% 25%, rgba(234,99,140,.32), transparent 55%);
+    mix-blend-mode:screen;
+  }
+  .design-card:hover .design-thumb{ border-color:var(--rose); transform:translateY(-3px); }
+  .design-tag{
+    position:absolute; top:12px; left:12px; z-index:2;
+    font-family:var(--mono); font-size:10px; letter-spacing:.06em;
+    color:var(--cream); background:rgba(27,32,33,.6);
+    border:1px solid rgba(255,217,218,.25); padding:3px 8px;
+  }
+  .design-info{ padding-top:12px; }
+  .design-title{ font-family:var(--display); font-weight:500; font-size:1.02rem; color:var(--paper); margin-bottom:4px; }
+  .design-type{ font-family:var(--mono); font-size:10px; letter-spacing:.05em; color:var(--ink-soft); text-transform:uppercase; }
+
+  .filmstrip-dialog{
+    width:min(1100px, 94vw); height:min(640px, 86vh);
+    position:fixed; inset:0; margin:auto;
+    background:var(--ink); border:1px solid rgba(255,217,218,.2);
+    opacity:0; transform:translateY(18px) scale(.96);
+    transition:opacity .35s var(--ease), transform .35s var(--ease);
+    box-shadow:var(--paper-shadow);
+  }
+  .filmstrip-dialog::before{
+    content:''; position:absolute; top:-11px; left:50%; transform:translateX(-50%) rotate(3deg);
+    width:80px; height:22px;
+    background:var(--tape); border:1px solid var(--tape-edge);
+    opacity:.85; z-index:3;
+  }
+  .filmstrip-dialog[open]{
+    display:flex; flex-direction:column;
+  }
+  .filmstrip-dialog.is-open{ opacity:1; transform:translateY(0) scale(1); }
+  .filmstrip-viewer{
+    flex:1; display:flex; align-items:center; overflow:hidden; position:relative;
+  }
+  .filmstrip-track{
+    flex:1; display:flex; gap:24px; overflow-x:auto; scroll-snap-type:x mandatory;
+    padding:60px 8%; scrollbar-width:none;
+  }
+  .filmstrip-track::-webkit-scrollbar{ display:none; }
+  .filmstrip-frame{
+    flex:0 0 auto; width:min(60vw, 560px); scroll-snap-align:center;
+    aspect-ratio:4/3; position:relative; overflow:hidden;
+    background:linear-gradient(150deg, var(--slate), var(--ink) 70%);
+    border:1px solid rgba(255,217,218,.2);
+    opacity:.4; transform:scale(.88);
+    transition:opacity .4s var(--ease), transform .4s var(--ease), border-color .4s var(--ease);
+  }
+  .filmstrip-frame.is-active{
+    opacity:1; transform:scale(1); border-color:rgba(255,217,218,.4);
+  }
+  .filmstrip-frame::after{
+    content:''; position:absolute; inset:0;
+    background:radial-gradient(circle at 30% 20%, rgba(234,99,140,.35), transparent 55%);
+    mix-blend-mode:screen;
+  }
+  .filmstrip-nav{
+    flex:0 0 auto; width:52px; height:52px; border-radius:50%;
+    background:rgba(255,217,218,.06); border:1px solid rgba(255,217,218,.25);
+    color:var(--cream); font-size:22px; cursor:pointer; z-index:3;
+    margin:0 18px;
+    transition:background .25s var(--ease), border-color .25s var(--ease), transform .25s var(--ease);
+  }
+  .filmstrip-nav:hover{ background:var(--wine); border-color:var(--wine); transform:scale(1.08); }
+  .filmstrip-caption{
+    padding:0 8% 28px; font-family:var(--mono); font-size:12px;
+    letter-spacing:.04em; color:var(--ink-soft); text-transform:uppercase;
+  }
+  .filmstrip-caption strong{ color:var(--paper); font-family:var(--display); text-transform:none; font-size:1rem; letter-spacing:normal; }
+
+  /* ============================================================
+     EXPERIENCE — scrubbable timeline, horizontal OR vertical
+     ------------------------------------------------------------
+     Default is horizontal. To switch to vertical, you don't need
+     to touch this CSS or the HTML at all — open the <script> block
+     and change ONE line near the top:
+
+         var TIMELINE_LAYOUT = 'horizontal';   // becomes:
+         var TIMELINE_LAYOUT = 'vertical';
+
+     The script applies "exp-timeline-wrap--vertical" and
+     "exp-scrub--vertical" automatically based on that value.
+     ============================================================ */
+  .exp-timeline-wrap{
+    display:flex; align-items:center; gap:16px;
+  }
+  .exp-nav{
+    flex:0 0 auto; width:44px; height:44px; border-radius:50%;
+    background:rgba(255,217,218,.05); border:1px solid rgba(255,217,218,.22);
+    color:var(--cream); font-size:20px; cursor:pointer;
+    transition:background .25s var(--ease), border-color .25s var(--ease), transform .25s var(--ease);
+  }
+  .exp-nav:hover{ background:var(--wine); border-color:var(--wine); }
+  .exp-track{
+    flex:1; display:flex; gap:28px; overflow-x:auto; scroll-snap-type:x mandatory;
+    padding:8px 4px 28px; cursor:grab; scrollbar-width:thin; scrollbar-color:var(--rose) rgba(255,217,218,.1);
+  }
+  .exp-track.grabbing{ cursor:grabbing; scroll-snap-type:none; }
+  .exp-track::-webkit-scrollbar{ height:4px; }
+  .exp-track::-webkit-scrollbar-track{ background:rgba(255,217,218,.1); }
+  .exp-track::-webkit-scrollbar-thumb{ background:var(--rose); border-radius:4px; }
+  .exp-stop{
+    flex:0 0 auto; width:min(620px, 86vw); scroll-snap-align:center;
+    background:rgba(255,217,218,.03);
+    border:1px solid rgba(255,217,218,.16); border-top:2px solid var(--wine);
+    padding:32px 34px;
+  }
+  .exp-year{ font-family:var(--mono); font-size:12px; letter-spacing:.06em; color:var(--rose); text-transform:uppercase; }
+  .exp-role{ font-family:var(--display); font-weight:600; font-size:1.6rem; color:var(--paper); margin:10px 0 4px; }
+  .exp-org{ font-family:var(--mono); font-size:12px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; margin-bottom:16px; }
+  .exp-points{ margin:0; padding-left:18px; color:var(--ink-soft); font-size:.95rem; line-height:1.7; }
+  .exp-points li{ margin-bottom:6px; }
+
+  .exp-scrub{
+    position:relative; display:flex; justify-content:space-between;
+    max-width:620px; margin:8px auto 0; padding:0 4px;
+  }
+  .exp-scrub-line{
+    position:absolute; top:5px; left:4px; right:4px; height:1px;
+    background:rgba(255,217,218,.18); z-index:0;
+  }
+  .exp-dot{
+    position:relative; z-index:1; background:none; border:none; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    font-family:var(--mono); font-size:11px; color:var(--ink-soft); letter-spacing:.04em;
+    padding:0;
+  }
+  .exp-dot::before{
+    content:''; width:11px; height:11px; border-radius:50%;
+    background:var(--ink); border:2px solid rgba(255,217,218,.3);
+    transition:border-color .25s var(--ease), background .25s var(--ease);
+  }
+  .exp-dot:hover::before{ border-color:var(--rose); }
+  .exp-dot.active{ color:var(--paper); }
+  .exp-dot.active::before{ background:var(--rose); border-color:var(--rose); }
+
+  /* --- Vertical variant --- */
+  .exp-timeline-wrap.exp-timeline-wrap--vertical{
+    flex-direction:column; align-items:stretch; gap:10px;
+  }
+  .exp-timeline-wrap--vertical .exp-nav{ align-self:center; }
+  .exp-timeline-wrap--vertical .exp-nav.prev{ transform:rotate(90deg); }
+  .exp-timeline-wrap--vertical .exp-nav.next{ transform:rotate(90deg); }
+  .exp-timeline-wrap--vertical .exp-track{
+    flex-direction:column; overflow-x:hidden; overflow-y:auto;
+    scroll-snap-type:y mandatory; max-height:70vh;
+    padding:4px 10px 4px 4px;
+  }
+  .exp-timeline-wrap--vertical .exp-stop{ width:100%; scroll-snap-align:start; }
+
+  .exp-scrub.exp-scrub--vertical{
+    flex-direction:column; align-items:flex-start; max-width:none; gap:18px; margin:20px 0 0 6px;
+  }
+  .exp-scrub--vertical .exp-scrub-line{ top:4px; bottom:4px; left:5px; right:auto; width:1px; height:auto; }
+  .exp-scrub--vertical .exp-dot{ flex-direction:row; gap:12px; }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width:860px){
+    .tab{ font-size:10px; padding:9px 14px 8px; }
+    .about-grid{ grid-template-columns:1fr; }
+    .beat-row{ grid-template-columns:40px 1fr; }
+    .beat-desc{ grid-column:2/3; }
+    .contact-inner{ flex-direction:column; align-items:flex-start; }
+    .tl-row{ grid-template-columns:1fr; gap:8px; }
+    .skills-grid{ grid-template-columns:1fr; gap:36px; }
+    .work-row{ grid-template-columns:44px 1fr; }
+    .work-pub{ grid-column:2/3; text-align:left; margin-top:2px; }
+    .hero-body,
+    .hero-body.hero-body--right{
+      grid-template-columns:1fr;
+      grid-template-areas:"photo" "a" "b";
+      row-gap:28px;
+      
+    }
+    .hero-body.hero-body--right .hero-portrait-wrap,
+    .hero-portrait-wrap{ justify-self:start; }
+    .case-file-dialog{ width:92vw; }
+    .case-file-body{ padding:32px 24px; }
+    .filmstrip-dialog{ width:96vw; height:80vh; }
+    .filmstrip-frame{ width:78vw; }
+    .filmstrip-nav{ width:40px; height:40px; margin:0 8px; }
+    .exp-stop{ padding:26px 22px; }
+    .exp-scrub{ display:none; }
+  }
+  @media (max-width:640px){
+    .story-panel{ width:82vw; }
+    .pan-hint{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="site-nav" id="siteNav">
+  <div class="wrap nav-inner">
+    <a href="#page-home" class="brand"><span class="dot"></span>Kirstien Dominique Santos</a>
+  </div>
+</header>
+
+<nav class="subnav" id="subnav" aria-label="Sections">
+  <div class="subnav-inner">
+    <button type="button" class="tab" data-page="home"><span>Home</span></button>
+    <button type="button" class="tab" data-page="experience"><span>Experience</span></button>
+    <button type="button" class="tab" data-page="work"><span>Work</span></button>
+    <button type="button" class="tab" data-page="design"><span>Design</span></button>
+    <button type="button" class="tab" data-page="skills"><span>Skills</span></button>
+    <button type="button" class="tab" data-page="contact"><span>Contact</span></button>
+  </div>
+</nav>
+<div class="accent-rule" id="accentRule" aria-hidden="true"></div>
+<div class="nav-spacer" aria-hidden="true"></div>
+
+<aside class="page-sidebar" data-page="home" aria-label="Home section navigation">
+  <a href="#top" class="ps-link" data-target="top">Overview</a>
+  <a href="#summary" class="ps-link" data-target="summary">Summary</a>
+  <a href="#coverage" class="ps-link" data-target="coverage">Coverage</a>
+  <a href="#about" class="ps-link" data-target="about">About</a>
+  <a href="#bylines" class="ps-link" data-target="bylines">Bylines</a>
+</aside>
+<aside class="page-sidebar" data-page="experience" aria-label="Experience section navigation">
+  <a href="#experience" class="ps-link" data-target="experience">Experience</a>
+  <a href="#education" class="ps-link" data-target="education">Education</a>
+</aside>
+<aside class="page-sidebar" data-page="work" aria-label="Work section navigation">
+  <a href="#stories" class="ps-link" data-target="stories">Featured Stories</a>
+  <a href="#works" class="ps-link" data-target="works">Previous Works</a>
+</aside>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<section class="hero" id="top" data-page="home">
+  <div class="wrap">
+    <div class="eyebrow"><span class="rule"></span>Portfolio — Vol. 01, 2026</div>
+    <h1 class="masthead">Kirstien Dominique <em>Santos</em></h1>
+    
+    <div class="hero-body">
+      <div class="hero-text-a">
+        <p class="hero-sub">Investigative &amp; features reporter working the intersection of housing, labor, and everyday systems.</p>
+      </div>
+
+      <div class="hero-portrait-wrap">
+        <span class="hero-portrait-ring" aria-hidden="true"></span>
+        <!-- Swap this div for <img src="your-photo.jpg" alt="Kirstien Dominique Santos" class="hero-portrait"> when ready -->
+        <div class="hero-portrait" role="img" aria-label="Portrait of Kirstien Dominique Santos"></div>
+        <span class="hero-portrait-tag">Kirstien Santos</span>
+      </div>
+
+      <div class="hero-text-b">
+        <p class="dateline"><b>Pasig City, MNL —</b> BA in Journalism graduate with experience in writing digital news, content writing, graphic design, organizational leadership, research, copyediting, video editing, scriptwriting, social media management and project management.</p>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-cue wrap"><span class="line"></span>Scroll</div>
+</section>
+
+<!-- ============================================================
+     PROFESSIONAL SUMMARY
+     ============================================================ -->
+<section id="summary" class="tight" data-page="home">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Summary</span>
+      <h2 class="head">Professional Summary</h2>
+    </div>
+    <p class="summary-text reveal"><strong>BA in Journalism graduate with experience in writing digital news,</strong> content writing, graphic design, organizational leadership, research, copyediting, video editing, scriptwriting, social media management and project management.</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     COVERAGE / BEATS
+     ============================================================ -->
+<section id="coverage" class="tight" data-page="home">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Coverage</span>
+      <h2 class="head">What I report on</h2>
+      <p class="lede">Four beats, one throughline: how policy decisions made in conference rooms land on the people who never get a seat at the table.</p>
+    </div>
+    <div class="beats">
+      <div class="beat-row reveal">
+        <span class="beat-num">01</span>
+        <span class="beat-name">Housing</span>
+        <span class="beat-desc">Eviction courts, landlord networks, zoning fights, and the slow erosion of affordable stock across Cook County.</span>
+      </div>
+      <div class="beat-row reveal">
+        <span class="beat-num">02</span>
+        <span class="beat-name">Labor</span>
+        <span class="beat-desc">Warehouse conditions, gig work, union drives, and wage theft investigations built from payroll records and testimony.</span>
+      </div>
+      <div class="beat-row reveal">
+        <span class="beat-num">03</span>
+        <span class="beat-name">Public Systems</span>
+        <span class="beat-desc">School closures, transit equity, and municipal budgets — tracing where public money actually goes.</span>
+      </div>
+      <div class="beat-row reveal">
+        <span class="beat-num">04</span>
+        <span class="beat-name">Data &amp; FOIA</span>
+        <span class="beat-desc">Records requests, database building, and computational reporting that turns raw filings into accountability stories.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FEATURED STORIES — scroll-panning contact-sheet reel (signature)
+     ============================================================ -->
+<section id="stories" class="pan-section" data-page="work">
+  <div class="pan-sticky">
+    <div class="wrap" style="position:absolute; top:64px; left:50%; transform:translateX(-50%); width:var(--wrap);">
+      <span class="kicker reveal in-view">Selected Work</span>
+      <h2 class="head reveal in-view">Featured stories</h2>
+    </div>
+    <span class="pan-hint">Keep scrolling →</span>
+
+    <div class="pan-track" id="panTrack">
+
+      <article class="story-panel">
+        <div class="story-media">
+          <span class="frame-sprocket left"></span>
+          <span class="frame-sprocket right"></span>
+          <span class="frame-tag">FRAME 01</span>
+        </div>
+        <div class="story-meta">
+          <div class="story-pub">Chicago Tribune · Investigations</div>
+          <h3 class="story-title">The Eviction Machine</h3>
+          <p class="story-dek">A six-month analysis of 40,000 court filings reveals how three landlord networks account for one in five evictions citywide.</p>
+        </div>
+      </article>
+
+      <article class="story-panel">
+        <div class="story-media">
+          <span class="frame-sprocket left"></span>
+          <span class="frame-sprocket right"></span>
+          <span class="frame-tag">FRAME 02</span>
+        </div>
+        <div class="story-meta">
+          <div class="story-pub">ProPublica Illinois</div>
+          <h3 class="story-title">Ghost Shifts</h3>
+          <p class="story-dek">Warehouse workers describe scheduling algorithms that erase hours worked — and the paper trail that proves it.</p>
+        </div>
+      </article>
+
+      <article class="story-panel">
+        <div class="story-media">
+          <span class="frame-sprocket left"></span>
+          <span class="frame-sprocket right"></span>
+          <span class="frame-tag">FRAME 03</span>
+        </div>
+        <div class="story-meta">
+          <div class="story-pub">The Marshall Project</div>
+          <h3 class="story-title">Closed Doors, Open Files</h3>
+          <p class="story-dek">A district shut 12 schools in a single summer. Budget records show the decision was made a year earlier.</p>
+        </div>
+      </article>
+
+      <article class="story-panel">
+        <div class="story-media">
+          <span class="frame-sprocket left"></span>
+          <span class="frame-sprocket right"></span>
+          <span class="frame-tag">FRAME 04</span>
+        </div>
+        <div class="story-meta">
+          <div class="story-pub">Chicago Tribune · Data Desk</div>
+          <h3 class="story-title">The Transit Gap</h3>
+          <p class="story-dek">Mapping bus route cuts against ridership by ward shows who loses service first — and who never gets it back.</p>
+        </div>
+      </article>
+
+      <article class="story-panel">
+        <div class="story-media">
+          <span class="frame-sprocket left"></span>
+          <span class="frame-sprocket right"></span>
+          <span class="frame-tag">FRAME 05</span>
+        </div>
+        <div class="story-meta">
+          <div class="story-pub">Independent / Freelance</div>
+          <h3 class="story-title">Wage Theft, By the Numbers</h3>
+          <p class="story-dek">A FOIA-built database of state labor complaints becomes the basis for a three-part accountability series.</p>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="pan-progress"><div class="pan-progress-bar" id="panProgressBar"></div></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CREATIVE DESIGN GALLERY — filmstrip lightbox
+     ============================================================ -->
+<section id="design" class="tight" data-page="design">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Creative Work</span>
+      <h2 class="head">Design &amp; visual work</h2>
+      <p class="lede">Graphic design, layout, and video work alongside the reporting. Click any frame to open the filmstrip.</p>
+    </div>
+    <div class="design-grid" id="designGrid"><!-- populated by JS --></div>
+  </div>
+</section>
+
+<dialog id="filmstripDialog" class="filmstrip-dialog" aria-label="Design work filmstrip">
+  <form method="dialog" class="dialog-close-form">
+    <button class="dialog-close" aria-label="Close">✕</button>
+  </form>
+  <div class="filmstrip-viewer">
+    <button class="filmstrip-nav prev" id="filmstripPrev" aria-label="Previous frame" type="button">‹</button>
+    <div class="filmstrip-track" id="filmstripTrack"><!-- populated by JS --></div>
+    <button class="filmstrip-nav next" id="filmstripNext" aria-label="Next frame" type="button">›</button>
+  </div>
+  <div class="filmstrip-caption" id="filmstripCaption"></div>
+</dialog>
+
+<!-- ============================================================
+     PREVIOUS WORKS — genre folders (inline expand + case-file modal)
+     ============================================================ -->
+<section id="works" class="tight" data-page="work">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Previous Works</span>
+      <h2 class="head">Browse by beat</h2>
+      <p class="lede">Click a folder to open every clip filed under that beat. Click a clip inside to open the full case file.</p>
+    </div>
+
+    <div class="folder-tabs" id="folderTabs" role="tablist" aria-label="Article genres">
+      <button class="folder-tab" data-folder="housing" role="tab" aria-selected="false" aria-controls="folderPanel" type="button">
+        <span class="folder-tab-icon" aria-hidden="true"></span>Housing
+      </button>
+      <button class="folder-tab" data-folder="labor" role="tab" aria-selected="false" aria-controls="folderPanel" type="button">
+        <span class="folder-tab-icon" aria-hidden="true"></span>Labor
+      </button>
+      <button class="folder-tab" data-folder="systems" role="tab" aria-selected="false" aria-controls="folderPanel" type="button">
+        <span class="folder-tab-icon" aria-hidden="true"></span>Public Systems
+      </button>
+      <button class="folder-tab" data-folder="data" role="tab" aria-selected="false" aria-controls="folderPanel" type="button">
+        <span class="folder-tab-icon" aria-hidden="true"></span>Data &amp; FOIA
+      </button>
+    </div>
+
+    <div class="folder-panel" id="folderPanel">
+      <div class="folder-panel-inner">
+        <div class="folder-grid" id="folderGrid"><!-- populated by JS --></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<dialog id="caseFileDialog" class="case-file-dialog" aria-labelledby="caseFileTitle">
+  <form method="dialog" class="dialog-close-form">
+    <button class="dialog-close" aria-label="Close case file">✕</button>
+  </form>
+  <div class="case-file-body">
+    <span class="kicker" id="caseFileGenre">Genre</span>
+    <h3 class="case-file-title" id="caseFileTitle">Title</h3>
+    <div class="case-file-meta" id="caseFileMeta">Publication — Year</div>
+    <p class="case-file-dek" id="caseFileDek">Excerpt goes here.</p>
+  </div>
+</dialog>
+
+<!-- ============================================================
+     WORK EXPERIENCE
+     ============================================================ -->
+<section id="experience" data-page="experience">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Career</span>
+      <h2 class="head">Work Experience</h2>
+      <p class="lede">Drag the track, use the arrows, or click a year to scrub through the timeline.</p>
+    </div>
+
+    <div class="exp-timeline-wrap reveal">
+      <button class="exp-nav prev" id="expPrev" aria-label="Previous role">‹</button>
+
+      <div class="exp-track" id="expTrack">
+        <article class="exp-stop" data-index="0">
+          <span class="exp-year">Sep 2025 — Dec 2025</span>
+          <h3 class="exp-role">Digital and Graphics Intern</h3>
+          <div class="exp-org">NewsWatch Plus Philippines — Ortigas Center, Pasig City</div>
+          <ul class="exp-points">
+            <li>Lead reporter on a six-month eviction-court investigation cited in two city council hearings.</li>
+            <li>Built and maintain a FOIA-sourced database of 40,000+ court filings used across the newsroom.</li>
+            <li>Mentor two early-career reporters on public-records requests and data verification.</li>
+          </ul>
+        </article>
+
+        <article class="exp-stop" data-index="1">
+          <span class="exp-year">Jun 2025 — Jun 2026</span>
+          <h3 class="exp-role">President</h3>
+          <div class="exp-org">UST Journalism Society — UST, Manila</div>
+          <ul class="exp-points">
+            <li>Covered municipal budgets, transit policy, and school board decisions on a daily deadline.</li>
+            <li>Co-developed a public-facing FOIA tracking tool adopted by three partner newsrooms.</li>
+          </ul>
+        </article>
+
+        <article class="exp-stop" data-index="2">
+          <span class="exp-year">Jan 2025 — May 2025</span>
+          <h3 class="exp-role">Writer and Graphics Design Team</h3>
+          <div class="exp-org">The Trilby — UST, Manila</div>
+          <ul class="exp-points">
+            <li>Reported on labor and housing for a community newsroom serving three South Side wards.</li>
+            <li>Produced a four-part series on wage theft that led to a state labor department review.</li>
+          </ul>
+        </article>
+      </div>
+
+      <button class="exp-nav next" id="expNext" aria-label="Next role">›</button>
+    </div>
+
+    <div class="exp-scrub" id="expScrub" role="tablist" aria-label="Jump to role">
+      <span class="exp-scrub-line" aria-hidden="true"></span>
+      <button class="exp-dot" data-index="0" role="tab" aria-label="Sep to Dec 2025"><span>2025</span></button>
+      <button class="exp-dot" data-index="1" role="tab" aria-label="Jun 2025 to Jun 2026"><span>2025</span></button>
+      <button class="exp-dot" data-index="2" role="tab" aria-label="Jan to May 2025"><span>2025</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     EDUCATION
+     ============================================================ -->
+<section id="education" class="tight" data-page="experience">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Education</span>
+      <h2 class="head">Education</h2>
+    </div>
+    <div class="timeline">
+      <div class="tl-row reveal">
+        <span class="tl-date">2022 — 2026</span>
+        <div>
+          <h3 class="tl-role">B.A. in Journalism</h3>
+          <div class="tl-org">University of Santo Tomas — Manila</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TECHNICAL SKILLS / SOFT SKILLS
+     ============================================================ -->
+<section id="skills" data-page="skills">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Skills</span>
+      <h2 class="head">Technical &amp; Soft Skills</h2>
+    </div>
+    <div class="skills-grid">
+      <div class="skills-col reveal">
+        <span class="kicker">Technical</span>
+        <div class="skill-tags">
+          <span class="skill-tag">FOIA / Public Records</span>
+          <span class="skill-tag">Data Journalism</span>
+          <span class="skill-tag">SQL</span>
+          <span class="skill-tag">Python (pandas)</span>
+          <span class="skill-tag">Datawrapper / Flourish</span>
+          <span class="skill-tag">Adobe Premiere</span>
+          <span class="skill-tag">AP Style</span>
+          <span class="skill-tag">CMS Publishing (WordPress)</span>
+        </div>
+      </div>
+      <div class="skills-col reveal">
+        <span class="kicker">Soft Skills</span>
+        <div class="skill-tags">
+          <span class="skill-tag">Source Development</span>
+          <span class="skill-tag">Deadline Management</span>
+          <span class="skill-tag">Editorial Judgment</span>
+          <span class="skill-tag">Interviewing</span>
+          <span class="skill-tag">Fact-Checking Rigor</span>
+          <span class="skill-tag">Cross-Team Collaboration</span>
+          <span class="skill-tag">Mentorship</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     BYLINES
+     ============================================================ -->
+<section id="bylines" class="tight" data-page="home">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Bylines</span>
+      <h2 class="head">Where the work has run</h2>
+    </div>
+  </div>
+  <div class="byline-strip reveal">
+    <div class="byline-item">Chicago Tribune</div>
+    <div class="byline-item">ProPublica Illinois</div>
+    <div class="byline-item">The Marshall Project</div>
+    <div class="byline-item">Block Club Chicago</div>
+    <div class="byline-item">Injustice Watch</div>
+  </div>
+</section>
+
+<!-- ============================================================
+     ABOUT
+     ============================================================ -->
+<section id="about" data-page="home">
+  <div class="wrap about-grid">
+    <div class="about-portrait reveal" role="img" aria-label="Portrait placeholder for Kirstien Dominique Santos"></div>
+    <div class="about-copy reveal">
+      <span class="kicker">About</span>
+      <h2 class="head" style="margin-bottom:22px;">Reporting that shows the work</h2>
+      <p><strong>I got into journalism through public records,</strong> not press releases — a habit that still shapes every story I take on. Before joining the Tribune's investigations team, I covered city hall for a nonprofit newsroom and spent two years building FOIA pipelines for reporters across the Midwest.</p>
+      <p>My stories tend to start with a spreadsheet and end with someone's kitchen table. I care about precision as much as I care about access: every figure in my work is one I can hand to a reader, a lawyer, or an editor and defend line by line.</p>
+      <div class="stat-row">
+        <div class="stat"><b>60+</b><span>Published Investigations</span></div>
+        <div class="stat"><b>12</b><span>Public Records Lawsuits</span></div>
+        <div class="stat"><b>3</b><span>State Press Awards</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CONTACT
+     ============================================================ -->
+<section id="contact" class="contact" data-page="contact">
+  <div class="wrap contact-inner">
+    <div>
+      <span class="kicker">Get in touch</span>
+      <h2 class="head">Got a tip,<br>or a story to assign?</h2>
+    </div>
+    <div class="contact-links">
+      <a href="mailto:kirstiendsantos.work@gmail.com">kirstiendsantos.work@gmail.com</a>
+      <a href="https://www.linkedin.com/in/kirstiensantos03/">LinkedIn</a>
+    </div>
+  </div>
+  <div class="wrap">
+    <footer>
+      <span>© 2026 Kirstien Dominique Santos. All rights reserved.</span>
+      <span>Pasig City, MNL — Vol. 01</span>
+    </footer>
+  </div>
+</section>
+
+<script>
+(function(){
+  "use strict";
+
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- CONFIG --------------------------------------------------
+  // Switch the Work Experience timeline between a horizontal
+  // scrubber and a vertical stacked one by changing this one value.
+  //   'horizontal'  -> drag/scrub sideways through roles (default)
+  //   'vertical'    -> stacked top-to-bottom, scrub up/down
+  var TIMELINE_LAYOUT = 'horizontal';
+
+  /* ---------------------------------------------------------
+     Reveal-on-scroll for titles / rows
+     --------------------------------------------------------- */
+  var revealEls = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window && !reduceMotion){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        // Toggle both ways so elements re-play their entrance animation
+        // every time they're scrolled back into view, up or down.
+        if(entry.isIntersecting){
+          entry.target.classList.add('in-view');
+        } else {
+          entry.target.classList.remove('in-view');
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(function(el){ io.observe(el); });
+  } else {
+    revealEls.forEach(function(el){ el.classList.add('in-view'); });
+  }
+
+  /* ---------------------------------------------------------
+     Scroll-linked horizontal pan for the featured stories reel.
+     The .pan-section is tall (panelCount * viewport height-ish);
+     while it's in view, its sticky child pins to the viewport
+     and the inner track translates horizontally in step with
+     vertical scroll progress through the section.
+     --------------------------------------------------------- */
+  var panSection = document.querySelector('.pan-section');
+  var panTrack = document.getElementById('panTrack');
+  var progressBar = document.getElementById('panProgressBar');
+  var isDesktopPan = window.matchMedia('(min-width: 641px)').matches;
+
+  function sizePanSection(){
+    if(!panSection || !panTrack) return;
+    if(!isDesktopPan){
+      // Mobile: let it become a natural swipe-scroll strip, no scroll-jacking
+      panSection.style.height = 'auto';
+      panTrack.parentElement.style.position = 'relative';
+      panTrack.parentElement.style.overflowX = 'auto';
+      panTrack.parentElement.style.height = 'auto';
+      panTrack.parentElement.style.padding = '120px 0 80px';
+      panTrack.style.transform = 'none';
+      if(progressBar) progressBar.parentElement.style.display = 'none';
+      return;
+    }
+    var trackWidth = panTrack.scrollWidth;
+    var viewport = window.innerWidth;
+    var scrollRoom = Math.max(trackWidth - viewport, 0);
+    // Extra vertical scroll distance so the pan has room to play out
+    panSection.style.height = (window.innerHeight + scrollRoom) + 'px';
+  }
+
+  function updatePan(){
+    if(!panSection || !panTrack || !isDesktopPan) return;
+    var rect = panSection.getBoundingClientRect();
+    var total = panSection.offsetHeight - window.innerHeight;
+    if(total <= 0) return;
+    var scrolled = -rect.top;
+    var progress = Math.min(Math.max(scrolled / total, 0), 1);
+
+    var trackWidth = panTrack.scrollWidth;
+    var viewport = window.innerWidth;
+    var maxTranslate = Math.max(trackWidth - viewport, 0);
+
+    var x = -progress * maxTranslate;
+    panTrack.style.transform = reduceMotion ? 'none' : 'translate3d(' + x + 'px,0,0)';
+    if(progressBar) progressBar.style.width = (progress * 100) + '%';
+  }
+
+  var ticking = false;
+  function onScroll(){
+    if(!ticking){
+      window.requestAnimationFrame(function(){
+        updatePan();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive:true });
+  window.addEventListener('resize', function(){
+    isDesktopPan = window.matchMedia('(min-width: 641px)').matches;
+    sizePanSection();
+    updatePan();
+  });
+
+  window.addEventListener('load', function(){
+    sizePanSection();
+    updatePan();
+  });
+  sizePanSection();
+  updatePan();
+
+  // Font files (Fraunces / Space Mono) can finish loading after the
+  // `load` event fires — especially when a browser's ad blocker, VPN,
+  // or battery saver delays the request. Until they swap in, panel
+  // widths are measured with fallback fonts, so the scroll room
+  // calculated above can be wrong. Recompute once webfonts are
+  // confirmed ready, and again if panel content ever resizes.
+  if(document.fonts && document.fonts.ready){
+    document.fonts.ready.then(function(){
+      sizePanSection();
+      updatePan();
+    });
+  }
+  if('ResizeObserver' in window && panTrack){
+    var ro = new ResizeObserver(function(){
+      sizePanSection();
+      updatePan();
+    });
+    ro.observe(panTrack);
+  }
+
+  /* ---------------------------------------------------------
+     PREVIOUS WORKS — genre folders + case-file modal
+     --------------------------------------------------------- */
+  var worksData = [
+    { genre:'housing', year:'2026', title:'Inside the Landlord Registry Fight', pub:'Chicago Tribune', dek:'A look at how a proposed citywide landlord registry stalled twice in committee — and who lobbied to keep it that way.' },
+    { genre:'housing', year:'2023', title:'The Fair Housing Complaint No One Filed', pub:'Injustice Watch', dek:'Renters describe discrimination they never reported, and the barriers — language, fear, paperwork — that keep complaints from ever reaching a regulator.' },
+    { genre:'labor', year:'2025', title:'Who Gets a Warehouse Job — and Who Doesn\u2019t', pub:'ProPublica Illinois', dek:'Scheduling algorithms and staffing-agency practices quietly filter out applicants long before a human reviewer sees a resume.' },
+    { genre:'labor', year:'2022', title:'Temp Agencies and the Wage Gap', pub:'Independent', dek:'A pay-record analysis of three staffing agencies shows temp workers earning 18% less than direct hires for identical shifts.' },
+    { genre:'systems', year:'2025', title:'The Paper Trail Behind School Closures', pub:'The Marshall Project', dek:'Budget documents show a district\u2019s decision to close 12 schools was effectively made a year before it was announced.' },
+    { genre:'systems', year:'2024', title:'Bus Stops, Erased', pub:'Block Club Chicago', dek:'Mapping route cuts against ridership by ward reveals which neighborhoods lost service first — and never got it back.' },
+    { genre:'data', year:'2024', title:'Records Requests 101: A Reporter\u2019s Toolkit', pub:'Injustice Watch', dek:'A practical walkthrough of the FOIA pipeline built for this newsroom, shared so other reporters can adapt it.' },
+    { genre:'data', year:'2023', title:'Wage Theft Claims, Mapped by Zip Code', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.' }
+  ];
+  var genreLabels = { housing:'Housing', labor:'Labor', systems:'Public Systems', data:'Data & FOIA' };
+
+  var folderTabs = document.querySelectorAll('.folder-tab');
+  var folderPanel = document.getElementById('folderPanel');
+  var folderGrid = document.getElementById('folderGrid');
+  var activeFolder = null;
+
+  function renderFolder(genre){
+    folderGrid.innerHTML = '';
+    worksData.filter(function(w){ return w.genre === genre; }).forEach(function(w, i){
+      var card = document.createElement('button');
+      card.className = 'folder-card';
+      card.type = 'button';
+      card.style.animationDelay = reduceMotion ? '0s' : (i * 0.06) + 's';
+      card.innerHTML =
+        '<span class="work-year">' + w.year + '</span>' +
+        '<span class="work-title">' + w.title + '</span>' +
+        '<span class="work-pub">' + w.pub + '</span>';
+      card.addEventListener('click', function(){ openCaseFile(w); });
+      folderGrid.appendChild(card);
+    });
+  }
+
+  function closeFolder(){
+    folderPanel.style.maxHeight = null;
+    folderPanel.classList.remove('open');
+    folderTabs.forEach(function(t){ t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+    activeFolder = null;
+  }
+
+  folderTabs.forEach(function(tab){
+    tab.addEventListener('click', function(){
+      var genre = tab.getAttribute('data-folder');
+      if(activeFolder === genre){ closeFolder(); return; }
+
+      folderTabs.forEach(function(t){ t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected','true');
+      activeFolder = genre;
+
+      renderFolder(genre);
+      folderPanel.classList.add('open');
+      requestAnimationFrame(function(){
+        folderPanel.style.maxHeight = folderPanel.scrollHeight + 'px';
+      });
+    });
+  });
+
+  /* ---------------------------------------------------------
+     Shared animated open/close for <dialog> elements.
+     Opening: showModal() first (so display flips + it's in the
+     top layer), then add .is-open a frame later so the CSS
+     transition actually has something to animate from.
+     Closing: the native <form method="dialog"> submit, a click
+     on the backdrop, and the Escape key all normally close the
+     dialog instantly. We intercept all three, play the reverse
+     transition by removing .is-open, and only call .close() once
+     that transition finishes (or after a fallback timeout).
+     --------------------------------------------------------- */
+  function openDialogAnimated(dialog){
+    if(!dialog.showModal) return;
+    dialog.showModal();
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){ dialog.classList.add('is-open'); });
+    });
+  }
+  function closeDialogAnimated(dialog){
+    if(!dialog.open || dialog.classList.contains('is-closing')) return;
+    dialog.classList.remove('is-open');
+    if(reduceMotion){ dialog.close(); return; }
+    dialog.classList.add('is-closing');
+    var finished = false;
+    function finish(){
+      if(finished) return;
+      finished = true;
+      dialog.classList.remove('is-closing');
+      dialog.removeEventListener('transitionend', onEnd);
+      dialog.close();
+    }
+    function onEnd(e){ if(e.target === dialog) finish(); }
+    dialog.addEventListener('transitionend', onEnd);
+    setTimeout(finish, 400);
+  }
+  function wireDialogClose(dialog){
+    if(!dialog) return;
+    // The close button lives in <form method="dialog">, which would
+    // otherwise close the dialog natively/instantly on submit.
+    var form = dialog.querySelector('.dialog-close-form');
+    if(form){
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        closeDialogAnimated(dialog);
+      });
+    }
+    // Click on the backdrop (the dialog element itself, outside its content).
+    dialog.addEventListener('click', function(e){
+      if(e.target === dialog){ closeDialogAnimated(dialog); }
+    });
+    // Escape key fires 'cancel' before the dialog closes.
+    dialog.addEventListener('cancel', function(e){
+      e.preventDefault();
+      closeDialogAnimated(dialog);
+    });
+  }
+
+  var caseFileDialog = document.getElementById('caseFileDialog');
+  function openCaseFile(w){
+    document.getElementById('caseFileGenre').textContent = genreLabels[w.genre];
+    document.getElementById('caseFileTitle').textContent = w.title;
+    document.getElementById('caseFileMeta').textContent = w.pub + ' — ' + w.year;
+    document.getElementById('caseFileDek').textContent = w.dek;
+    openDialogAnimated(caseFileDialog);
+  }
+  wireDialogClose(caseFileDialog);
+
+  /* ---------------------------------------------------------
+     CREATIVE DESIGN GALLERY — grid + filmstrip lightbox
+     --------------------------------------------------------- */
+  var designData = [
+    { title:'Housing Rights Zine', type:'Print Layout \u00b7 2025' },
+    { title:'Labor Beat Podcast Cover Art', type:'Illustration \u00b7 2024' },
+    { title:'Data Story Explainer Graphics', type:'Infographics \u00b7 2024' },
+    { title:'Investigative Series Key Art', type:'Editorial Design \u00b7 2023' },
+    { title:'Newsroom Rebrand Concept', type:'Brand Identity \u00b7 2023' },
+    { title:'Short Documentary Title Sequence', type:'Motion / Video \u00b7 2022' }
+  ];
+
+  var designGrid = document.getElementById('designGrid');
+  var filmstripTrack = document.getElementById('filmstripTrack');
+
+  designData.forEach(function(d, i){
+    var card = document.createElement('button');
+    card.className = 'design-card';
+    card.type = 'button';
+    card.innerHTML =
+      '<div class="design-thumb"><span class="design-tag">FRAME 0' + (i+1) + '</span></div>' +
+      '<div class="design-info">' +
+        '<div class="design-title">' + d.title + '</div>' +
+        '<div class="design-type">' + d.type + '</div>' +
+      '</div>';
+    card.addEventListener('click', function(){ openFilmstrip(i); });
+    designGrid.appendChild(card);
+
+    var frame = document.createElement('div');
+    frame.className = 'filmstrip-frame';
+    frame.setAttribute('data-index', i);
+    filmstripTrack.appendChild(frame);
+  });
+
+  var filmstripDialog = document.getElementById('filmstripDialog');
+  var filmstripPrev = document.getElementById('filmstripPrev');
+  var filmstripNext = document.getElementById('filmstripNext');
+  var filmstripCaption = document.getElementById('filmstripCaption');
+  var filmstripIndex = 0;
+
+  function updateFilmstripCaption(){
+    var d = designData[filmstripIndex];
+    filmstripCaption.innerHTML = '<strong>' + d.title + '</strong> &nbsp;\u2014&nbsp; ' + d.type + ' &nbsp;(' + (filmstripIndex+1) + ' / ' + designData.length + ')';
+  }
+
+  // Whichever frame sits nearest the center of the strip gets the
+  // "is-active" treatment (full size/opacity), everything else stays
+  // dimmed and slightly shrunk — so dragging/scrolling the strip
+  // visibly animates frames in and out as they pass the center.
+  function setActiveFrame(index){
+    Array.prototype.forEach.call(filmstripTrack.children, function(frame, idx){
+      frame.classList.toggle('is-active', idx === index);
+    });
+  }
+
+  function updateActiveFrameFromScroll(){
+    var trackRect = filmstripTrack.getBoundingClientRect();
+    if(trackRect.width === 0) return;
+    var centerX = trackRect.left + trackRect.width / 2;
+    var closestIndex = filmstripIndex, closestDist = Infinity;
+    Array.prototype.forEach.call(filmstripTrack.children, function(frame, idx){
+      var r = frame.getBoundingClientRect();
+      var dist = Math.abs((r.left + r.width / 2) - centerX);
+      if(dist < closestDist){ closestDist = dist; closestIndex = idx; }
+    });
+    setActiveFrame(closestIndex);
+    if(closestIndex !== filmstripIndex){
+      filmstripIndex = closestIndex;
+      updateFilmstripCaption();
+    }
+  }
+
+  var filmstripScrollRAF = null;
+  filmstripTrack.addEventListener('scroll', function(){
+    if(filmstripScrollRAF) return;
+    filmstripScrollRAF = requestAnimationFrame(function(){
+      updateActiveFrameFromScroll();
+      filmstripScrollRAF = null;
+    });
+  });
+
+  function goToFrame(i, instant){
+    filmstripIndex = Math.max(0, Math.min(designData.length - 1, i));
+    var frame = filmstripTrack.children[filmstripIndex];
+    if(frame){
+      frame.scrollIntoView({ behavior: (instant || reduceMotion) ? 'auto' : 'smooth', inline:'center', block:'nearest' });
+    }
+    setActiveFrame(filmstripIndex);
+    updateFilmstripCaption();
+  }
+
+  function openFilmstrip(i){
+    openDialogAnimated(filmstripDialog);
+    goToFrame(i, true);
+  }
+  wireDialogClose(filmstripDialog);
+  if(filmstripDialog){
+    filmstripDialog.addEventListener('keydown', function(e){
+      if(e.key === 'ArrowRight'){ goToFrame(filmstripIndex + 1); }
+      if(e.key === 'ArrowLeft'){ goToFrame(filmstripIndex - 1); }
+    });
+  }
+  if(filmstripPrev){ filmstripPrev.addEventListener('click', function(){ goToFrame(filmstripIndex - 1); }); }
+  if(filmstripNext){ filmstripNext.addEventListener('click', function(){ goToFrame(filmstripIndex + 1); }); }
+
+  /* ---------------------------------------------------------
+     WORK EXPERIENCE — scrubbable timeline (horizontal or vertical,
+     driven by the TIMELINE_LAYOUT flag defined near the top)
+     --------------------------------------------------------- */
+  var expWrap = document.querySelector('.exp-timeline-wrap');
+  var expScrubEl = document.getElementById('expScrub');
+  if(TIMELINE_LAYOUT === 'vertical'){
+    if(expWrap) expWrap.classList.add('exp-timeline-wrap--vertical');
+    if(expScrubEl) expScrubEl.classList.add('exp-scrub--vertical');
+  }
+  function isVertical(){ return TIMELINE_LAYOUT === 'vertical'; }
+
+  var expTrack = document.getElementById('expTrack');
+  var expPrev = document.getElementById('expPrev');
+  var expNext = document.getElementById('expNext');
+  var expDots = document.querySelectorAll('.exp-dot');
+  var expStops = expTrack ? expTrack.querySelectorAll('.exp-stop') : [];
+
+  function goToStop(i){
+    i = Math.max(0, Math.min(expStops.length - 1, i));
+    var stop = expStops[i];
+    if(stop){
+      stop.scrollIntoView({
+        behavior: reduceMotion ? 'auto' : 'smooth',
+        inline: isVertical() ? 'nearest' : 'center',
+        block: isVertical() ? 'center' : 'nearest'
+      });
+    }
+  }
+  function currentStopIndex(){
+    var active = document.querySelector('.exp-dot.active');
+    return active ? parseInt(active.getAttribute('data-index'), 10) : 0;
+  }
+  if(expPrev){ expPrev.addEventListener('click', function(){ goToStop(currentStopIndex() - 1); }); }
+  if(expNext){ expNext.addEventListener('click', function(){ goToStop(currentStopIndex() + 1); }); }
+  expDots.forEach(function(dot){
+    dot.addEventListener('click', function(){ goToStop(parseInt(dot.getAttribute('data-index'), 10)); });
+  });
+
+  // Native click-and-drag scrubbing (in addition to normal touch/trackpad scroll).
+  if(expTrack){
+    var isDown = false, startPos = 0, startScroll = 0;
+    expTrack.addEventListener('pointerdown', function(e){
+      isDown = true;
+      expTrack.classList.add('grabbing');
+      startPos = isVertical() ? e.clientY : e.clientX;
+      startScroll = isVertical() ? expTrack.scrollTop : expTrack.scrollLeft;
+      expTrack.setPointerCapture(e.pointerId);
+    });
+    expTrack.addEventListener('pointermove', function(e){
+      if(!isDown) return;
+      var pos = isVertical() ? e.clientY : e.clientX;
+      if(isVertical()){ expTrack.scrollTop = startScroll - (pos - startPos); }
+      else{ expTrack.scrollLeft = startScroll - (pos - startPos); }
+    });
+    function endDrag(){ isDown = false; expTrack.classList.remove('grabbing'); }
+    expTrack.addEventListener('pointerup', endDrag);
+    expTrack.addEventListener('pointercancel', endDrag);
+  }
+
+  // Keep the scrub dots in sync with whichever stop is centered in view.
+  if('IntersectionObserver' in window && expTrack && expStops.length){
+    var expObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting && entry.intersectionRatio > 0.6){
+          var idx = entry.target.getAttribute('data-index');
+          expDots.forEach(function(d){
+            d.classList.toggle('active', d.getAttribute('data-index') === idx);
+          });
+        }
+      });
+    }, { root: expTrack, threshold: [0.6] });
+    expStops.forEach(function(stop){ expObserver.observe(stop); });
+  } else if(expDots.length){
+    expDots[0].classList.add('active');
+  }
+
+  /* ---------------------------------------------------------
+     Smooth-scroll for in-page nav links (respects reduced motion
+     via the global CSS rule on html { scroll-behavior }).
+     --------------------------------------------------------- */
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      var id = a.getAttribute('href');
+      if(id.length > 1){
+        var target = document.querySelector(id);
+        if(target){
+          e.preventDefault();
+          target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+        }
+      }
+    });
+  });
+
+  /* ---------------------------------------------------------
+     SINGLE-FILE PAGE ROUTER
+     Turns the site into a "multi-page" experience without any
+     extra HTML files: every top-level section/sidebar already
+     carries data-page="home|experience|work|design|skills|contact".
+     Switching pages just toggles which of those are visible.
+     Routes live in the URL hash as "#page-<name>" (distinct from
+     the in-page anchor hashes like "#summary" used above, so the
+     two systems never collide) — this keeps pages bookmarkable
+     and back/forward-button friendly.
+     --------------------------------------------------------- */
+  var PAGES = ['home', 'experience', 'work', 'design', 'skills', 'contact'];
+  var subnav = document.getElementById('subnav');
+  var allTabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+  // NOTE: the nav buttons themselves also carry data-page (so they know
+  // which page they switch to) — exclude the subnav so the router only
+  // ever shows/hides actual page content, never the tabs.
+  var pageEls = Array.prototype.filter.call(document.querySelectorAll('[data-page]'), function(el){
+    return !el.closest('#subnav');
+  });
+
+  /* Measures the real header height (brand row can wrap on narrow
+     screens) so the subnav, cascade rule, and hero padding all line
+     up exactly instead of relying on a guessed pixel value. */
+  var siteNav = document.getElementById('siteNav');
+  function syncHeaderHeight(){
+    document.documentElement.style.setProperty('--header-h', siteNav.offsetHeight + 'px');
+  }
+  syncHeaderHeight();
+  window.addEventListener('resize', syncHeaderHeight);
+
+  function showPage(pageId){
+    if(PAGES.indexOf(pageId) === -1){ pageId = 'home'; }
+    pageEls.forEach(function(el){
+      // Setting/clearing an inline style (rather than toggling a class)
+      // means each element's own authored display value (flex for the
+      // hero, grid for others, etc.) takes back over automatically when
+      // shown again — no fighting CSS specificity page by page.
+      el.style.display = (el.getAttribute('data-page') === pageId) ? '' : 'none';
+    });
+    window.scrollTo(0, 0);
+    // The featured-stories reel measures its own scroll width to size
+    // itself; while its page was hidden that measured 0, so recompute
+    // once it's actually visible and laid out.
+    if(pageId === 'work'){
+      requestAnimationFrame(function(){ sizePanSection(); updatePan(); });
+    }
+    return pageId;
+  }
+
+  /* Marks the current page's tab active (its border seams into the
+     page below it — see .tab.is-active in CSS) and cascades that
+     tab's accent colour down through the cascade rule and hero wash,
+     so the whole page visibly "belongs" to the tab above it. */
+  function setCurrentTab(pageId){
+    allTabs.forEach(function(t){
+      t.classList.toggle('is-active', t.getAttribute('data-page') === pageId);
+    });
+    var accent = getComputedStyle(document.documentElement).getPropertyValue('--acc-' + pageId).trim();
+    if(accent){ document.documentElement.style.setProperty('--page-accent', accent); }
+  }
+
+  function pageIdFromHash(){
+    var h = location.hash.replace('#', '');
+    var pageId = h.indexOf('page-') === 0 ? h.slice(5) : 'home';
+    return PAGES.indexOf(pageId) === -1 ? 'home' : pageId;
+  }
+
+  // Clicking a subnav tab: show its page and mark the tab active,
+  // cascading its accent colour down into the page.
+  allTabs.forEach(function(tab){
+    tab.addEventListener('click', function(){
+      var pageId = tab.getAttribute('data-page');
+      if(tab.classList.contains('is-active')) return;
+      showPage(pageId);
+      setCurrentTab(pageId);
+      if(window.history && history.pushState){
+        history.pushState(null, '', '#page-' + pageId);
+      }
+    });
+  });
+
+  // Back/forward navigation (or a hand-typed #page-… URL): jump straight
+  // to the right page and fly its tab up.
+  function routeFromNavigation(){
+    var pageId = pageIdFromHash();
+    showPage(pageId);
+    setCurrentTab(pageId);
+  }
+  window.addEventListener('hashchange', routeFromNavigation);
+  window.addEventListener('popstate', routeFromNavigation);
+
+  // Initial load: show the right page and place its tab in the header
+  // slot directly — no flying in on first paint.
+  (function initialRoute(){
+    var pageId = pageIdFromHash();
+    showPage(pageId);
+    setCurrentTab(pageId);
+  })();
+
+  /* ---------------------------------------------------------
+     Sidebar scrollspy — highlights whichever section a given
+     page-sidebar is currently scrolled past. Safe to observe every
+     sidebar's targets up front: elements on hidden pages simply
+     never intersect, so nothing needs re-wiring on page switch.
+     --------------------------------------------------------- */
+  if('IntersectionObserver' in window){
+    document.querySelectorAll('.page-sidebar').forEach(function(sidebar){
+      var links = sidebar.querySelectorAll('.ps-link');
+      var targets = [];
+      links.forEach(function(link){
+        var el = document.getElementById(link.getAttribute('data-target'));
+        if(el){ targets.push({ el: el, link: link }); }
+      });
+      if(!targets.length) return;
+      var spy = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(!entry.isIntersecting) return;
+          var match = targets.filter(function(t){ return t.el === entry.target; })[0];
+          if(!match) return;
+          links.forEach(function(l){ l.classList.remove('active'); });
+          match.link.classList.add('active');
+        });
+      }, { rootMargin: '-40% 0px -50% 0px', threshold: 0 });
+      targets.forEach(function(t){ spy.observe(t.el); });
+    });
+  }
+
+})();
+</script>
+
+</body>
+</html>
