@@ -35,6 +35,15 @@
 
     --wrap: min(1180px, 92vw);
     --ease: cubic-bezier(.22,.61,.36,1);
+    --cascade-ease: cubic-bezier(.16,1,.3,1);
+
+    /* Real measured heights of the two subnav rows (JS keeps these in
+       sync with actual layout — see syncNavMetrics) so the accent rule
+       and content spacer always line up under however many rows are
+       currently on screen. Fallback values match the default single-
+       line tab row so nothing jumps before JS runs. */
+    --subnav-h: 37px;
+    --subnav-bottom-h: 37px;
 
     /* Section "wire-service" tags — newsrooms colour-code beats
        (Metro, Business, Sports…); each page gets one tag colour,
@@ -103,12 +112,25 @@
   .brand:hover .dot{ transform:scale(1.5); box-shadow:0 0 0 4px rgba(234,99,140,.2); }
 
   /* ------------------------------------------------------------
-     SUBNAV — a single row of wire-service section tags directly
-     under the header. Each tag carries its own beat colour (see
-     --acc-* tokens). The active tag sits flush with the page —
-     its bottom border drops out and its colour is picked up by
-     the hero wash right underneath, so the tab visibly "grows
-     into" the page it belongs to instead of just marking it.
+     SUBNAV — a header row pinned to the top of the viewport, and a
+     breadcrumb tray pinned to the bottom of the viewport. Each page's
+     content is one full-bleed panel (see PAGE PANELS below); the
+     panel for whichever page is active fills the gap between the two
+     bars, and every other panel is parked off-screen. A top-row tab
+     "pulls" its panel down over whatever's showing; a bottom-row tab
+     pulls its panel up. The two bars are the handles; the panels
+     underneath are what actually gets pulled.
+
+     CASCADE MODEL: page order is fixed — Home, Experience, Work,
+     Design, Skills, Contact.
+       - Top row: every page at or after the active one renders
+         normally. Every page before it blanks out (.is-passed) but
+         keeps its column's width reserved, so nothing else shifts.
+       - Bottom row: the mirror image — every page before the active
+         one shows here (.is-shown) as a breadcrumb you can pull back
+         up; everything else is an invisible placeholder, which is
+         what keeps this tray reading as empty until something has
+         actually been passed.
      ------------------------------------------------------------ */
   .subnav{
     position:fixed; left:0; right:0; top:var(--header-h, 49px); z-index:99;
@@ -118,10 +140,15 @@
     scrollbar-width:none;
   }
   .subnav::-webkit-scrollbar{ display:none; }
-  .subnav-inner{ display:flex; }
+  .subnav-inner{
+    display:grid;
+    grid-auto-flow:column;
+    grid-template-columns:repeat(6, max-content);
+    align-items:start;
+  }
   .tab{
     --accent:var(--rose);
-    flex:0 0 auto;
+    grid-row:1;
     font-family:var(--mono); font-size:11px; letter-spacing:.05em;
     text-transform:uppercase; color:var(--ink);
     background:var(--accent); filter:brightness(.62) saturate(.85);
@@ -129,9 +156,10 @@
     padding:9px 20px 8px;
     cursor:pointer; position:relative; top:0;
     transform:translateY(7px);
-    transition:filter .25s var(--ease), transform .4s cubic-bezier(.34,1.3,.5,1), box-shadow .25s var(--ease);
+    opacity:1;
+    transition:filter .25s var(--ease), transform .4s cubic-bezier(.34,1.3,.5,1), box-shadow .25s var(--ease), opacity .3s var(--ease);
   }
-  .tab + .tab{ margin-left:-1px; }
+  .tab:not(:first-child){ margin-left:-1px; }
   .tab span{ position:relative; z-index:2; pointer-events:none; font-weight:700; }
   .tab:hover{ filter:brightness(.85) saturate(1); }
   .tab:not(.is-active):hover{ transform:translateY(3px); }
@@ -143,6 +171,16 @@
     border-bottom:1px solid var(--accent); /* seams into the wash below */
     margin-bottom:-1px;
   }
+  /* A page whose slot has cascaded down to the bottom tray: keep its
+     column reserved up top, but blank it out and drop it slightly so
+     it visibly sinks away as its breadcrumb lands below. */
+  .tab.is-passed{
+    opacity:0;
+    pointer-events:none;
+    transform:translateY(14px);
+    box-shadow:none;
+    transition:opacity .3s var(--cascade-ease), transform .4s var(--cascade-ease);
+  }
   .tab[data-page="home"]{ --accent:var(--acc-home); }
   .tab[data-page="experience"]{ --accent:var(--acc-experience); }
   .tab[data-page="work"]{ --accent:var(--acc-work); }
@@ -150,16 +188,114 @@
   .tab[data-page="skills"]{ --accent:var(--acc-skills); }
   .tab[data-page="contact"]{ --accent:var(--acc-contact); }
 
-  /* Thin cascade rule spanning the page, in the active section's
-     colour — the literal thread from tab down into content. */
+  /* ------------------------------------------------------------
+     BOTTOM SUBNAV — pinned to the bottom edge of the viewport, like
+     a mobile app's tab bar, rather than stacked under the top row.
+     Always present at a fixed reserved height, so it reads as an
+     empty tray on Home rather than something that pops in later.
+     ------------------------------------------------------------ */
+  .subnav-bottom{
+    position:fixed; left:0; right:0; bottom:0; top:auto; z-index:99;
+    background:var(--ink);
+    border-top:1px solid rgba(255,217,218,.14);
+    box-shadow:0 -12px 30px rgba(0,0,0,.3);
+    overflow-x:auto; overflow-y:visible; -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .subnav-bottom::-webkit-scrollbar{ display:none; }
+  /* Left-aligned on the same 6-column grid as the top row (not
+     centred) so a breadcrumb sits in exactly the same horizontal slot
+     as its tab up top — the two are the same tab, seen at the two
+     edges of the same pulled sheet of paper. */
+  .tab-bottom{
+    filter:brightness(.7) saturate(.8);
+    /* Mirrors .tab's base border exactly (1px black, sealed edge
+       omitted) so the row's height matches the top row pixel for
+       pixel — only the sealed edge moves from bottom to top. */
+    border:1px solid rgba(0,0,0,.4); border-top:none;
+    box-shadow:none;
+    transform:translateY(10px);
+    opacity:0;
+    pointer-events:none;
+    cursor:pointer;
+    transition:opacity .35s var(--cascade-ease) .04s, transform .45s var(--cascade-ease) .04s, filter .25s var(--ease);
+  }
+  .tab-bottom:hover{ filter:brightness(.9) saturate(1); }
+  .tab-bottom.is-shown{
+    opacity:1;
+    transform:translateY(0);
+    pointer-events:auto;
+    /* Same trick as .tab.is-active's border-bottom seam, mirrored:
+       adds the coloured edge on the side facing the content above,
+       with a matching negative margin so the added 1px never changes
+       the row's height. */
+    border-top:1px solid var(--accent);
+    margin-top:-1px;
+  }
+
+  /* Thin cascade rule spanning the page, directly under the top
+     subnav only, in the active section's colour — the literal thread
+     from tab down into content. */
   .accent-rule{
-    position:fixed; left:0; right:0; top:calc(var(--header-h, 49px) + 37px); z-index:98;
+    position:fixed; left:0; right:0; z-index:98;
+    top:calc(var(--header-h, 49px) + var(--subnav-h, 37px));
     height:3px; background:var(--page-accent);
     transition:background .35s var(--ease);
   }
   /* In-flow spacer: pushes every page's content clear of the fixed
-     header + subnav + accent rule, so no per-page padding math needed. */
-  .nav-spacer{ height:calc(var(--header-h, 49px) + 40px); }
+     header + top subnav + accent rule, so no per-page padding math
+     needed. The bottom tray is handled separately (see body
+     padding-bottom below) since it's pinned to the viewport's bottom
+     edge, not stacked in the document flow up top. */
+  .nav-spacer{
+    height:calc(var(--header-h, 49px) + var(--subnav-h, 37px) + 3px);
+  }
+  /* Keeps page content clear of the fixed bottom tray so its last
+     lines never sit underneath it. */
+  body{ padding-bottom:var(--subnav-bottom-h, 37px); }
+
+  /* ============================================================
+     PAGE PANELS — each page's scattered sections (hero, summary,
+     coverage… for Home; stories, works… for Work, etc.) are grouped
+     at runtime into one wrapper per page (see the router script).
+     A panel always carries a border in its own page's accent colour —
+     the same colour as its tab up in the subnav — so however far you
+     scroll, the page reads as a sheet that belongs to that coloured
+     tab, like the edge of a folder. It normally just sits in the
+     document's natural flow otherwise; the wrapping itself is
+     invisible. It only becomes a fixed, full-bleed slab briefly, while
+     the router pulls it into place: the same coloured edge thickens
+     into the seam it lands on, and a soft shadow rides just ahead of
+     it — under its leading edge going down, over its leading edge
+     going up — as if it's a real sheet being dragged across the page
+     beneath. Once it lands, JS releases it back to normal flow so
+     scrolling (and the Work page's horizontal pan rig) behaves
+     exactly as it always has.
+     ============================================================ */
+  .page-panel{
+    display:block;
+    box-sizing:border-box;
+    border:3px solid var(--panel-accent, var(--rose));
+    transition:border-color .35s var(--ease);
+  }
+  .page-panel[data-page="home"]{ --panel-accent:var(--acc-home); }
+  .page-panel[data-page="experience"]{ --panel-accent:var(--acc-experience); }
+  .page-panel[data-page="work"]{ --panel-accent:var(--acc-work); }
+  .page-panel[data-page="design"]{ --panel-accent:var(--acc-design); }
+  .page-panel[data-page="skills"]{ --panel-accent:var(--acc-skills); }
+  .page-panel[data-page="contact"]{ --panel-accent:var(--acc-contact); }
+  /* While being pulled, the resting 3px border thickens on the
+     landing edge only, so the seam visibly "locks in" right as it
+     arrives — then settles back to the same-colour 3px frame once
+     JS releases it back to normal flow. */
+  .page-panel.is-pulling-down{
+    border-top-width:6px;
+    box-shadow:0 26px 50px -10px rgba(0,0,0,.5);
+  }
+  .page-panel.is-pulling-up{
+    border-bottom-width:6px;
+    box-shadow:0 -26px 50px -10px rgba(0,0,0,.5);
+  }
 
   /* ============================================================
      PAGE SIDEBAR — in-page section jump list, shown on the
@@ -1025,6 +1161,19 @@
     <button type="button" class="tab" data-page="design"><span>Design</span></button>
     <button type="button" class="tab" data-page="skills"><span>Skills</span></button>
     <button type="button" class="tab" data-page="contact"><span>Contact</span></button>
+  </div>
+</nav>
+<!-- Breadcrumb tray: mirrors the row above, column for column. Empty
+     placeholder on Home; fills in left-to-right as pages cascade down
+     out of the top row. -->
+<nav class="subnav subnav-bottom" id="subnavBottom" aria-label="Previously viewed sections">
+  <div class="subnav-inner">
+    <button type="button" class="tab tab-bottom" data-page="home"><span>Home</span></button>
+    <button type="button" class="tab tab-bottom" data-page="experience"><span>Experience</span></button>
+    <button type="button" class="tab tab-bottom" data-page="work"><span>Work</span></button>
+    <button type="button" class="tab tab-bottom" data-page="design"><span>Design</span></button>
+    <button type="button" class="tab tab-bottom" data-page="skills"><span>Skills</span></button>
+    <button type="button" class="tab tab-bottom" data-page="contact"><span>Contact</span></button>
   </div>
 </nav>
 <div class="accent-rule" id="accentRule" aria-hidden="true"></div>
@@ -1926,50 +2075,173 @@
      --------------------------------------------------------- */
   var PAGES = ['home', 'experience', 'work', 'design', 'skills', 'contact'];
   var subnav = document.getElementById('subnav');
+  var subnavBottom = document.getElementById('subnavBottom');
   var allTabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
-  // NOTE: the nav buttons themselves also carry data-page (so they know
-  // which page they switch to) — exclude the subnav so the router only
-  // ever shows/hides actual page content, never the tabs.
-  var pageEls = Array.prototype.filter.call(document.querySelectorAll('[data-page]'), function(el){
-    return !el.closest('#subnav');
+
+  /* Group every top-level content section (hero, summary, coverage…
+     for Home; stories, works… for Work; and so on — several loose
+     sections per page) into one wrapper <div class="page-panel"> per
+     page. This gives the router a single element per page to slide,
+     instead of five, without touching any section's own markup,
+     styling, or ID — they're just relocated into their page's panel,
+     in their original relative order. Page sidebars (the little
+     in-page jump lists) are left where they are; they're already
+     independently fixed-positioned and toggle instantly with no
+     slide of their own. */
+  var contentEls = Array.prototype.filter.call(document.querySelectorAll('[data-page]'), function(el){
+    return !el.closest('#subnav') && !el.closest('#subnavBottom') && !el.classList.contains('page-sidebar');
+  });
+  var pageSidebars = Array.prototype.slice.call(document.querySelectorAll('.page-sidebar[data-page]'));
+  var pageStage = document.createElement('div');
+  pageStage.id = 'pageStage';
+  contentEls[0].parentNode.insertBefore(pageStage, contentEls[0]);
+  var pagePanels = {};
+  PAGES.forEach(function(pageId){
+    var panel = document.createElement('div');
+    panel.className = 'page-panel';
+    panel.setAttribute('data-page', pageId);
+    pageStage.appendChild(panel);
+    pagePanels[pageId] = panel;
+  });
+  contentEls.forEach(function(el){
+    var pageId = el.getAttribute('data-page');
+    if(pagePanels[pageId]){ pagePanels[pageId].appendChild(el); }
   });
 
   /* Measures the real header height (brand row can wrap on narrow
-     screens) so the subnav, cascade rule, and hero padding all line
-     up exactly instead of relying on a guessed pixel value. */
+     screens) plus both subnav rows' real heights, so the accent rule,
+     content spacer, and the sliding panels' resting rect all line up
+     exactly instead of relying on guessed pixel values. */
   var siteNav = document.getElementById('siteNav');
-  function syncHeaderHeight(){
+  function syncNavMetrics(){
     document.documentElement.style.setProperty('--header-h', siteNav.offsetHeight + 'px');
+    document.documentElement.style.setProperty('--subnav-h', subnav.offsetHeight + 'px');
+    document.documentElement.style.setProperty('--subnav-bottom-h', subnavBottom.offsetHeight + 'px');
   }
-  syncHeaderHeight();
-  window.addEventListener('resize', syncHeaderHeight);
+  syncNavMetrics();
+  window.addEventListener('resize', syncNavMetrics);
 
-  function showPage(pageId){
+  /* ---------------------------------------------------------
+     THE PULL: a page-panel is normally just a static block in the
+     document, scrolled the ordinary way. To "pull" one over the
+     screen, it's lifted out of flow just long enough to slide from
+     off-screen (above the top bar, or below the bottom tray) into
+     the gap between them, covering whatever was showing — then
+     dropped straight back into normal flow once it lands, so the
+     page behind it (including the Work page's horizontal pan rig,
+     which measures window scroll) never notices anything happened.
+     A soft "ease-out" curve (see --cascade-ease) gives it weight and
+     a gentle settle, like a hand pulling a sheet of paper down and
+     letting it fall the last little bit on its own, rather than
+     stopping dead the instant it arrives.
+     --------------------------------------------------------- */
+  var CASCADE_MS = 640;
+  var activePageId = null;
+
+  function parkAsCurtain(panel, direction){
+    panel.style.position = 'fixed';
+    panel.style.left = '0';
+    panel.style.right = '0';
+    panel.style.top = 'calc(var(--header-h, 49px) + var(--subnav-h, 37px))';
+    panel.style.bottom = 'var(--subnav-bottom-h, 37px)';
+    panel.style.overflowY = 'auto';
+    panel.style.zIndex = '60';
+    panel.style.background = 'var(--ink)';
+    panel.style.transition = 'none';
+    panel.classList.add(direction === 'down' ? 'is-pulling-down' : 'is-pulling-up');
+    panel.style.transform = direction === 'down' ? 'translateY(-100%)' : 'translateY(100%)';
+  }
+
+  function releaseFromCurtain(panel){
+    panel.style.position = '';
+    panel.style.left = '';
+    panel.style.right = '';
+    panel.style.top = '';
+    panel.style.bottom = '';
+    panel.style.overflowY = '';
+    panel.style.zIndex = '';
+    panel.style.background = '';
+    panel.style.transition = '';
+    panel.style.transform = '';
+    panel.classList.remove('is-pulling-down', 'is-pulling-up');
+  }
+
+  function showPage(pageId, animate){
     if(PAGES.indexOf(pageId) === -1){ pageId = 'home'; }
-    pageEls.forEach(function(el){
-      // Setting/clearing an inline style (rather than toggling a class)
-      // means each element's own authored display value (flex for the
-      // hero, grid for others, etc.) takes back over automatically when
-      // shown again — no fighting CSS specificity page by page.
+    var oldPageId = activePageId;
+    var newPanel = pagePanels[pageId];
+    var oldPanel = oldPageId ? pagePanels[oldPageId] : null;
+
+    pageSidebars.forEach(function(el){
       el.style.display = (el.getAttribute('data-page') === pageId) ? '' : 'none';
     });
-    window.scrollTo(0, 0);
-    // The featured-stories reel measures its own scroll width to size
-    // itself; while its page was hidden that measured 0, so recompute
-    // once it's actually visible and laid out.
-    if(pageId === 'work'){
-      requestAnimationFrame(function(){ sizePanSection(); updatePan(); });
+
+    var canAnimate = animate && oldPanel && oldPageId !== pageId && !reduceMotion;
+
+    if(!canAnimate){
+      PAGES.forEach(function(p){
+        pagePanels[p].style.display = (p === pageId) ? '' : 'none';
+      });
+      window.scrollTo(0, 0);
+      activePageId = pageId;
+      if(pageId === 'work'){
+        requestAnimationFrame(function(){ sizePanSection(); updatePan(); });
+      }
+      return pageId;
     }
+
+    // Top-row tabs only ever move forward through PAGES (later pages
+    // are the only ones left clickable up top); bottom-row tabs only
+    // ever move back to an earlier one — so comparing order alone
+    // tells us which bar is "pulling": forward = pulled down from the
+    // top bar, backward = pulled up from the bottom tray.
+    var direction = PAGES.indexOf(pageId) > PAGES.indexOf(oldPageId) ? 'down' : 'up';
+
+    window.scrollTo(0, 0);
+    document.body.style.overflow = 'hidden';
+    newPanel.style.display = '';
+    parkAsCurtain(newPanel, direction);
+    void newPanel.offsetHeight; // commit the off-screen start position
+    newPanel.style.transition = 'transform ' + CASCADE_MS + 'ms var(--cascade-ease)';
+    requestAnimationFrame(function(){
+      newPanel.style.transform = 'translateY(0)';
+    });
+
+    activePageId = pageId;
+    window.setTimeout(function(){
+      oldPanel.style.display = 'none';
+      releaseFromCurtain(newPanel);
+      document.body.style.overflow = '';
+      window.scrollTo(0, 0);
+      if(pageId === 'work'){ sizePanSection(); updatePan(); }
+    }, CASCADE_MS + 30);
+
     return pageId;
   }
 
+
+
   /* Marks the current page's tab active (its border seams into the
-     page below it — see .tab.is-active in CSS) and cascades that
-     tab's accent colour down through the cascade rule and hero wash,
-     so the whole page visibly "belongs" to the tab above it. */
+     page below it — see .tab.is-active in CSS), cascades that tab's
+     accent colour down through the cascade rule and hero wash so the
+     whole page visibly "belongs" to the tab above it, AND drives the
+     two-row cascade: every page ordered before the active one blanks
+     out up top (.is-passed) and lands as a breadcrumb down in the
+     bottom row (.is-shown); everything from the active page onward
+     stays put, normally, in the top row. */
   function setCurrentTab(pageId){
+    var activeIndex = PAGES.indexOf(pageId);
     allTabs.forEach(function(t){
-      t.classList.toggle('is-active', t.getAttribute('data-page') === pageId);
+      var tabPage = t.getAttribute('data-page');
+      var tabIndex = PAGES.indexOf(tabPage);
+      var isBottomTab = t.classList.contains('tab-bottom');
+      if(isBottomTab){
+        t.classList.toggle('is-shown', tabIndex < activeIndex);
+        t.classList.remove('is-active');
+      } else {
+        t.classList.toggle('is-active', tabIndex === activeIndex);
+        t.classList.toggle('is-passed', tabIndex < activeIndex);
+      }
     });
     var accent = getComputedStyle(document.documentElement).getPropertyValue('--acc-' + pageId).trim();
     if(accent){ document.documentElement.style.setProperty('--page-accent', accent); }
@@ -1981,13 +2253,14 @@
     return PAGES.indexOf(pageId) === -1 ? 'home' : pageId;
   }
 
-  // Clicking a subnav tab: show its page and mark the tab active,
+  // Clicking a subnav tab: pull its page over the screen (top tabs
+  // pull down, bottom tabs pull up — see showPage) and mark it active,
   // cascading its accent colour down into the page.
   allTabs.forEach(function(tab){
     tab.addEventListener('click', function(){
       var pageId = tab.getAttribute('data-page');
       if(tab.classList.contains('is-active')) return;
-      showPage(pageId);
+      showPage(pageId, true);
       setCurrentTab(pageId);
       if(window.history && history.pushState){
         history.pushState(null, '', '#page-' + pageId);
