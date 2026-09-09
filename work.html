@@ -143,7 +143,7 @@
   .subnav-inner{
     display:grid;
     grid-auto-flow:column;
-    grid-template-columns:repeat(6, max-content);
+    grid-template-columns:repeat(5, max-content);
     align-items:start;
   }
   .tab{
@@ -184,7 +184,6 @@
   .tab[data-page="home"]{ --accent:var(--acc-home); }
   .tab[data-page="experience"]{ --accent:var(--acc-experience); }
   .tab[data-page="work"]{ --accent:var(--acc-work); }
-  .tab[data-page="design"]{ --accent:var(--acc-design); }
   .tab[data-page="skills"]{ --accent:var(--acc-skills); }
   .tab[data-page="contact"]{ --accent:var(--acc-contact); }
 
@@ -231,6 +230,19 @@
        the row's height. */
     border-top:1px solid var(--accent);
     margin-top:-1px;
+  }
+
+  /* The clone that actually travels between the two rows (see
+     flyTabGhost in the router script). Pins it to an exact viewport
+     rect regardless of whatever grid/margin rules the row it was
+     cloned from applies, and keeps it clear of every click target. */
+  .tab-ghost{
+    position:fixed !important;
+    margin:0 !important;
+    z-index:300 !important;
+    pointer-events:none !important;
+    opacity:1 !important;
+    box-shadow:0 10px 24px rgba(0,0,0,.4) !important;
   }
 
   /* Thin cascade rule spanning the page, directly under the top
@@ -281,7 +293,6 @@
   .page-panel[data-page="home"]{ --panel-accent:var(--acc-home); }
   .page-panel[data-page="experience"]{ --panel-accent:var(--acc-experience); }
   .page-panel[data-page="work"]{ --panel-accent:var(--acc-work); }
-  .page-panel[data-page="design"]{ --panel-accent:var(--acc-design); }
   .page-panel[data-page="skills"]{ --panel-accent:var(--acc-skills); }
   .page-panel[data-page="contact"]{ --panel-accent:var(--acc-contact); }
   /* While being pulled, the resting 3px border thickens on the
@@ -341,10 +352,14 @@
      HERO
      ============================================================ */
   .hero{
-    min-height:100vh;
+    /* Home is a one-screen page now: fills exactly the gap between
+       the two subnav bars (minus the page-panel's own 3px+3px
+       border), so it never needs to scroll. */
+    min-height:calc(100vh - var(--header-h, 49px) - var(--subnav-h, 37px) - var(--subnav-bottom-h, 37px) - 6px);
+    box-sizing:border-box;
     display:flex; flex-direction:column; justify-content:center;
     position:relative;
-    padding-top:20px;
+    padding:20px 0;
     transition:background .4s var(--ease);
   }
   .hero::before{
@@ -695,7 +710,15 @@
   .contact{
     background:linear-gradient(180deg, var(--ink), var(--slate));
     text-align:left;
+    /* Fits to one screen too: main content and the footer line sit
+       at the top and bottom of the same fixed-height band. */
+    min-height:calc(100vh - var(--header-h, 49px) - var(--subnav-h, 37px) - var(--subnav-bottom-h, 37px) - 6px);
+    box-sizing:border-box;
+    display:flex; flex-direction:column; justify-content:space-between;
+    padding:60px 0 30px;
   }
+  .contact .contact-inner{ padding-top:0; }
+  .contact footer{ padding-bottom:0; }
   .contact-inner{ display:flex; justify-content:space-between; align-items:flex-end; gap:40px; flex-wrap:wrap; }
   .contact h2.head{ font-size:clamp(2.4rem, 6vw, 4.4rem); }
   .contact-links{ display:flex; flex-direction:column; gap:6px; }
@@ -965,6 +988,44 @@
   .design-title{ font-family:var(--display); font-weight:500; font-size:1.02rem; color:var(--paper); margin-bottom:4px; }
   .design-type{ font-family:var(--mono); font-size:10px; letter-spacing:.05em; color:var(--ink-soft); text-transform:uppercase; }
 
+  /* Skill chips on a folder-card or design-card — same small tag
+     look, shared between both grids and matched against the Skills
+     page's own tag text (see the hover-preview script). */
+  .item-skills{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  .item-skill-tag{
+    font-family:var(--mono); font-size:9px; letter-spacing:.04em; text-transform:uppercase;
+    color:var(--ink-soft); border:1px solid rgba(255,217,218,.18);
+    padding:3px 7px; border-radius:2px; line-height:1.4;
+  }
+  .folder-card .item-skills{ margin-top:10px; }
+
+  /* Hovering (or tabbing to) a skill tag on the Skills page: the tag
+     itself gets a subtle "has matches" glow, and this floating panel
+     lists whichever stories or design pieces carry that tag. Clicking
+     an item jumps to Work and opens that item's case file / frame. */
+  .skill-tag.has-matches{ box-shadow:inset 0 0 0 1px rgba(234,99,140,.35); }
+  .skill-preview{
+    position:fixed; z-index:400; width:min(320px, 86vw);
+    background:var(--ink); border:1px solid rgba(255,217,218,.22);
+    box-shadow:var(--paper-shadow);
+    opacity:0; transform:translateY(6px); pointer-events:none;
+    transition:opacity .2s var(--ease), transform .2s var(--ease);
+  }
+  .skill-preview.is-visible{ opacity:1; transform:translateY(0); pointer-events:auto; }
+  .skill-preview-head{
+    font-family:var(--mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--rose); padding:12px 14px 6px;
+  }
+  .skill-preview-item{
+    display:flex; flex-direction:column; gap:2px; width:100%;
+    text-align:left; background:none; border:none; cursor:pointer;
+    padding:8px 14px; border-top:1px solid rgba(255,217,218,.1);
+    transition:background .2s var(--ease);
+  }
+  .skill-preview-item:hover{ background:rgba(234,99,140,.08); }
+  .skill-preview-title{ font-family:var(--display); font-size:.92rem; color:var(--paper); }
+  .skill-preview-sub{ font-family:var(--mono); font-size:10px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; }
+
   .filmstrip-dialog{
     width:min(1100px, 94vw); height:min(640px, 86vh);
     position:fixed; inset:0; margin:auto;
@@ -1022,90 +1083,66 @@
   .filmstrip-caption strong{ color:var(--paper); font-family:var(--display); text-transform:none; font-size:1rem; letter-spacing:normal; }
 
   /* ============================================================
-     EXPERIENCE — scrubbable timeline, horizontal OR vertical
-     ------------------------------------------------------------
-     Default is horizontal. To switch to vertical, you don't need
-     to touch this CSS or the HTML at all — open the <script> block
-     and change ONE line near the top:
-
-         var TIMELINE_LAYOUT = 'horizontal';   // becomes:
-         var TIMELINE_LAYOUT = 'vertical';
-
-     The script applies "exp-timeline-wrap--vertical" and
-     "exp-scrub--vertical" automatically based on that value.
+     EXPERIENCE — vertical timeline. A single spine runs down the
+     centre; each role is a 3-column grid row (card | dot | date, or
+     the mirror of that), so the card and its date hang off opposite
+     sides of the spine and only the dot actually touches it.
      ============================================================ */
-  .exp-timeline-wrap{
-    display:flex; align-items:center; gap:16px;
+  .vtimeline{
+    position:relative;
+    margin-top:8px;
   }
-  .exp-nav{
-    flex:0 0 auto; width:44px; height:44px; border-radius:50%;
-    background:rgba(255,217,218,.05); border:1px solid rgba(255,217,218,.22);
-    color:var(--cream); font-size:20px; cursor:pointer;
-    transition:background .25s var(--ease), border-color .25s var(--ease), transform .25s var(--ease);
+  .vtimeline::before{
+    content:'';
+    position:absolute; left:50%; top:6px; bottom:6px; width:2px;
+    background:linear-gradient(180deg, transparent, rgba(255,217,218,.35) 6%, rgba(255,217,218,.35) 94%, transparent);
+    transform:translateX(-50%);
+    z-index:0;
   }
-  .exp-nav:hover{ background:var(--wine); border-color:var(--wine); }
-  .exp-track{
-    flex:1; display:flex; gap:28px; overflow-x:auto; scroll-snap-type:x mandatory;
-    padding:8px 4px 28px; cursor:grab; scrollbar-width:thin; scrollbar-color:var(--rose) rgba(255,217,218,.1);
+  .vtl-item{
+    position:relative; z-index:1;
+    display:grid;
+    grid-template-columns:1fr 32px 1fr;
+    column-gap:28px;
+    align-items:start;
+    margin-bottom:44px;
   }
-  .exp-track.grabbing{ cursor:grabbing; scroll-snap-type:none; }
-  .exp-track::-webkit-scrollbar{ height:4px; }
-  .exp-track::-webkit-scrollbar-track{ background:rgba(255,217,218,.1); }
-  .exp-track::-webkit-scrollbar-thumb{ background:var(--rose); border-radius:4px; }
-  .exp-stop{
-    flex:0 0 auto; width:min(620px, 86vw); scroll-snap-align:center;
+  .vtl-item:last-child{ margin-bottom:0; }
+  .vtl-dot{
+    grid-column:2; justify-self:center; margin-top:6px;
+    width:14px; height:14px; border-radius:50%;
+    background:var(--ink); border:3px solid var(--rose);
+    box-shadow:0 0 0 4px var(--ink);
+  }
+  .vtl-date-slot{ padding-top:8px; }
+  .vtl-date-slot .exp-year{ font-family:var(--mono); font-size:12px; letter-spacing:.06em; color:var(--rose); text-transform:uppercase; }
+  .vtl-card{
     background:rgba(255,217,218,.03);
     border:1px solid rgba(255,217,218,.16); border-top:2px solid var(--wine);
-    padding:32px 34px;
+    padding:26px 28px;
   }
-  .exp-year{ font-family:var(--mono); font-size:12px; letter-spacing:.06em; color:var(--rose); text-transform:uppercase; }
-  .exp-role{ font-family:var(--display); font-weight:600; font-size:1.6rem; color:var(--paper); margin:10px 0 4px; }
-  .exp-org{ font-family:var(--mono); font-size:12px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; margin-bottom:16px; }
+  .exp-role{ font-family:var(--display); font-weight:600; font-size:1.5rem; color:var(--paper); margin:0 0 4px; }
+  .exp-org{ font-family:var(--mono); font-size:12px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; margin-bottom:14px; }
   .exp-points{ margin:0; padding-left:18px; color:var(--ink-soft); font-size:.95rem; line-height:1.7; }
   .exp-points li{ margin-bottom:6px; }
 
-  .exp-scrub{
-    position:relative; display:flex; justify-content:space-between;
-    max-width:620px; margin:8px auto 0; padding:0 4px;
-  }
-  .exp-scrub-line{
-    position:absolute; top:5px; left:4px; right:4px; height:1px;
-    background:rgba(255,217,218,.18); z-index:0;
-  }
-  .exp-dot{
-    position:relative; z-index:1; background:none; border:none; cursor:pointer;
-    display:flex; flex-direction:column; align-items:center; gap:8px;
-    font-family:var(--mono); font-size:11px; color:var(--ink-soft); letter-spacing:.04em;
-    padding:0;
-  }
-  .exp-dot::before{
-    content:''; width:11px; height:11px; border-radius:50%;
-    background:var(--ink); border:2px solid rgba(255,217,218,.3);
-    transition:border-color .25s var(--ease), background .25s var(--ease);
-  }
-  .exp-dot:hover::before{ border-color:var(--rose); }
-  .exp-dot.active{ color:var(--paper); }
-  .exp-dot.active::before{ background:var(--rose); border-color:var(--rose); }
+  /* Left item: card in column 1 (hugging the spine on its right
+     edge), date in column 3. Right item: mirrored. */
+  .vtl-left .vtl-card{ grid-column:1; justify-self:end; max-width:560px; }
+  .vtl-left .vtl-date-slot{ grid-column:3; text-align:left; }
+  .vtl-right .vtl-date-slot{ grid-column:1; text-align:right; }
+  .vtl-right .vtl-card{ grid-column:3; justify-self:start; max-width:560px; }
 
-  /* --- Vertical variant --- */
-  .exp-timeline-wrap.exp-timeline-wrap--vertical{
-    flex-direction:column; align-items:stretch; gap:10px;
+  @media (max-width:700px){
+    .vtimeline::before{ left:6px; }
+    .vtl-item, .vtl-left .vtl-card, .vtl-right .vtl-card, .vtl-left .vtl-date-slot, .vtl-right .vtl-date-slot{
+      grid-template-columns:1fr; grid-column:1 !important; justify-self:stretch !important;
+      max-width:none; text-align:left !important;
+    }
+    .vtl-item{ display:block; padding-left:28px; }
+    .vtl-dot{ position:absolute; left:6px; top:6px; transform:translateX(-50%); }
+    .vtl-date-slot{ margin-bottom:8px; }
   }
-  .exp-timeline-wrap--vertical .exp-nav{ align-self:center; }
-  .exp-timeline-wrap--vertical .exp-nav.prev{ transform:rotate(90deg); }
-  .exp-timeline-wrap--vertical .exp-nav.next{ transform:rotate(90deg); }
-  .exp-timeline-wrap--vertical .exp-track{
-    flex-direction:column; overflow-x:hidden; overflow-y:auto;
-    scroll-snap-type:y mandatory; max-height:70vh;
-    padding:4px 10px 4px 4px;
-  }
-  .exp-timeline-wrap--vertical .exp-stop{ width:100%; scroll-snap-align:start; }
-
-  .exp-scrub.exp-scrub--vertical{
-    flex-direction:column; align-items:flex-start; max-width:none; gap:18px; margin:20px 0 0 6px;
-  }
-  .exp-scrub--vertical .exp-scrub-line{ top:4px; bottom:4px; left:5px; right:auto; width:1px; height:auto; }
-  .exp-scrub--vertical .exp-dot{ flex-direction:row; gap:12px; }
 
   /* ============================================================
      RESPONSIVE
@@ -1158,7 +1195,6 @@
     <button type="button" class="tab" data-page="home"><span>Home</span></button>
     <button type="button" class="tab" data-page="experience"><span>Experience</span></button>
     <button type="button" class="tab" data-page="work"><span>Work</span></button>
-    <button type="button" class="tab" data-page="design"><span>Design</span></button>
     <button type="button" class="tab" data-page="skills"><span>Skills</span></button>
     <button type="button" class="tab" data-page="contact"><span>Contact</span></button>
   </div>
@@ -1171,7 +1207,6 @@
     <button type="button" class="tab tab-bottom" data-page="home"><span>Home</span></button>
     <button type="button" class="tab tab-bottom" data-page="experience"><span>Experience</span></button>
     <button type="button" class="tab tab-bottom" data-page="work"><span>Work</span></button>
-    <button type="button" class="tab tab-bottom" data-page="design"><span>Design</span></button>
     <button type="button" class="tab tab-bottom" data-page="skills"><span>Skills</span></button>
     <button type="button" class="tab tab-bottom" data-page="contact"><span>Contact</span></button>
   </div>
@@ -1179,13 +1214,6 @@
 <div class="accent-rule" id="accentRule" aria-hidden="true"></div>
 <div class="nav-spacer" aria-hidden="true"></div>
 
-<aside class="page-sidebar" data-page="home" aria-label="Home section navigation">
-  <a href="#top" class="ps-link" data-target="top">Overview</a>
-  <a href="#summary" class="ps-link" data-target="summary">Summary</a>
-  <a href="#coverage" class="ps-link" data-target="coverage">Coverage</a>
-  <a href="#about" class="ps-link" data-target="about">About</a>
-  <a href="#bylines" class="ps-link" data-target="bylines">Bylines</a>
-</aside>
 <aside class="page-sidebar" data-page="experience" aria-label="Experience section navigation">
   <a href="#experience" class="ps-link" data-target="experience">Experience</a>
   <a href="#education" class="ps-link" data-target="education">Education</a>
@@ -1193,10 +1221,13 @@
 <aside class="page-sidebar" data-page="work" aria-label="Work section navigation">
   <a href="#stories" class="ps-link" data-target="stories">Featured Stories</a>
   <a href="#works" class="ps-link" data-target="works">Previous Works</a>
+  <a href="#design" class="ps-link" data-target="design">Design &amp; Visual</a>
 </aside>
 
 <!-- ============================================================
-     HERO
+     HERO — Home is just this one screen now: no scroll, no
+     sidebar (nothing to jump to), sized to exactly fill the gap
+     between the two subnav bars.
      ============================================================ -->
 <section class="hero" id="top" data-page="home">
   <div class="wrap">
@@ -1217,55 +1248,6 @@
 
       <div class="hero-text-b">
         <p class="dateline"><b>Pasig City, MNL —</b> BA in Journalism graduate with experience in writing digital news, content writing, graphic design, organizational leadership, research, copyediting, video editing, scriptwriting, social media management and project management.</p>
-      </div>
-    </div>
-  </div>
-  <div class="scroll-cue wrap"><span class="line"></span>Scroll</div>
-</section>
-
-<!-- ============================================================
-     PROFESSIONAL SUMMARY
-     ============================================================ -->
-<section id="summary" class="tight" data-page="home">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <span class="kicker">Summary</span>
-      <h2 class="head">Professional Summary</h2>
-    </div>
-    <p class="summary-text reveal"><strong>BA in Journalism graduate with experience in writing digital news,</strong> content writing, graphic design, organizational leadership, research, copyediting, video editing, scriptwriting, social media management and project management.</p>
-  </div>
-</section>
-
-<!-- ============================================================
-     COVERAGE / BEATS
-     ============================================================ -->
-<section id="coverage" class="tight" data-page="home">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <span class="kicker">Coverage</span>
-      <h2 class="head">What I report on</h2>
-      <p class="lede">Four beats, one throughline: how policy decisions made in conference rooms land on the people who never get a seat at the table.</p>
-    </div>
-    <div class="beats">
-      <div class="beat-row reveal">
-        <span class="beat-num">01</span>
-        <span class="beat-name">Housing</span>
-        <span class="beat-desc">Eviction courts, landlord networks, zoning fights, and the slow erosion of affordable stock across Cook County.</span>
-      </div>
-      <div class="beat-row reveal">
-        <span class="beat-num">02</span>
-        <span class="beat-name">Labor</span>
-        <span class="beat-desc">Warehouse conditions, gig work, union drives, and wage theft investigations built from payroll records and testimony.</span>
-      </div>
-      <div class="beat-row reveal">
-        <span class="beat-num">03</span>
-        <span class="beat-name">Public Systems</span>
-        <span class="beat-desc">School closures, transit equity, and municipal budgets — tracing where public money actually goes.</span>
-      </div>
-      <div class="beat-row reveal">
-        <span class="beat-num">04</span>
-        <span class="beat-name">Data &amp; FOIA</span>
-        <span class="beat-desc">Records requests, database building, and computational reporting that turns raw filings into accountability stories.</span>
       </div>
     </div>
   </div>
@@ -1356,32 +1338,6 @@
 </section>
 
 <!-- ============================================================
-     CREATIVE DESIGN GALLERY — filmstrip lightbox
-     ============================================================ -->
-<section id="design" class="tight" data-page="design">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <span class="kicker">Creative Work</span>
-      <h2 class="head">Design &amp; visual work</h2>
-      <p class="lede">Graphic design, layout, and video work alongside the reporting. Click any frame to open the filmstrip.</p>
-    </div>
-    <div class="design-grid" id="designGrid"><!-- populated by JS --></div>
-  </div>
-</section>
-
-<dialog id="filmstripDialog" class="filmstrip-dialog" aria-label="Design work filmstrip">
-  <form method="dialog" class="dialog-close-form">
-    <button class="dialog-close" aria-label="Close">✕</button>
-  </form>
-  <div class="filmstrip-viewer">
-    <button class="filmstrip-nav prev" id="filmstripPrev" aria-label="Previous frame" type="button">‹</button>
-    <div class="filmstrip-track" id="filmstripTrack"><!-- populated by JS --></div>
-    <button class="filmstrip-nav next" id="filmstripNext" aria-label="Next frame" type="button">›</button>
-  </div>
-  <div class="filmstrip-caption" id="filmstripCaption"></div>
-</dialog>
-
-<!-- ============================================================
      PREVIOUS WORKS — genre folders (inline expand + case-file modal)
      ============================================================ -->
 <section id="works" class="tight" data-page="work">
@@ -1428,22 +1384,49 @@
 </dialog>
 
 <!-- ============================================================
-     WORK EXPERIENCE
+     CREATIVE DESIGN GALLERY — filmstrip lightbox. Appended onto the
+     end of Work now that Work and Design share one tab.
+     ============================================================ -->
+<section id="design" class="tight" data-page="work">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Creative Work</span>
+      <h2 class="head">Design &amp; visual work</h2>
+      <p class="lede">Graphic design, layout, and video work alongside the reporting. Click any frame to open the filmstrip.</p>
+    </div>
+    <div class="design-grid" id="designGrid"><!-- populated by JS --></div>
+  </div>
+</section>
+
+<dialog id="filmstripDialog" class="filmstrip-dialog" aria-label="Design work filmstrip">
+  <form method="dialog" class="dialog-close-form">
+    <button class="dialog-close" aria-label="Close">✕</button>
+  </form>
+  <div class="filmstrip-viewer">
+    <button class="filmstrip-nav prev" id="filmstripPrev" aria-label="Previous frame" type="button">‹</button>
+    <div class="filmstrip-track" id="filmstripTrack"><!-- populated by JS --></div>
+    <button class="filmstrip-nav next" id="filmstripNext" aria-label="Next frame" type="button">›</button>
+  </div>
+  <div class="filmstrip-caption" id="filmstripCaption"></div>
+</dialog>
+
+<!-- ============================================================
+     WORK EXPERIENCE — vertical timeline, centered spine, entries
+     alternating left/right of it.
      ============================================================ -->
 <section id="experience" data-page="experience">
   <div class="wrap">
     <div class="section-head reveal">
       <span class="kicker">Career</span>
       <h2 class="head">Work Experience</h2>
-      <p class="lede">Drag the track, use the arrows, or click a year to scrub through the timeline.</p>
+      <p class="lede">Each role, in order — the date sits on the spine, the details hang off whichever side it lands on.</p>
     </div>
 
-    <div class="exp-timeline-wrap reveal">
-      <button class="exp-nav prev" id="expPrev" aria-label="Previous role">‹</button>
-
-      <div class="exp-track" id="expTrack">
-        <article class="exp-stop" data-index="0">
-          <span class="exp-year">Sep 2025 — Dec 2025</span>
+    <div class="vtimeline" id="expTimeline">
+      <article class="vtl-item vtl-left reveal">
+        <div class="vtl-date-slot"><span class="exp-year">Sep 2025 — Dec 2025</span></div>
+        <span class="vtl-dot" aria-hidden="true"></span>
+        <div class="vtl-card">
           <h3 class="exp-role">Digital and Graphics Intern</h3>
           <div class="exp-org">NewsWatch Plus Philippines — Ortigas Center, Pasig City</div>
           <ul class="exp-points">
@@ -1451,37 +1434,34 @@
             <li>Built and maintain a FOIA-sourced database of 40,000+ court filings used across the newsroom.</li>
             <li>Mentor two early-career reporters on public-records requests and data verification.</li>
           </ul>
-        </article>
+        </div>
+      </article>
 
-        <article class="exp-stop" data-index="1">
-          <span class="exp-year">Jun 2025 — Jun 2026</span>
+      <article class="vtl-item vtl-right reveal">
+        <div class="vtl-card">
           <h3 class="exp-role">President</h3>
           <div class="exp-org">UST Journalism Society — UST, Manila</div>
           <ul class="exp-points">
             <li>Covered municipal budgets, transit policy, and school board decisions on a daily deadline.</li>
             <li>Co-developed a public-facing FOIA tracking tool adopted by three partner newsrooms.</li>
           </ul>
-        </article>
+        </div>
+        <span class="vtl-dot" aria-hidden="true"></span>
+        <div class="vtl-date-slot"><span class="exp-year">Jun 2025 — Jun 2026</span></div>
+      </article>
 
-        <article class="exp-stop" data-index="2">
-          <span class="exp-year">Jan 2025 — May 2025</span>
+      <article class="vtl-item vtl-left reveal">
+        <div class="vtl-date-slot"><span class="exp-year">Jan 2025 — May 2025</span></div>
+        <span class="vtl-dot" aria-hidden="true"></span>
+        <div class="vtl-card">
           <h3 class="exp-role">Writer and Graphics Design Team</h3>
           <div class="exp-org">The Trilby — UST, Manila</div>
           <ul class="exp-points">
             <li>Reported on labor and housing for a community newsroom serving three South Side wards.</li>
             <li>Produced a four-part series on wage theft that led to a state labor department review.</li>
           </ul>
-        </article>
-      </div>
-
-      <button class="exp-nav next" id="expNext" aria-label="Next role">›</button>
-    </div>
-
-    <div class="exp-scrub" id="expScrub" role="tablist" aria-label="Jump to role">
-      <span class="exp-scrub-line" aria-hidden="true"></span>
-      <button class="exp-dot" data-index="0" role="tab" aria-label="Sep to Dec 2025"><span>2025</span></button>
-      <button class="exp-dot" data-index="1" role="tab" aria-label="Jun 2025 to Jun 2026"><span>2025</span></button>
-      <button class="exp-dot" data-index="2" role="tab" aria-label="Jan to May 2025"><span>2025</span></button>
+        </div>
+      </article>
     </div>
   </div>
 </section>
@@ -1515,6 +1495,7 @@
     <div class="section-head reveal">
       <span class="kicker">Skills</span>
       <h2 class="head">Technical &amp; Soft Skills</h2>
+      <p class="lede">Hover — or tab to — any tag to see which stories or design pieces it was used on.</p>
     </div>
     <div class="skills-grid">
       <div class="skills-col reveal">
@@ -1528,6 +1509,8 @@
           <span class="skill-tag">Adobe Premiere</span>
           <span class="skill-tag">AP Style</span>
           <span class="skill-tag">CMS Publishing (WordPress)</span>
+          <span class="skill-tag">Graphic Design</span>
+          <span class="skill-tag">Layout &amp; Typography</span>
         </div>
       </div>
       <div class="skills-col reveal">
@@ -1541,45 +1524,6 @@
           <span class="skill-tag">Cross-Team Collaboration</span>
           <span class="skill-tag">Mentorship</span>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================
-     BYLINES
-     ============================================================ -->
-<section id="bylines" class="tight" data-page="home">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <span class="kicker">Bylines</span>
-      <h2 class="head">Where the work has run</h2>
-    </div>
-  </div>
-  <div class="byline-strip reveal">
-    <div class="byline-item">Chicago Tribune</div>
-    <div class="byline-item">ProPublica Illinois</div>
-    <div class="byline-item">The Marshall Project</div>
-    <div class="byline-item">Block Club Chicago</div>
-    <div class="byline-item">Injustice Watch</div>
-  </div>
-</section>
-
-<!-- ============================================================
-     ABOUT
-     ============================================================ -->
-<section id="about" data-page="home">
-  <div class="wrap about-grid">
-    <div class="about-portrait reveal" role="img" aria-label="Portrait placeholder for Kirstien Dominique Santos"></div>
-    <div class="about-copy reveal">
-      <span class="kicker">About</span>
-      <h2 class="head" style="margin-bottom:22px;">Reporting that shows the work</h2>
-      <p><strong>I got into journalism through public records,</strong> not press releases — a habit that still shapes every story I take on. Before joining the Tribune's investigations team, I covered city hall for a nonprofit newsroom and spent two years building FOIA pipelines for reporters across the Midwest.</p>
-      <p>My stories tend to start with a spreadsheet and end with someone's kitchen table. I care about precision as much as I care about access: every figure in my work is one I can hand to a reader, a lawyer, or an editor and defend line by line.</p>
-      <div class="stat-row">
-        <div class="stat"><b>60+</b><span>Published Investigations</span></div>
-        <div class="stat"><b>12</b><span>Public Records Lawsuits</span></div>
-        <div class="stat"><b>3</b><span>State Press Awards</span></div>
       </div>
     </div>
   </div>
@@ -1612,13 +1556,6 @@
   "use strict";
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // ---- CONFIG --------------------------------------------------
-  // Switch the Work Experience timeline between a horizontal
-  // scrubber and a vertical stacked one by changing this one value.
-  //   'horizontal'  -> drag/scrub sideways through roles (default)
-  //   'vertical'    -> stacked top-to-bottom, scrub up/down
-  var TIMELINE_LAYOUT = 'horizontal';
 
   /* ---------------------------------------------------------
      Reveal-on-scroll for titles / rows
@@ -1739,14 +1676,14 @@
      PREVIOUS WORKS — genre folders + case-file modal
      --------------------------------------------------------- */
   var worksData = [
-    { genre:'housing', year:'2026', title:'Inside the Landlord Registry Fight', pub:'Chicago Tribune', dek:'A look at how a proposed citywide landlord registry stalled twice in committee — and who lobbied to keep it that way.' },
-    { genre:'housing', year:'2023', title:'The Fair Housing Complaint No One Filed', pub:'Injustice Watch', dek:'Renters describe discrimination they never reported, and the barriers — language, fear, paperwork — that keep complaints from ever reaching a regulator.' },
-    { genre:'labor', year:'2025', title:'Who Gets a Warehouse Job — and Who Doesn\u2019t', pub:'ProPublica Illinois', dek:'Scheduling algorithms and staffing-agency practices quietly filter out applicants long before a human reviewer sees a resume.' },
-    { genre:'labor', year:'2022', title:'Temp Agencies and the Wage Gap', pub:'Independent', dek:'A pay-record analysis of three staffing agencies shows temp workers earning 18% less than direct hires for identical shifts.' },
-    { genre:'systems', year:'2025', title:'The Paper Trail Behind School Closures', pub:'The Marshall Project', dek:'Budget documents show a district\u2019s decision to close 12 schools was effectively made a year before it was announced.' },
-    { genre:'systems', year:'2024', title:'Bus Stops, Erased', pub:'Block Club Chicago', dek:'Mapping route cuts against ridership by ward reveals which neighborhoods lost service first — and never got it back.' },
-    { genre:'data', year:'2024', title:'Records Requests 101: A Reporter\u2019s Toolkit', pub:'Injustice Watch', dek:'A practical walkthrough of the FOIA pipeline built for this newsroom, shared so other reporters can adapt it.' },
-    { genre:'data', year:'2023', title:'Wage Theft Claims, Mapped by Zip Code', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.' }
+    { genre:'housing', year:'2026', title:'Inside the Landlord Registry Fight', pub:'Chicago Tribune', dek:'A look at how a proposed citywide landlord registry stalled twice in committee — and who lobbied to keep it that way.', skills:['FOIA / Public Records','Editorial Judgment'] },
+    { genre:'housing', year:'2023', title:'The Fair Housing Complaint No One Filed', pub:'Injustice Watch', dek:'Renters describe discrimination they never reported, and the barriers — language, fear, paperwork — that keep complaints from ever reaching a regulator.', skills:['Interviewing','Source Development'] },
+    { genre:'labor', year:'2025', title:'Who Gets a Warehouse Job — and Who Doesn\u2019t', pub:'ProPublica Illinois', dek:'Scheduling algorithms and staffing-agency practices quietly filter out applicants long before a human reviewer sees a resume.', skills:['Data Journalism','SQL'] },
+    { genre:'labor', year:'2022', title:'Temp Agencies and the Wage Gap', pub:'Independent', dek:'A pay-record analysis of three staffing agencies shows temp workers earning 18% less than direct hires for identical shifts.', skills:['Python (pandas)','Data Journalism'] },
+    { genre:'systems', year:'2025', title:'The Paper Trail Behind School Closures', pub:'The Marshall Project', dek:'Budget documents show a district\u2019s decision to close 12 schools was effectively made a year before it was announced.', skills:['FOIA / Public Records','Fact-Checking Rigor'] },
+    { genre:'systems', year:'2024', title:'Bus Stops, Erased', pub:'Block Club Chicago', dek:'Mapping route cuts against ridership by ward reveals which neighborhoods lost service first — and never got it back.', skills:['Datawrapper / Flourish','Data Journalism'] },
+    { genre:'data', year:'2024', title:'Records Requests 101: A Reporter\u2019s Toolkit', pub:'Injustice Watch', dek:'A practical walkthrough of the FOIA pipeline built for this newsroom, shared so other reporters can adapt it.', skills:['FOIA / Public Records','CMS Publishing (WordPress)'] },
+    { genre:'data', year:'2023', title:'Wage Theft Claims, Mapped by Zip Code', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'] }
   ];
   var genreLabels = { housing:'Housing', labor:'Labor', systems:'Public Systems', data:'Data & FOIA' };
 
@@ -1765,7 +1702,8 @@
       card.innerHTML =
         '<span class="work-year">' + w.year + '</span>' +
         '<span class="work-title">' + w.title + '</span>' +
-        '<span class="work-pub">' + w.pub + '</span>';
+        '<span class="work-pub">' + w.pub + '</span>' +
+        skillChipsHtml(w.skills);
       card.addEventListener('click', function(){ openCaseFile(w); });
       folderGrid.appendChild(card);
     });
@@ -1867,13 +1805,23 @@
      CREATIVE DESIGN GALLERY — grid + filmstrip lightbox
      --------------------------------------------------------- */
   var designData = [
-    { title:'Housing Rights Zine', type:'Print Layout \u00b7 2025' },
-    { title:'Labor Beat Podcast Cover Art', type:'Illustration \u00b7 2024' },
-    { title:'Data Story Explainer Graphics', type:'Infographics \u00b7 2024' },
-    { title:'Investigative Series Key Art', type:'Editorial Design \u00b7 2023' },
-    { title:'Newsroom Rebrand Concept', type:'Brand Identity \u00b7 2023' },
-    { title:'Short Documentary Title Sequence', type:'Motion / Video \u00b7 2022' }
+    { title:'Housing Rights Zine', type:'Print Layout \u00b7 2025', skills:['Layout & Typography','Graphic Design'] },
+    { title:'Labor Beat Podcast Cover Art', type:'Illustration \u00b7 2024', skills:['Graphic Design'] },
+    { title:'Data Story Explainer Graphics', type:'Infographics \u00b7 2024', skills:['Data Journalism','Datawrapper / Flourish','Graphic Design'] },
+    { title:'Investigative Series Key Art', type:'Editorial Design \u00b7 2023', skills:['Graphic Design','Editorial Judgment'] },
+    { title:'Newsroom Rebrand Concept', type:'Brand Identity \u00b7 2023', skills:['Graphic Design','Layout & Typography'] },
+    { title:'Short Documentary Title Sequence', type:'Motion / Video \u00b7 2022', skills:['Adobe Premiere','Graphic Design'] }
   ];
+
+  // Small skill-tag chips shared by both the folder cards (Previous
+  // Works) and the design cards — same markup, same class, so the
+  // hover-preview wiring below can treat every tagged item the same way.
+  function skillChipsHtml(skills){
+    if(!skills || !skills.length) return '';
+    return '<div class="item-skills">' + skills.map(function(s){
+      return '<span class="item-skill-tag">' + s + '</span>';
+    }).join('') + '</div>';
+  }
 
   var designGrid = document.getElementById('designGrid');
   var filmstripTrack = document.getElementById('filmstripTrack');
@@ -1887,6 +1835,7 @@
       '<div class="design-info">' +
         '<div class="design-title">' + d.title + '</div>' +
         '<div class="design-type">' + d.type + '</div>' +
+        skillChipsHtml(d.skills) +
       '</div>';
     card.addEventListener('click', function(){ openFilmstrip(i); });
     designGrid.appendChild(card);
@@ -1969,81 +1918,98 @@
   if(filmstripNext){ filmstripNext.addEventListener('click', function(){ goToFrame(filmstripIndex + 1); }); }
 
   /* ---------------------------------------------------------
-     WORK EXPERIENCE — scrubbable timeline (horizontal or vertical,
-     driven by the TIMELINE_LAYOUT flag defined near the top)
+     SKILLS ↔ WORK/DESIGN — hovering (or tabbing to) a skill tag on
+     the Skills page shows which Previous-Works items or design
+     pieces carry that exact tag text. Clicking one of the matches
+     switches to the Work tab (via the same click path a real subnav
+     click would take, so the pull-animation plays normally) and then
+     opens that item's case file or filmstrip frame.
      --------------------------------------------------------- */
-  var expWrap = document.querySelector('.exp-timeline-wrap');
-  var expScrubEl = document.getElementById('expScrub');
-  if(TIMELINE_LAYOUT === 'vertical'){
-    if(expWrap) expWrap.classList.add('exp-timeline-wrap--vertical');
-    if(expScrubEl) expScrubEl.classList.add('exp-scrub--vertical');
+  function goToWorkPage(afterShown){
+    var workTab = document.querySelector('.tab[data-page="work"]');
+    if(!workTab){ afterShown(); return; }
+    if(workTab.classList.contains('is-active')){ afterShown(); return; }
+    workTab.click();
+    window.setTimeout(afterShown, (typeof CASCADE_MS === 'number' ? CASCADE_MS : 640) + 60);
   }
-  function isVertical(){ return TIMELINE_LAYOUT === 'vertical'; }
+  function openWorkItem(w){
+    goToWorkPage(function(){
+      var folderTab = document.querySelector('.folder-tab[data-folder="' + w.genre + '"]');
+      if(folderTab && activeFolder !== w.genre){ folderTab.click(); }
+      var target = document.getElementById('works');
+      if(target){ target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' }); }
+      window.setTimeout(function(){ openCaseFile(w); }, reduceMotion ? 0 : 350);
+    });
+  }
+  function openDesignItem(i){
+    goToWorkPage(function(){
+      var target = document.getElementById('design');
+      if(target){ target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' }); }
+      window.setTimeout(function(){ openFilmstrip(i); }, reduceMotion ? 0 : 350);
+    });
+  }
 
-  var expTrack = document.getElementById('expTrack');
-  var expPrev = document.getElementById('expPrev');
-  var expNext = document.getElementById('expNext');
-  var expDots = document.querySelectorAll('.exp-dot');
-  var expStops = expTrack ? expTrack.querySelectorAll('.exp-stop') : [];
+  function itemsForSkill(label){
+    var items = [];
+    worksData.forEach(function(w){
+      if((w.skills || []).indexOf(label) !== -1){
+        items.push({ title: w.title, sub: 'Previous Works · ' + w.pub + ' — ' + w.year, action: function(){ openWorkItem(w); } });
+      }
+    });
+    designData.forEach(function(d, i){
+      if((d.skills || []).indexOf(label) !== -1){
+        items.push({ title: d.title, sub: 'Design · ' + d.type, action: function(){ openDesignItem(i); } });
+      }
+    });
+    return items;
+  }
 
-  function goToStop(i){
-    i = Math.max(0, Math.min(expStops.length - 1, i));
-    var stop = expStops[i];
-    if(stop){
-      stop.scrollIntoView({
-        behavior: reduceMotion ? 'auto' : 'smooth',
-        inline: isVertical() ? 'nearest' : 'center',
-        block: isVertical() ? 'center' : 'nearest'
-      });
-    }
+  var skillPreviewEl = document.createElement('div');
+  skillPreviewEl.className = 'skill-preview';
+  skillPreviewEl.setAttribute('role', 'note');
+  document.body.appendChild(skillPreviewEl);
+
+  var skillHideTimer = null;
+  function cancelSkillHide(){ if(skillHideTimer){ window.clearTimeout(skillHideTimer); skillHideTimer = null; } }
+  function scheduleSkillHide(){ skillHideTimer = window.setTimeout(function(){ skillPreviewEl.classList.remove('is-visible'); }, 150); }
+
+  function positionSkillPreview(tagEl){
+    var rect = tagEl.getBoundingClientRect();
+    var left = Math.min(rect.left, window.innerWidth - 320 - 12);
+    skillPreviewEl.style.top = (rect.bottom + 8) + 'px';
+    skillPreviewEl.style.left = Math.max(12, left) + 'px';
   }
-  function currentStopIndex(){
-    var active = document.querySelector('.exp-dot.active');
-    return active ? parseInt(active.getAttribute('data-index'), 10) : 0;
+  function showSkillPreview(tagEl){
+    var items = itemsForSkill(tagEl.textContent.trim());
+    if(!items.length){ skillPreviewEl.classList.remove('is-visible'); return; }
+    skillPreviewEl.innerHTML = '<div class="skill-preview-head">Used in</div>';
+    items.forEach(function(it){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'skill-preview-item';
+      btn.innerHTML = '<span class="skill-preview-title">' + it.title + '</span><span class="skill-preview-sub">' + it.sub + '</span>';
+      btn.addEventListener('click', it.action);
+      skillPreviewEl.appendChild(btn);
+    });
+    positionSkillPreview(tagEl);
+    skillPreviewEl.classList.add('is-visible');
   }
-  if(expPrev){ expPrev.addEventListener('click', function(){ goToStop(currentStopIndex() - 1); }); }
-  if(expNext){ expNext.addEventListener('click', function(){ goToStop(currentStopIndex() + 1); }); }
-  expDots.forEach(function(dot){
-    dot.addEventListener('click', function(){ goToStop(parseInt(dot.getAttribute('data-index'), 10)); });
+
+  document.querySelectorAll('.skill-tag').forEach(function(tag){
+    tag.setAttribute('tabindex', '0');
+    var label = tag.textContent.trim();
+    tag.classList.toggle('has-matches', itemsForSkill(label).length > 0);
+    tag.addEventListener('mouseenter', function(){ cancelSkillHide(); showSkillPreview(tag); });
+    tag.addEventListener('mouseleave', scheduleSkillHide);
+    tag.addEventListener('focus', function(){ cancelSkillHide(); showSkillPreview(tag); });
+    tag.addEventListener('blur', scheduleSkillHide);
   });
+  skillPreviewEl.addEventListener('mouseenter', cancelSkillHide);
+  skillPreviewEl.addEventListener('mouseleave', scheduleSkillHide);
 
-  // Native click-and-drag scrubbing (in addition to normal touch/trackpad scroll).
-  if(expTrack){
-    var isDown = false, startPos = 0, startScroll = 0;
-    expTrack.addEventListener('pointerdown', function(e){
-      isDown = true;
-      expTrack.classList.add('grabbing');
-      startPos = isVertical() ? e.clientY : e.clientX;
-      startScroll = isVertical() ? expTrack.scrollTop : expTrack.scrollLeft;
-      expTrack.setPointerCapture(e.pointerId);
-    });
-    expTrack.addEventListener('pointermove', function(e){
-      if(!isDown) return;
-      var pos = isVertical() ? e.clientY : e.clientX;
-      if(isVertical()){ expTrack.scrollTop = startScroll - (pos - startPos); }
-      else{ expTrack.scrollLeft = startScroll - (pos - startPos); }
-    });
-    function endDrag(){ isDown = false; expTrack.classList.remove('grabbing'); }
-    expTrack.addEventListener('pointerup', endDrag);
-    expTrack.addEventListener('pointercancel', endDrag);
-  }
-
-  // Keep the scrub dots in sync with whichever stop is centered in view.
-  if('IntersectionObserver' in window && expTrack && expStops.length){
-    var expObserver = new IntersectionObserver(function(entries){
-      entries.forEach(function(entry){
-        if(entry.isIntersecting && entry.intersectionRatio > 0.6){
-          var idx = entry.target.getAttribute('data-index');
-          expDots.forEach(function(d){
-            d.classList.toggle('active', d.getAttribute('data-index') === idx);
-          });
-        }
-      });
-    }, { root: expTrack, threshold: [0.6] });
-    expStops.forEach(function(stop){ expObserver.observe(stop); });
-  } else if(expDots.length){
-    expDots[0].classList.add('active');
-  }
+  /* Work Experience is now a plain static vertical timeline (see
+     .vtimeline) — no drag/scrub JS needed; the ".reveal" class on
+     each .vtl-item already gets its fade-in from the observer below. */
 
   /* ---------------------------------------------------------
      Smooth-scroll for in-page nav links (respects reduced motion
@@ -2073,7 +2039,7 @@
      two systems never collide) — this keeps pages bookmarkable
      and back/forward-button friendly.
      --------------------------------------------------------- */
-  var PAGES = ['home', 'experience', 'work', 'design', 'skills', 'contact'];
+  var PAGES = ['home', 'experience', 'work', 'skills', 'contact'];
   var subnav = document.getElementById('subnav');
   var subnavBottom = document.getElementById('subnavBottom');
   var allTabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
@@ -2229,10 +2195,115 @@
      out up top (.is-passed) and lands as a breadcrumb down in the
      bottom row (.is-shown); everything from the active page onward
      stays put, normally, in the top row. */
-  function setCurrentTab(pageId){
+  /* ---------------------------------------------------------
+     THE TABS RIDE ALONG: when a tab crosses from the top row to the
+     bottom tray (or back), a temporary "ghost" — a clone of the real
+     tab — is what actually flies between them, timed to match the
+     page-panel's own pull. The real top and bottom tab instances snap
+     to their final state instantly and silently underneath the
+     ghost's flight path, so the moment the ghost lands and is
+     removed, the swap is invisible: it just looks like the one tab
+     travelled all the way from its old slot to its new one.
+     --------------------------------------------------------- */
+  function tabAccent(pageId){
+    return getComputedStyle(document.documentElement).getPropertyValue('--acc-' + pageId).trim();
+  }
+
+  function flyTabGhost(sourceEl, sourceRect, targetRect, onLand){
+    var ghost = sourceEl.cloneNode(true);
+    ghost.classList.remove('is-active', 'is-passed', 'is-shown');
+    ghost.classList.add('tab-ghost');
+    ghost.style.left = sourceRect.left + 'px';
+    ghost.style.top = sourceRect.top + 'px';
+    ghost.style.width = sourceRect.width + 'px';
+    ghost.style.height = sourceRect.height + 'px';
+    ghost.style.transform = 'translate(0,0)';
+    ghost.style.transition = 'none';
+    document.body.appendChild(ghost);
+    var dx = targetRect.left - sourceRect.left;
+    var dy = targetRect.top - sourceRect.top;
+    void ghost.offsetHeight; // commit the start position
+    ghost.style.transition = 'transform ' + CASCADE_MS + 'ms var(--cascade-ease)';
+    requestAnimationFrame(function(){
+      ghost.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+    });
+    // The real target stays hidden the whole flight — only revealed
+    // (see onLand) the instant the ghost arrives and is removed, so
+    // there's never a moment where the tab appears to exist in both
+    // places at once.
+    window.setTimeout(function(){
+      if(onLand){ onLand(); }
+      ghost.remove();
+    }, CASCADE_MS + 20);
+  }
+
+  function setCurrentTab(pageId, oldPageId, animate){
     var activeIndex = PAGES.indexOf(pageId);
+    var oldIndex = oldPageId ? PAGES.indexOf(oldPageId) : -1;
+    var canFly = animate && oldPageId && oldPageId !== pageId && oldIndex !== -1 && !reduceMotion;
+    var toBottom = canFly && activeIndex > oldIndex;
+    var lo = canFly ? Math.min(oldIndex, activeIndex) : -1;
+    var hi = canFly ? Math.max(oldIndex, activeIndex) : -1;
+    var flyingPages = {};
+
+    if(canFly){
+      for(var i = lo; i < hi; i++){
+        var tabPage = PAGES[i];
+        var topEl = allTabs.filter(function(t){ return t.getAttribute('data-page') === tabPage && !t.classList.contains('tab-bottom'); })[0];
+        var bottomEl = allTabs.filter(function(t){ return t.getAttribute('data-page') === tabPage && t.classList.contains('tab-bottom'); })[0];
+        if(!topEl || !bottomEl) continue;
+        flyingPages[tabPage] = true;
+        var sourceEl = toBottom ? topEl : bottomEl;
+        var targetEl = toBottom ? bottomEl : topEl;
+        var willBeActive = (i === activeIndex);
+        var sourceRect = sourceEl.getBoundingClientRect();
+
+        // Hide the source instantly (transition suppressed) — the
+        // ghost is the only thing that visibly moves away from here.
+        var prevSourceTransition = sourceEl.style.transition;
+        sourceEl.style.transition = 'none';
+        if(toBottom){
+          topEl.classList.remove('is-active');
+          topEl.classList.add('is-passed');
+        } else {
+          bottomEl.classList.remove('is-shown');
+        }
+        void sourceEl.offsetHeight;
+        (function(srcEl, prevSrc){
+          requestAnimationFrame(function(){ srcEl.style.transition = prevSrc; });
+        }(sourceEl, prevSourceTransition));
+
+        // Measure where the target WILL sit once revealed, by forcing
+        // its final state just long enough to read the rect, then
+        // reverting it to hidden — it only actually reveals in onLand,
+        // once the ghost has finished travelling there.
+        var prevTargetTransition = targetEl.style.transition;
+        targetEl.style.transition = 'none';
+        if(toBottom){ targetEl.classList.add('is-shown'); }
+        else { targetEl.classList.remove('is-passed'); targetEl.classList.toggle('is-active', willBeActive); }
+        void targetEl.offsetHeight;
+        var targetRect = targetEl.getBoundingClientRect();
+        if(toBottom){ targetEl.classList.remove('is-shown'); }
+        else { targetEl.classList.add('is-passed'); targetEl.classList.remove('is-active'); }
+        void targetEl.offsetHeight;
+        targetEl.style.transition = prevTargetTransition;
+
+        flyTabGhost(sourceEl, sourceRect, targetRect, (function(tgtEl, isBottomTarget, active){
+          return function(){
+            var prevT = tgtEl.style.transition;
+            tgtEl.style.transition = 'none';
+            if(isBottomTarget){ tgtEl.classList.add('is-shown'); }
+            else { tgtEl.classList.remove('is-passed'); tgtEl.classList.toggle('is-active', active); }
+            void tgtEl.offsetHeight;
+            requestAnimationFrame(function(){ tgtEl.style.transition = prevT; });
+          };
+        }(targetEl, toBottom, willBeActive)));
+      }
+    }
+
     allTabs.forEach(function(t){
       var tabPage = t.getAttribute('data-page');
+      if(flyingPages[tabPage]) return; // handled by the flight above
       var tabIndex = PAGES.indexOf(tabPage);
       var isBottomTab = t.classList.contains('tab-bottom');
       if(isBottomTab){
@@ -2243,7 +2314,7 @@
         t.classList.toggle('is-passed', tabIndex < activeIndex);
       }
     });
-    var accent = getComputedStyle(document.documentElement).getPropertyValue('--acc-' + pageId).trim();
+    var accent = tabAccent(pageId);
     if(accent){ document.documentElement.style.setProperty('--page-accent', accent); }
   }
 
@@ -2255,13 +2326,15 @@
 
   // Clicking a subnav tab: pull its page over the screen (top tabs
   // pull down, bottom tabs pull up — see showPage) and mark it active,
-  // cascading its accent colour down into the page.
+  // cascading its accent colour down into the page, while its own tab
+  // rides along between the two rows (see setCurrentTab).
   allTabs.forEach(function(tab){
     tab.addEventListener('click', function(){
       var pageId = tab.getAttribute('data-page');
       if(tab.classList.contains('is-active')) return;
+      var oldPageId = activePageId;
       showPage(pageId, true);
-      setCurrentTab(pageId);
+      setCurrentTab(pageId, oldPageId, true);
       if(window.history && history.pushState){
         history.pushState(null, '', '#page-' + pageId);
       }
@@ -2269,7 +2342,8 @@
   });
 
   // Back/forward navigation (or a hand-typed #page-… URL): jump straight
-  // to the right page and fly its tab up.
+  // to the right page and place its tab directly — no flight, since
+  // there's no click gesture to tie the motion to.
   function routeFromNavigation(){
     var pageId = pageIdFromHash();
     showPage(pageId);
