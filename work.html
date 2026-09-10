@@ -1027,7 +1027,7 @@
   .skill-preview-sub{ font-family:var(--mono); font-size:10px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; }
 
   .filmstrip-dialog{
-    width:min(1100px, 94vw); height:min(640px, 86vh);
+    width:min(1000px, 94vw); height:min(620px, 86vh);
     position:fixed; inset:0; margin:auto;
     background:var(--ink); border:1px solid rgba(255,217,218,.2);
     opacity:0; transform:translateY(18px) scale(.96);
@@ -1046,41 +1046,109 @@
   .filmstrip-dialog.is-open{ opacity:1; transform:translateY(0) scale(1); }
   .filmstrip-viewer{
     flex:1; display:flex; align-items:center; overflow:hidden; position:relative;
+    padding:34px 4%;
+    perspective:2200px;
   }
-  .filmstrip-track{
-    flex:1; display:flex; gap:24px; overflow-x:auto; scroll-snap-type:x mandatory;
-    padding:60px 8%; scrollbar-width:none;
+
+  /* ============================================================
+     SCRAPBOOK SPREAD — an open two-page spread. Left page carries
+     the pinned "photo", right page carries the handwritten-style
+     caption. Navigating clones ONLY the page that's actually turning
+     (right page going forward, left page going back) and pivots that
+     single leaf on its spine-side edge — the same way a real page
+     lifts off the binding — while the opposite page just soft-
+     crossfades to its next content, since it isn't the one turning.
+     ============================================================ */
+  .scrapbook-spread{
+    position:relative; flex:1; height:100%; max-width:820px; margin:0 auto;
+    display:flex;
+    box-shadow:0 24px 60px rgba(0,0,0,.55);
+    transform-style:preserve-3d;
   }
-  .filmstrip-track::-webkit-scrollbar{ display:none; }
-  .filmstrip-frame{
-    flex:0 0 auto; width:min(60vw, 560px); scroll-snap-align:center;
-    aspect-ratio:4/3; position:relative; overflow:hidden;
+  .scrapbook-page{
+    flex:1; min-width:0; box-sizing:border-box;
+    background:
+      repeating-linear-gradient(rgba(27,32,33,0) 0 27px, rgba(27,32,33,.05) 27px 28px),
+      var(--paper);
+    color:var(--ink);
+    position:relative; overflow:hidden;
+    padding:36px 32px;
+    backface-visibility:hidden;
+  }
+  .scrapbook-page-left{ border-radius:3px 0 0 3px; box-shadow:inset -16px 0 26px -22px rgba(0,0,0,.6); }
+  .scrapbook-page-right{ border-radius:0 3px 3px 0; box-shadow:inset 16px 0 26px -22px rgba(0,0,0,.6); }
+  .scrapbook-spine{
+    width:12px; flex:0 0 auto; z-index:2;
+    background:linear-gradient(90deg, rgba(0,0,0,.4), rgba(0,0,0,.05) 35%, rgba(0,0,0,.05) 65%, rgba(0,0,0,.4));
+  }
+  .scrap-tape{
+    position:absolute; top:14px; left:50%; transform:translateX(-50%) rotate(-4deg);
+    width:56px; height:18px; background:var(--tape); border:1px solid var(--tape-edge);
+    opacity:.85; z-index:2;
+  }
+  .scrap-photo{
+    position:relative; margin-top:26px; aspect-ratio:4/3;
     background:linear-gradient(150deg, var(--slate), var(--ink) 70%);
-    border:1px solid rgba(255,217,218,.2);
-    opacity:.4; transform:scale(.88);
-    transition:opacity .4s var(--ease), transform .4s var(--ease), border-color .4s var(--ease);
+    border:6px solid #fff; box-shadow:0 12px 26px rgba(0,0,0,.4);
+    transform:rotate(-1.6deg);
   }
-  .filmstrip-frame.is-active{
-    opacity:1; transform:scale(1); border-color:rgba(255,217,218,.4);
-  }
-  .filmstrip-frame::after{
+  .scrap-photo::after{
     content:''; position:absolute; inset:0;
     background:radial-gradient(circle at 30% 20%, rgba(234,99,140,.35), transparent 55%);
     mix-blend-mode:screen;
   }
+  .scrap-photo-tag{
+    position:absolute; top:10px; left:10px; z-index:2;
+    font-family:var(--mono); font-size:10px; letter-spacing:.06em;
+    color:var(--cream); background:rgba(27,32,33,.6);
+    border:1px solid rgba(255,217,218,.25); padding:3px 8px;
+  }
+  .scrap-kicker{ font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--wine); }
+  .scrap-title{
+    font-family:var(--marker); font-weight:400; font-size:2.2rem; line-height:1.05;
+    color:var(--ink); margin:12px 0 6px;
+  }
+  .scrap-type{ font-family:var(--mono); font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:rgba(27,32,33,.55); margin-bottom:20px; }
+  .scrap-skills{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+  .scrap-skill-tag{
+    font-family:var(--mono); font-size:9px; letter-spacing:.04em; text-transform:uppercase;
+    color:rgba(27,32,33,.7); border:1px solid rgba(27,32,33,.28);
+    padding:3px 7px; border-radius:2px;
+  }
+  .scrap-page-num{
+    position:absolute; bottom:16px; right:20px;
+    font-family:var(--mono); font-size:10px; color:rgba(27,32,33,.45); letter-spacing:.04em;
+  }
+
+  /* The clone of whichever single page is turning. It's positioned
+     with position:fixed to exactly overlay that one page (not the
+     whole spread), and pivots on the spine-side edge — left edge for
+     the right page turning forward, right edge for the left page
+     turning back — so it swings like an actual leaf lifting off the
+     spine, not a card spinning around its own middle. */
+  .scrapbook-leaf{
+    position:absolute; z-index:400; pointer-events:none;
+    transform-style:preserve-3d;
+  }
+  .scrapbook-leaf-face{
+    position:absolute; inset:0; backface-visibility:hidden; box-sizing:border-box;
+  }
+  .scrapbook-leaf-back{
+    background:var(--paper);
+  }
+  .leaf-right .scrapbook-leaf-face.scrapbook-page{ border-radius:0 3px 3px 0; }
+  .leaf-left .scrapbook-leaf-face.scrapbook-page{ border-radius:3px 0 0 3px; }
+  .leaf-right .scrapbook-leaf-back{ border-radius:0 3px 3px 0; }
+  .leaf-left .scrapbook-leaf-back{ border-radius:3px 0 0 3px; }
+
   .filmstrip-nav{
     flex:0 0 auto; width:52px; height:52px; border-radius:50%;
     background:rgba(255,217,218,.06); border:1px solid rgba(255,217,218,.25);
-    color:var(--cream); font-size:22px; cursor:pointer; z-index:3;
+    color:var(--cream); font-size:22px; cursor:pointer; z-index:6;
     margin:0 18px;
     transition:background .25s var(--ease), border-color .25s var(--ease), transform .25s var(--ease);
   }
   .filmstrip-nav:hover{ background:var(--wine); border-color:var(--wine); transform:scale(1.08); }
-  .filmstrip-caption{
-    padding:0 8% 28px; font-family:var(--mono); font-size:12px;
-    letter-spacing:.04em; color:var(--ink-soft); text-transform:uppercase;
-  }
-  .filmstrip-caption strong{ color:var(--paper); font-family:var(--display); text-transform:none; font-size:1rem; letter-spacing:normal; }
 
   /* ============================================================
      EXPERIENCE — vertical timeline. A single spine runs down the
@@ -1168,8 +1236,15 @@
     .hero-portrait-wrap{ justify-self:start; }
     .case-file-dialog{ width:92vw; }
     .case-file-body{ padding:32px 24px; }
-    .filmstrip-dialog{ width:96vw; height:80vh; }
-    .filmstrip-frame{ width:78vw; }
+    .filmstrip-dialog{ width:96vw; height:88vh; }
+    .scrapbook-spread{ flex-direction:column; max-width:96vw; }
+    .scrapbook-spine{
+      width:auto; height:10px;
+      background:linear-gradient(180deg, rgba(0,0,0,.4), rgba(0,0,0,.05) 35%, rgba(0,0,0,.05) 65%, rgba(0,0,0,.4));
+    }
+    .scrapbook-page-left{ border-radius:3px 3px 0 0; box-shadow:inset 0 -16px 26px -22px rgba(0,0,0,.6); }
+    .scrapbook-page-right{ border-radius:0 0 3px 3px; box-shadow:inset 0 16px 26px -22px rgba(0,0,0,.6); }
+    .scrap-title{ font-size:1.6rem; }
     .filmstrip-nav{ width:40px; height:40px; margin:0 8px; }
     .exp-stop{ padding:26px 22px; }
     .exp-scrub{ display:none; }
@@ -1398,16 +1473,15 @@
   </div>
 </section>
 
-<dialog id="filmstripDialog" class="filmstrip-dialog" aria-label="Design work filmstrip">
+<dialog id="filmstripDialog" class="filmstrip-dialog scrapbook-dialog" aria-label="Design work scrapbook">
   <form method="dialog" class="dialog-close-form">
     <button class="dialog-close" aria-label="Close">✕</button>
   </form>
   <div class="filmstrip-viewer">
-    <button class="filmstrip-nav prev" id="filmstripPrev" aria-label="Previous frame" type="button">‹</button>
-    <div class="filmstrip-track" id="filmstripTrack"><!-- populated by JS --></div>
-    <button class="filmstrip-nav next" id="filmstripNext" aria-label="Next frame" type="button">›</button>
+    <button class="filmstrip-nav prev" id="filmstripPrev" aria-label="Previous page" type="button">‹</button>
+    <div class="scrapbook-spread" id="scrapbookSpread"><!-- populated by JS --></div>
+    <button class="filmstrip-nav next" id="filmstripNext" aria-label="Next page" type="button">›</button>
   </div>
-  <div class="filmstrip-caption" id="filmstripCaption"></div>
 </dialog>
 
 <!-- ============================================================
@@ -1824,7 +1898,6 @@
   }
 
   var designGrid = document.getElementById('designGrid');
-  var filmstripTrack = document.getElementById('filmstripTrack');
 
   designData.forEach(function(d, i){
     var card = document.createElement('button');
@@ -1839,73 +1912,158 @@
       '</div>';
     card.addEventListener('click', function(){ openFilmstrip(i); });
     designGrid.appendChild(card);
-
-    var frame = document.createElement('div');
-    frame.className = 'filmstrip-frame';
-    frame.setAttribute('data-index', i);
-    filmstripTrack.appendChild(frame);
   });
+
+  /* ---------------------------------------------------------
+     SCRAPBOOK PAGE FLIP — only the page that's actually turning gets
+     cloned and animated: the right page when moving forward, the
+     left page when moving back. That single leaf pivots on its
+     spine-side edge (not the spread's centre), so it lifts off the
+     binding and swings over exactly like turning one page of a real
+     book — landing flat on top of the opposite page, back-face-up,
+     which is why its back is a blank sheet rather than any content.
+     The page NOT turning has no reason to move at all in a real
+     book, so it just quietly cross-fades to its next content instead
+     of hard-cutting.
+     --------------------------------------------------------- */
+  function scrapSkillChipsHtml(skills){
+    if(!skills || !skills.length) return '';
+    return '<div class="scrap-skills">' + skills.map(function(s){
+      return '<span class="scrap-skill-tag">' + s + '</span>';
+    }).join('') + '</div>';
+  }
+
+  function scrapbookSpreadHtml(index){
+    var d = designData[index];
+    return (
+      '<div class="scrapbook-page scrapbook-page-left">' +
+        '<span class="scrap-tape" aria-hidden="true"></span>' +
+        '<div class="scrap-photo"><span class="scrap-photo-tag">FRAME 0' + (index + 1) + '</span></div>' +
+      '</div>' +
+      '<div class="scrapbook-spine" aria-hidden="true"></div>' +
+      '<div class="scrapbook-page scrapbook-page-right">' +
+        '<span class="scrap-kicker">Design &amp; Visual</span>' +
+        '<h3 class="scrap-title">' + d.title + '</h3>' +
+        '<div class="scrap-type">' + d.type + '</div>' +
+        scrapSkillChipsHtml(d.skills) +
+        '<span class="scrap-page-num">' + (index + 1) + ' / ' + designData.length + '</span>' +
+      '</div>'
+    );
+  }
 
   var filmstripDialog = document.getElementById('filmstripDialog');
   var filmstripPrev = document.getElementById('filmstripPrev');
   var filmstripNext = document.getElementById('filmstripNext');
-  var filmstripCaption = document.getElementById('filmstripCaption');
+  var filmstripViewer = document.querySelector('.filmstrip-viewer');
+  var scrapbookSpread = document.getElementById('scrapbookSpread');
   var filmstripIndex = 0;
+  var FLIP_MS = 700;
+  var CROSSFADE_MS = 260;
+  var isFlipping = false;
 
-  function updateFilmstripCaption(){
-    var d = designData[filmstripIndex];
-    filmstripCaption.innerHTML = '<strong>' + d.title + '</strong> &nbsp;\u2014&nbsp; ' + d.type + ' &nbsp;(' + (filmstripIndex+1) + ' / ' + designData.length + ')';
+  function renderScrapbookSpread(index){
+    scrapbookSpread.innerHTML = scrapbookSpreadHtml(index);
   }
 
-  // Whichever frame sits nearest the center of the strip gets the
-  // "is-active" treatment (full size/opacity), everything else stays
-  // dimmed and slightly shrunk — so dragging/scrolling the strip
-  // visibly animates frames in and out as they pass the center.
-  function setActiveFrame(index){
-    Array.prototype.forEach.call(filmstripTrack.children, function(frame, idx){
-      frame.classList.toggle('is-active', idx === index);
+  function flipScrapbook(newIndex, direction){
+    if(isFlipping || !scrapbookSpread || !filmstripViewer) return;
+    isFlipping = true;
+
+    // Below 860px the spread stacks top/bottom instead of side by
+    // side (see the media query), so the spine runs horizontally —
+    // the "turning" page there is the one nearer the bottom of the
+    // stack, pivoting on a horizontal edge (rotateX) instead of a
+    // vertical one (rotateY).
+    var stacked = window.matchMedia('(max-width:860px)').matches;
+    var leftEl = scrapbookSpread.querySelector('.scrapbook-page-left');
+    var rightEl = scrapbookSpread.querySelector('.scrapbook-page-right');
+    var turningEl = direction > 0 ? rightEl : leftEl;
+    var staticEl = direction > 0 ? leftEl : rightEl;
+    var turningRect = turningEl.getBoundingClientRect();
+    // filmstripViewer has no transform of its own, so it's a stable
+    // containing block — position the leaf relative to IT (not the
+    // viewport) so the dialog's own open/close transform never throws
+    // the maths off.
+    var viewerRect = filmstripViewer.getBoundingClientRect();
+
+    // Build the leaf: front face is a snapshot of the turning page as
+    // it looks right now; back face is a blank sheet, since that's
+    // what you'd actually see on the underside of a page as it lands.
+    var leaf = document.createElement('div');
+    leaf.className = 'scrapbook-leaf ' + (direction > 0 ? 'leaf-right' : 'leaf-left');
+    leaf.style.left = (turningRect.left - viewerRect.left) + 'px';
+    leaf.style.top = (turningRect.top - viewerRect.top) + 'px';
+    leaf.style.width = turningRect.width + 'px';
+    leaf.style.height = turningRect.height + 'px';
+    leaf.style.transformOrigin = stacked
+      ? (direction > 0 ? 'center top' : 'center bottom')
+      : (direction > 0 ? 'left center' : 'right center');
+
+    var front = turningEl.cloneNode(true);
+    front.classList.add('scrapbook-leaf-face');
+    var back = document.createElement('div');
+    back.className = 'scrapbook-leaf-face scrapbook-leaf-back';
+    back.style.transform = stacked ? 'rotateX(180deg)' : 'rotateY(180deg)';
+    leaf.appendChild(front);
+    leaf.appendChild(back);
+    filmstripViewer.appendChild(leaf);
+
+    // The opposite page isn't turning, so a real page-turn wouldn't
+    // move it at all — but leaving it showing the OLD item right next
+    // to the leaf's new item reads as broken, so it gets a quick
+    // cross-fade instead of either a hard pop or an animated turn.
+    staticEl.style.transition = 'opacity ' + (CROSSFADE_MS * .7) + 'ms ' + 'var(--ease)';
+    staticEl.style.opacity = '0';
+
+    window.setTimeout(function(){
+      renderScrapbookSpread(newIndex);
+      var freshStatic = scrapbookSpread.querySelector(direction > 0 ? '.scrapbook-page-left' : '.scrapbook-page-right');
+      freshStatic.style.transition = 'none';
+      freshStatic.style.opacity = '0';
+      void freshStatic.offsetHeight;
+      requestAnimationFrame(function(){
+        freshStatic.style.transition = 'opacity ' + CROSSFADE_MS + 'ms var(--ease)';
+        freshStatic.style.opacity = '1';
+      });
+    }, CROSSFADE_MS * .7);
+
+    var axis = stacked ? 'X' : 'Y';
+    // Stacked (top/bottom): the top page tips forward and down, so it
+    // needs the opposite sign convention from the side-by-side rotateY
+    // case to still read as "forward" turning away from the viewer.
+    var target = stacked
+      ? (direction > 0 ? 180 : -180)
+      : (direction > 0 ? -180 : 180);
+    leaf.style.transform = 'rotate' + axis + '(0deg)';
+    void leaf.offsetHeight; // commit the start position
+    leaf.style.transition = 'transform ' + FLIP_MS + 'ms cubic-bezier(.45,.05,.35,1)';
+    requestAnimationFrame(function(){
+      leaf.style.transform = 'rotate' + axis + '(' + target + 'deg)';
     });
+
+    filmstripIndex = newIndex;
+    window.setTimeout(function(){
+      leaf.remove();
+      isFlipping = false;
+    }, FLIP_MS + 30);
   }
 
-  function updateActiveFrameFromScroll(){
-    var trackRect = filmstripTrack.getBoundingClientRect();
-    if(trackRect.width === 0) return;
-    var centerX = trackRect.left + trackRect.width / 2;
-    var closestIndex = filmstripIndex, closestDist = Infinity;
-    Array.prototype.forEach.call(filmstripTrack.children, function(frame, idx){
-      var r = frame.getBoundingClientRect();
-      var dist = Math.abs((r.left + r.width / 2) - centerX);
-      if(dist < closestDist){ closestDist = dist; closestIndex = idx; }
-    });
-    setActiveFrame(closestIndex);
-    if(closestIndex !== filmstripIndex){
-      filmstripIndex = closestIndex;
-      updateFilmstripCaption();
+  function goToFrame(i){
+    var newIndex = Math.max(0, Math.min(designData.length - 1, i));
+    if(newIndex === filmstripIndex || isFlipping) return;
+    var direction = newIndex > filmstripIndex ? 1 : -1;
+    if(reduceMotion){
+      filmstripIndex = newIndex;
+      renderScrapbookSpread(filmstripIndex);
+    } else {
+      flipScrapbook(newIndex, direction);
     }
-  }
-
-  var filmstripScrollRAF = null;
-  filmstripTrack.addEventListener('scroll', function(){
-    if(filmstripScrollRAF) return;
-    filmstripScrollRAF = requestAnimationFrame(function(){
-      updateActiveFrameFromScroll();
-      filmstripScrollRAF = null;
-    });
-  });
-
-  function goToFrame(i, instant){
-    filmstripIndex = Math.max(0, Math.min(designData.length - 1, i));
-    var frame = filmstripTrack.children[filmstripIndex];
-    if(frame){
-      frame.scrollIntoView({ behavior: (instant || reduceMotion) ? 'auto' : 'smooth', inline:'center', block:'nearest' });
-    }
-    setActiveFrame(filmstripIndex);
-    updateFilmstripCaption();
   }
 
   function openFilmstrip(i){
+    filmstripIndex = Math.max(0, Math.min(designData.length - 1, i));
+    renderScrapbookSpread(filmstripIndex);
     openDialogAnimated(filmstripDialog);
-    goToFrame(i, true);
   }
   wireDialogClose(filmstripDialog);
   if(filmstripDialog){
