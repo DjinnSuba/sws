@@ -458,7 +458,7 @@
     aspect-ratio:1/1; border-radius:50%; overflow:hidden; position:relative;
     background:linear-gradient(165deg, var(--wine), var(--ink) 75%);
     border:1px solid rgba(255,217,218,.22);
-    background-image: url("assets/profile.png");
+    background-image: url("assets/profile.jpg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -603,6 +603,10 @@
   .story-media:hover{ border-color:rgba(234,99,140,.5); }
   .story-media:hover::after{ transform:scale(1.08); }
   .story-media::after{ transition:transform .5s var(--ease); }
+  .story-media img{
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; z-index:1;
+  }
   .story-panel:hover .frame-tag{ background:var(--wine); }
   .story-media::after{
     content:'';
@@ -680,7 +684,7 @@
     position: relative;
     overflow: hidden;
 
-    background-image: url("assets/profile.png");
+    background-image: url("assets/profile.jpg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -777,6 +781,12 @@
   }
   .tl-points{ margin:0; padding-left:18px; color:var(--ink-soft); font-size:.95rem; line-height:1.7; }
   .tl-points li{ margin-bottom:6px; }
+  .tl-body{ display:flex; align-items:center; gap:16px; }
+  .tl-logo{
+    flex:0 0 auto; width:128px; height:128px; object-fit:contain;
+    background:var(--paper); border:1px solid rgba(255,217,218,.2);
+    border-radius:4px; padding:5px;
+  }
 
   /* ============================================================
      SKILLS
@@ -977,6 +987,10 @@
     background:radial-gradient(circle at 25% 25%, rgba(234,99,140,.32), transparent 55%);
     mix-blend-mode:screen;
   }
+  .design-thumb img, .design-thumb video{
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; z-index:1;
+  }
   .design-card:hover .design-thumb{ border-color:var(--rose); transform:translateY(-3px); }
   .design-tag{
     position:absolute; top:12px; left:12px; z-index:2;
@@ -1079,7 +1093,7 @@
   .scrapbook-page-right{ border-radius:0 3px 3px 0; box-shadow:inset 16px 0 26px -22px rgba(0,0,0,.6); }
   .scrapbook-spine{
     width:12px; flex:0 0 auto; z-index:2;
-    background:linear-gradient(90deg, rgba(0,0,0,.4), rgba(0,0,0,.05) 35%, rgba(0,0,0,.05) 65%, rgba(0,0,0,.4));
+    background:#FFEFEF;
   }
   .scrap-tape{
     position:absolute; top:14px; left:50%; transform:translateX(-50%) rotate(-4deg);
@@ -1096,6 +1110,10 @@
     content:''; position:absolute; inset:0;
     background:radial-gradient(circle at 30% 20%, rgba(234,99,140,.35), transparent 55%);
     mix-blend-mode:screen;
+  }
+  .scrap-photo img, .scrap-photo video{
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; z-index:1;
   }
   .scrap-photo-tag{
     position:absolute; top:10px; left:10px; z-index:2;
@@ -1310,9 +1328,6 @@
     <h1 class="masthead">Kirstien Dominique <em>Santos</em></h1>
     
     <div class="hero-body">
-      <div class="hero-text-a">
-        <p class="hero-sub">Investigative &amp; features reporter working the intersection of housing, labor, and everyday systems.</p>
-      </div>
 
       <div class="hero-portrait-wrap">
         <span class="hero-portrait-ring" aria-hidden="true"></span>
@@ -1343,32 +1358,35 @@
 
       <article class="story-panel">
         <div class="story-media">
+          <img src="assets/Are second-hand bookstores turning a new, digital page, Santos.png" alt="" loading="lazy">
           <span class="frame-sprocket left"></span>
           <span class="frame-sprocket right"></span>
           <span class="frame-tag">FRAME 01</span>
         </div>
         <div class="story-meta">
-          <div class="story-pub">Chicago Tribune · Investigations</div>
-          <h3 class="story-title">The Eviction Machine</h3>
-          <p class="story-dek">A six-month analysis of 40,000 court filings reveals how three landlord networks account for one in five evictions citywide.</p>
+          <div class="story-pub">The Trilby · Lifestyle</div>
+          <h3 class="story-title">Are second-hand bookstores turning a new, digital page?</h3>
+          <p class="story-dek">Typically found in Recto, second-hand bookstores have served as an avenue for affordable books of various genres.</p>
         </div>
       </article>
 
       <article class="story-panel">
         <div class="story-media">
+          <img src="images/story-02.jpg" alt="" loading="lazy">
           <span class="frame-sprocket left"></span>
           <span class="frame-sprocket right"></span>
           <span class="frame-tag">FRAME 02</span>
         </div>
         <div class="story-meta">
-          <div class="story-pub">ProPublica Illinois</div>
-          <h3 class="story-title">Ghost Shifts</h3>
+          <div class="story-pub">NewsWatch Plus</div>
+          <h3 class="story-title">UNESCO Bohol's Asin Tibuok, need of urgent safeguarding</h3>
           <p class="story-dek">Warehouse workers describe scheduling algorithms that erase hours worked — and the paper trail that proves it.</p>
         </div>
       </article>
 
       <article class="story-panel">
         <div class="story-media">
+          <img src="images/story-03.jpg" alt="" loading="lazy">
           <span class="frame-sprocket left"></span>
           <span class="frame-sprocket right"></span>
           <span class="frame-tag">FRAME 03</span>
@@ -1377,32 +1395,6 @@
           <div class="story-pub">The Marshall Project</div>
           <h3 class="story-title">Closed Doors, Open Files</h3>
           <p class="story-dek">A district shut 12 schools in a single summer. Budget records show the decision was made a year earlier.</p>
-        </div>
-      </article>
-
-      <article class="story-panel">
-        <div class="story-media">
-          <span class="frame-sprocket left"></span>
-          <span class="frame-sprocket right"></span>
-          <span class="frame-tag">FRAME 04</span>
-        </div>
-        <div class="story-meta">
-          <div class="story-pub">Chicago Tribune · Data Desk</div>
-          <h3 class="story-title">The Transit Gap</h3>
-          <p class="story-dek">Mapping bus route cuts against ridership by ward shows who loses service first — and who never gets it back.</p>
-        </div>
-      </article>
-
-      <article class="story-panel">
-        <div class="story-media">
-          <span class="frame-sprocket left"></span>
-          <span class="frame-sprocket right"></span>
-          <span class="frame-tag">FRAME 05</span>
-        </div>
-        <div class="story-meta">
-          <div class="story-pub">Independent / Freelance</div>
-          <h3 class="story-title">Wage Theft, By the Numbers</h3>
-          <p class="story-dek">A FOIA-built database of state labor complaints becomes the basis for a three-part accountability series.</p>
         </div>
       </article>
 
@@ -1492,21 +1484,22 @@
   <div class="wrap">
     <div class="section-head reveal">
       <span class="kicker">Career</span>
-      <h2 class="head">Work Experience</h2>
-      <p class="lede">Each role, in order — the date sits on the spine, the details hang off whichever side it lands on.</p>
+      <h2 class="head">Experience</h2>
+      <p class="lede">Academic leadership and internships</p>
     </div>
 
     <div class="vtimeline" id="expTimeline">
       <article class="vtl-item vtl-left reveal">
-        <div class="vtl-date-slot"><span class="exp-year">Sep 2025 — Dec 2025</span></div>
+        <div class="vtl-date-slot"><span class="exp-year">Sep 2026 — Dec 2026</span></div>
         <span class="vtl-dot" aria-hidden="true"></span>
         <div class="vtl-card">
           <h3 class="exp-role">Digital and Graphics Intern</h3>
           <div class="exp-org">NewsWatch Plus Philippines — Ortigas Center, Pasig City</div>
           <ul class="exp-points">
-            <li>Lead reporter on a six-month eviction-court investigation cited in two city council hearings.</li>
-            <li>Built and maintain a FOIA-sourced database of 40,000+ court filings used across the newsroom.</li>
-            <li>Mentor two early-career reporters on public-records requests and data verification.</li>
+            <li>Wrote digital news articles covering weather, entertainment, politics and current affairs.</li>
+            <li>Created graphics and social media content to support news coverage.</li>
+            <li>Wrote broadcast scripts for <em>NewsWatch Now</em>.</li>
+            <li>Transcribed interviews and news broadcasts.</li>
           </ul>
         </div>
       </article>
@@ -1525,20 +1518,87 @@
       </article>
 
       <article class="vtl-item vtl-left reveal">
-        <div class="vtl-date-slot"><span class="exp-year">Jan 2025 — May 2025</span></div>
+        <div class="vtl-date-slot"><span class="exp-year">Aug 2025 — May 2025</span></div>
         <span class="vtl-dot" aria-hidden="true"></span>
+        <div class="vtl-card">
+          <h3 class="exp-role">Video and Creative Direction, Voice Actor</h3>
+          <div class="exp-org">Cut To The CHase — UST, Manila</div>
+          <ul class="exp-points">
+            <li>[Deets].</li>
+            <li>[Deets].</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="vtl-item vtl-right reveal">
         <div class="vtl-card">
           <h3 class="exp-role">Writer and Graphics Design Team</h3>
           <div class="exp-org">The Trilby — UST, Manila</div>
           <ul class="exp-points">
-            <li>Reported on labor and housing for a community newsroom serving three South Side wards.</li>
-            <li>Produced a four-part series on wage theft that led to a state labor department review.</li>
+            <li>[Deets].</li>
+            <li>[Deets].</li>
+          </ul>
+        </div>
+        <span class="vtl-dot" aria-hidden="true"></span>
+        <div class="vtl-date-slot"><span class="exp-year">Jan 2025 — May 2025</span></div>
+      </article>
+
+      <article class="vtl-item vtl-left reveal">
+        <div class="vtl-date-slot"><span class="exp-year">Jun 2024 — June 2025</span></div>
+        <span class="vtl-dot" aria-hidden="true"></span>
+        <div class="vtl-card">
+          <h3 class="exp-role">Chief-of-Staff</h3>
+          <div class="exp-org">UST Journalism Society — UST, Manila</div>
+          <ul class="exp-points">
+            <li>[Deets].</li>
+            <li>[Deets].</li>
           </ul>
         </div>
       </article>
+
+      <article class="vtl-item vtl-right reveal">
+        <div class="vtl-card">
+          <h3 class="exp-role">Advocacy Development and Research Head</h3>
+          <div class="exp-org">UST Hiraya — UST, Manila</div>
+          <ul class="exp-points">
+            <li>[Deets].</li>
+            <li>[Deets].</li>
+          </ul>
+        </div>
+        <span class="vtl-dot" aria-hidden="true"></span>
+        <div class="vtl-date-slot"><span class="exp-year">Oct 2023 — Jun 2025</span></div>
+      </article>
+
+      <article class="vtl-item vtl-left reveal">
+        <div class="vtl-date-slot"><span class="exp-year">June 2023 — June 2024</span></div>
+        <span class="vtl-dot" aria-hidden="true"></span>
+        <div class="vtl-card">
+          <h3 class="exp-role">Public Relations Officer</h3>
+          <div class="exp-org">UST Journalism Society — UST, Manila</div>
+          <ul class="exp-points">
+            <li>[Deets].</li>
+            <li>[Deets].</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="vtl-item vtl-right reveal">
+        <div class="vtl-card">
+          <h3 class="exp-role">Education Committee Member</h3>
+          <div class="exp-org">Pagbago Philippines — UST, Manila</div>
+          <ul class="exp-points">
+            <li>[Deets]</li>
+            <li>[Deets]</li>
+          </ul>
+        </div>
+        <span class="vtl-dot" aria-hidden="true"></span>
+        <div class="vtl-date-slot"><span class="exp-year">Aug 2020 — Aug 2022</span></div>
+      </article>
+      
     </div>
   </div>
 </section>
+
 
 <!-- ============================================================
      EDUCATION
@@ -1552,9 +1612,12 @@
     <div class="timeline">
       <div class="tl-row reveal">
         <span class="tl-date">2022 — 2026</span>
-        <div>
-          <h3 class="tl-role">B.A. in Journalism</h3>
-          <div class="tl-org">University of Santo Tomas — Manila</div>
+        <div class="tl-body">
+          <img src="assets/educlogo.png" alt="University of Santo Tomas logo" class="tl-logo" loading="lazy">
+          <div>
+            <h3 class="tl-role">B.A. in Journalism</h3>
+            <div class="tl-org">University of Santo Tomas — Manila</div>
+          </div>
         </div>
       </div>
     </div>
@@ -1750,14 +1813,19 @@
      PREVIOUS WORKS — genre folders + case-file modal
      --------------------------------------------------------- */
   var worksData = [
-    { genre:'housing', year:'2026', title:'Inside the Landlord Registry Fight', pub:'Chicago Tribune', dek:'A look at how a proposed citywide landlord registry stalled twice in committee — and who lobbied to keep it that way.', skills:['FOIA / Public Records','Editorial Judgment'] },
-    { genre:'housing', year:'2023', title:'The Fair Housing Complaint No One Filed', pub:'Injustice Watch', dek:'Renters describe discrimination they never reported, and the barriers — language, fear, paperwork — that keep complaints from ever reaching a regulator.', skills:['Interviewing','Source Development'] },
-    { genre:'labor', year:'2025', title:'Who Gets a Warehouse Job — and Who Doesn\u2019t', pub:'ProPublica Illinois', dek:'Scheduling algorithms and staffing-agency practices quietly filter out applicants long before a human reviewer sees a resume.', skills:['Data Journalism','SQL'] },
-    { genre:'labor', year:'2022', title:'Temp Agencies and the Wage Gap', pub:'Independent', dek:'A pay-record analysis of three staffing agencies shows temp workers earning 18% less than direct hires for identical shifts.', skills:['Python (pandas)','Data Journalism'] },
-    { genre:'systems', year:'2025', title:'The Paper Trail Behind School Closures', pub:'The Marshall Project', dek:'Budget documents show a district\u2019s decision to close 12 schools was effectively made a year before it was announced.', skills:['FOIA / Public Records','Fact-Checking Rigor'] },
-    { genre:'systems', year:'2024', title:'Bus Stops, Erased', pub:'Block Club Chicago', dek:'Mapping route cuts against ridership by ward reveals which neighborhoods lost service first — and never got it back.', skills:['Datawrapper / Flourish','Data Journalism'] },
+    { genre:'housing', year:'2025', title:'‘Ang Babae sa Septic Tank’ set for theatrical launch', pub:'Chicago Tribune', dek:'A look at how a proposed citywide landlord registry stalled twice in committee — and who lobbied to keep it that way.', skills:['FOIA / Public Records','Editorial Judgment'] },
+    { genre:'housing', year:'2023', title:'[THE TRILBY] EDSA STORY', pub:'Injustice Watch', dek:'Renters describe discrimination they never reported, and the barriers — language, fear, paperwork — that keep complaints from ever reaching a regulator.', skills:['Interviewing','Source Development'] },
+    { genre:'labor', year:'2025', title:'Are second-hand bookstores turning a new, digital page', pub:'ProPublica Illinois', dek:'Scheduling algorithms and staffing-agency practices quietly filter out applicants long before a human reviewer sees a resume.', skills:['Data Journalism','SQL'] },
+    { genre:'labor', year:'2022', title:'DOLE orders Cebu BPO company to halt operations', pub:'Independent', dek:'A pay-record analysis of three staffing agencies shows temp workers earning 18% less than direct hires for identical shifts.', skills:['Python (pandas)','Data Journalism'] },
+    { genre:'systems', year:'2025', title:'\u2019KPop Demon Hunters\u2019 singer Ejae dropping debut single this October', pub:'The Marshall Project', dek:'Budget documents show a district\u2019s decision to close 12 schools was effectively made a year before it was announced.', skills:['FOIA / Public Records','Fact-Checking Rigor'] },
+    { genre:'systems', year:'2024', title:'Lawyers\u2019 group_ Call for Marcos\u2019 resignation not seditious', pub:'Block Club Chicago', dek:'Mapping route cuts against ridership by ward reveals which neighborhoods lost service first — and never got it back.', skills:['Datawrapper / Flourish','Data Journalism'] },
     { genre:'data', year:'2024', title:'Records Requests 101: A Reporter\u2019s Toolkit', pub:'Injustice Watch', dek:'A practical walkthrough of the FOIA pipeline built for this newsroom, shared so other reporters can adapt it.', skills:['FOIA / Public Records','CMS Publishing (WordPress)'] },
-    { genre:'data', year:'2023', title:'Wage Theft Claims, Mapped by Zip Code', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'] }
+    { genre:'data', year:'2023', title:'Mirasol', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'] },
+    { genre:'data', year:'2023', title:'P-Pop boy group Alamat dropping sophomore album in November', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'] },
+    { genre:'data', year:'2023', title:'INCLUSIVITY IN PH BEAUTY', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'] },
+    { genre:'data', year:'2023', title:'UNESCO Bohol\u2019s Asin Tibuok, need of urgent safeguarding', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'] },
+    { genre:'data', year:'2023', title:'Weather systems to bring rains in extended weekend - PAGASA', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'] },
+    { genre:'data', year:'2023', title:'Weather Wednesday story', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'] }
   ];
   var genreLabels = { housing:'Housing', labor:'Labor', systems:'Public Systems', data:'Data & FOIA' };
 
@@ -1879,12 +1947,11 @@
      CREATIVE DESIGN GALLERY — grid + filmstrip lightbox
      --------------------------------------------------------- */
   var designData = [
-    { title:'Housing Rights Zine', type:'Print Layout \u00b7 2025', skills:['Layout & Typography','Graphic Design'] },
-    { title:'Labor Beat Podcast Cover Art', type:'Illustration \u00b7 2024', skills:['Graphic Design'] },
-    { title:'Data Story Explainer Graphics', type:'Infographics \u00b7 2024', skills:['Data Journalism','Datawrapper / Flourish','Graphic Design'] },
-    { title:'Investigative Series Key Art', type:'Editorial Design \u00b7 2023', skills:['Graphic Design','Editorial Judgment'] },
-    { title:'Newsroom Rebrand Concept', type:'Brand Identity \u00b7 2023', skills:['Graphic Design','Layout & Typography'] },
-    { title:'Short Documentary Title Sequence', type:'Motion / Video \u00b7 2022', skills:['Adobe Premiere','Graphic Design'] }
+    { title:'Miss Universe 2025', type:'Editorial Design \u00b7 2025', skills:['Graphic Design','Editorial Judgment'], img:'assets/missuniv.png' },
+    { title:'[THE TRILBY] INTRO-Trilby Asks (Horizontal)', type:'Motion / Video \u00b7 2023', skills:['Graphic Design','Layout & Typography'], video:'assets/[THE TRILBY] INTRO-Trilby Asks (Horizontal).mp4' },
+    { title:'[THE TRILBY] INTRO-Trilby Asks (Vertical)', type:'Motion / Video \u00b7 2022', skills:['Adobe Premiere','Graphic Design'], video:'assets/[THE TRILBY] INTRO-Trilby Asks (Vertical).mp4' },
+    { title:'Trillby', type:'Logo \u00b7 2025', skills:['Layout & Typography','Graphic Design'], img:'assets/Trilby t logo.png' },
+    { title:'LTR-PRICE-HIKE-PUBMAT THE TRILBY', type:'Infographics \u00b7 2024', skills:['Data Journalism','Datawrapper / Flourish','Graphic Design'], img:'assets/LTR-PRICE-HIKE-PUBMAT_THE TRILBY.png' }
   ];
 
   // Small skill-tag chips shared by both the folder cards (Previous
@@ -1897,14 +1964,34 @@
     }).join('') + '</div>';
   }
 
+  // Shared media renderer for a designData item — used by both the grid
+  // thumbnail (silent looping preview, no controls, so a click on the
+  // media still bubbles up to open the filmstrip) and the scrapbook
+  // modal (a real player with controls, since that's a deliberate
+  // click and autoplaying sound there would need to be muted anyway).
+  function designMediaHtml(d, opts){
+    opts = opts || {};
+    if(d.video){
+      return '<video src="' + d.video + '"' +
+        (d.poster ? ' poster="' + d.poster + '"' : '') +
+        (opts.controls ? ' controls playsinline' : ' autoplay muted loop playsinline') +
+        '></video>';
+    }
+    if(d.img){
+      return '<img src="' + d.img + '" alt="' + d.title + '" loading="lazy">';
+    }
+    return '';
+  }
+
   var designGrid = document.getElementById('designGrid');
 
   designData.forEach(function(d, i){
     var card = document.createElement('button');
     card.className = 'design-card';
     card.type = 'button';
+    var thumbMedia = designMediaHtml(d);
     card.innerHTML =
-      '<div class="design-thumb"><span class="design-tag">FRAME 0' + (i+1) + '</span></div>' +
+      '<div class="design-thumb">' + thumbMedia + '<span class="design-tag">FRAME 0' + (i+1) + '</span></div>' +
       '<div class="design-info">' +
         '<div class="design-title">' + d.title + '</div>' +
         '<div class="design-type">' + d.type + '</div>' +
@@ -1935,10 +2022,11 @@
 
   function scrapbookSpreadHtml(index){
     var d = designData[index];
+    var photoMedia = designMediaHtml(d, { controls: true });
     return (
       '<div class="scrapbook-page scrapbook-page-left">' +
         '<span class="scrap-tape" aria-hidden="true"></span>' +
-        '<div class="scrap-photo"><span class="scrap-photo-tag">FRAME 0' + (index + 1) + '</span></div>' +
+        '<div class="scrap-photo">' + photoMedia + '<span class="scrap-photo-tag">FRAME 0' + (index + 1) + '</span></div>' +
       '</div>' +
       '<div class="scrapbook-spine" aria-hidden="true"></div>' +
       '<div class="scrapbook-page scrapbook-page-right">' +
@@ -1958,7 +2046,15 @@
   var scrapbookSpread = document.getElementById('scrapbookSpread');
   var filmstripIndex = 0;
   var FLIP_MS = 700;
-  var CROSSFADE_MS = 260;
+  // The static (non-turning) page — the one carrying the photo when
+  // the text page is turning forward — used to swap to its new
+  // content well before the flip finished, so the picture visibly
+  // changed before the page had actually "turned." Instead, swap it
+  // at the flip's midpoint (when the turning leaf is edge-on and
+  // thinnest, so the swap is naturally masked) and let the fade run
+  // the rest of the flip's duration, so both pages settle together.
+  var SWAP_DELAY_MS = FLIP_MS * .5;
+  var FADE_IN_MS = FLIP_MS - SWAP_DELAY_MS;
   var isFlipping = false;
 
   function renderScrapbookSpread(index){
@@ -2012,7 +2108,7 @@
     // move it at all — but leaving it showing the OLD item right next
     // to the leaf's new item reads as broken, so it gets a quick
     // cross-fade instead of either a hard pop or an animated turn.
-    staticEl.style.transition = 'opacity ' + (CROSSFADE_MS * .7) + 'ms ' + 'var(--ease)';
+    staticEl.style.transition = 'opacity ' + SWAP_DELAY_MS + 'ms var(--ease)';
     staticEl.style.opacity = '0';
 
     window.setTimeout(function(){
@@ -2022,10 +2118,10 @@
       freshStatic.style.opacity = '0';
       void freshStatic.offsetHeight;
       requestAnimationFrame(function(){
-        freshStatic.style.transition = 'opacity ' + CROSSFADE_MS + 'ms var(--ease)';
+        freshStatic.style.transition = 'opacity ' + FADE_IN_MS + 'ms var(--ease)';
         freshStatic.style.opacity = '1';
       });
-    }, CROSSFADE_MS * .7);
+    }, SWAP_DELAY_MS);
 
     var axis = stacked ? 'X' : 'Y';
     // Stacked (top/bottom): the top page tips forward and down, so it
