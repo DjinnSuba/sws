@@ -8,7 +8,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&family=Caveat:wght@500;700&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
 
 <style>
   /* ============================================================
@@ -28,6 +28,7 @@
     --body:'Inter', -apple-system, sans-serif;
     --mono:'Space Mono', 'Courier New', monospace;
     --marker:'Caveat', cursive;
+    --script:'Dancing Script', cursive;
 
     --tape:rgba(255,217,218,.5);
     --tape-edge:rgba(27,32,33,.08);
@@ -37,13 +38,11 @@
     --ease: cubic-bezier(.22,.61,.36,1);
     --cascade-ease: cubic-bezier(.16,1,.3,1);
 
-    /* Real measured heights of the two subnav rows (JS keeps these in
-       sync with actual layout — see syncNavMetrics) so the accent rule
-       and content spacer always line up under however many rows are
-       currently on screen. Fallback values match the default single-
-       line tab row so nothing jumps before JS runs. */
+    /* Real measured height of the subnav row (JS keeps this in sync
+       with actual layout — see syncNavMetrics) so the accent rule and
+       content spacer always line up. Fallback matches the default tab
+       row so nothing jumps before JS runs. */
     --subnav-h: 37px;
-    --subnav-bottom-h: 37px;
 
     /* Section "wire-service" tags — newsrooms colour-code beats
        (Metro, Business, Sports…); each page gets one tag colour,
@@ -91,6 +90,145 @@
   }
 
   /* ============================================================
+     SCRAPBOOK DECORATION SYSTEM — a small kit of reusable pieces
+     (geometric confetti, paper scraps, torn strips, halftone dots,
+     an accent-coloured atmospheric wash) so every section — not just
+     the hero — can carry the same cut-and-pasted zine feeling. Every
+     shape uses `color:` so it can be tinted with each page's own
+     --acc-* variable rather than introducing new hues.
+     ============================================================ */
+  .deco-layer{
+    position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:0;
+  }
+  .deco-shape{ position:absolute; }
+  .deco-ring{
+    border-radius:50%; border:2px dashed currentColor; opacity:.35;
+  }
+  .deco-disc{
+    border-radius:50%; background:currentColor; opacity:.14;
+  }
+  .deco-triangle{
+    width:0; height:0; opacity:.32;
+    border-left:var(--tri-size, 22px) solid transparent;
+    border-right:var(--tri-size, 22px) solid transparent;
+    border-bottom:calc(var(--tri-size, 22px) * 1.6) solid currentColor;
+  }
+  .deco-triangle.down{
+    border-bottom:none;
+    border-top:calc(var(--tri-size, 22px) * 1.6) solid currentColor;
+  }
+  .deco-strip{
+    height:9px; background:currentColor; opacity:.28;
+    clip-path:polygon(0 0, 100% 35%, 100% 100%, 0 65%);
+  }
+  .deco-plus{
+    opacity:.4;
+  }
+  .deco-plus::before, .deco-plus::after{
+    content:''; position:absolute; background:currentColor;
+  }
+  .deco-plus::before{ top:50%; left:0; right:0; height:3px; transform:translateY(-50%); }
+  .deco-plus::after{ left:50%; top:0; bottom:0; width:3px; transform:translateX(-50%); }
+  .deco-zigzag{
+    opacity:.4;
+    background-image:
+      linear-gradient(135deg, currentColor 25%, transparent 25.5%),
+      linear-gradient(225deg, currentColor 25%, transparent 25.5%);
+    background-size:12px 12px;
+  }
+  /* Hand-drawn squiggle and "look here" arrow — actual inline <svg>
+     markup (see HTML) rather than a background-image, so the stroke
+     can just inherit `color:` like every other deco shape. */
+  .deco-wavy, .deco-arrow{ opacity:.55; }
+  .deco-wavy svg, .deco-arrow svg{ display:block; width:100%; height:100%; overflow:visible; }
+
+  /* Washi tape — patterned sticky-tape strips, the more decorative
+     cousin of the plain .tape colour swatch used elsewhere. Two
+     patterns (diagonal stripe, dot) so a page can mix them. */
+  .washi{
+    position:absolute;
+    opacity:.8;
+    box-shadow:0 3px 8px rgba(0,0,0,.28);
+    mix-blend-mode:normal;
+  }
+  .washi-stripe{
+    background:
+      repeating-linear-gradient(45deg, currentColor 0 5px, transparent 5px 11px),
+      rgba(255,255,255,.14);
+  }
+  .washi-dot{
+    background:
+      radial-gradient(currentColor 1.6px, transparent 2px) 0 0/12px 12px,
+      rgba(255,255,255,.14);
+  }
+
+  /* A clipped newspaper-article scrap — pure decoration (a fake photo
+     swatch + headline + a few greeked "column" lines), for the look
+     of an actual cutting pasted into the page rather than a UI card. */
+  .news-clipping{
+    position:absolute;
+    width:150px;
+    background:var(--paper); color:var(--ink);
+    padding:10px 12px 13px;
+    box-shadow:var(--paper-shadow);
+    clip-path:polygon(0 4px, 4% 0, 96% 1px, 100% 5px, 99% 96%, 95% 100%, 3% 99%, 1% 94%);
+    opacity:.92;
+  }
+  .news-clipping .nc-photo{
+    aspect-ratio:16/10; margin-bottom:8px; position:relative;
+    background:linear-gradient(150deg, var(--slate), var(--ink) 70%);
+  }
+  .news-clipping .nc-headline{
+    font-family:var(--display); font-weight:700; font-size:.78rem; line-height:1.15;
+    margin-bottom:7px; color:var(--ink);
+  }
+  .news-clipping .nc-line{ height:4px; background:rgba(27,32,33,.16); margin-bottom:4px; }
+  .news-clipping .nc-line:nth-child(3){ width:88%; }
+  .news-clipping .nc-line:last-child{ width:62%; margin-bottom:0; }
+
+  /* A torn/pinked scrap of paper — used for pull-quotes, annotations,
+     little sticky-note asides. Deckle edge via clip-path, a strip of
+     tape holding down the top corner. */
+  .paper-scrap{
+    position:relative;
+    background:var(--paper); color:var(--ink);
+    padding:22px 26px;
+    box-shadow:var(--paper-shadow);
+    clip-path:polygon(0 5px, 3% 0, 97% 1px, 100% 6px, 99% 95%, 96% 100%, 4% 99%, 1% 93%);
+  }
+  .paper-scrap::before{
+    content:'';
+    position:absolute; top:-11px; left:28px; transform:rotate(-5deg);
+    width:52px; height:16px;
+    background:var(--tape); border:1px solid var(--tape-edge);
+    opacity:.9;
+  }
+
+  /* Halftone dot texture — a newsprint-clipping surface, dropped in
+     as a translucent overlay on top of whatever it's applied to. */
+  .halftone::after{
+    content:'';
+    position:absolute; inset:0; pointer-events:none;
+    background-image:radial-gradient(circle, rgba(27,32,33,.55) 1px, transparent 1.3px);
+    background-size:6px 6px;
+    opacity:.16;
+    mix-blend-mode:multiply;
+  }
+
+  /* Atmospheric colour wash, same recipe as the hero's own glow —
+     dropped behind a section's content so every page's opening beat
+     carries a bit of its own accent colour bleeding through, not
+     just Home's. */
+  .section-glow{
+    position:absolute; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(ellipse 55% 45% at 88% 8%, color-mix(in srgb, var(--page-accent) 45%, transparent), transparent 60%),
+      radial-gradient(ellipse 45% 35% at 6% 96%, color-mix(in srgb, var(--page-accent) 30%, var(--wine)), transparent 60%);
+    opacity:.32;
+    transition:background .4s var(--ease);
+  }
+
+  /* ============================================================
      NAV
      ============================================================ */
   header.site-nav{
@@ -112,74 +250,90 @@
   .brand:hover .dot{ transform:scale(1.5); box-shadow:0 0 0 4px rgba(234,99,140,.2); }
 
   /* ------------------------------------------------------------
-     SUBNAV — a header row pinned to the top of the viewport, and a
-     breadcrumb tray pinned to the bottom of the viewport. Each page's
-     content is one full-bleed panel (see PAGE PANELS below); the
-     panel for whichever page is active fills the gap between the two
-     bars, and every other panel is parked off-screen. A top-row tab
-     "pulls" its panel down over whatever's showing; a bottom-row tab
-     pulls its panel up. The two bars are the handles; the panels
-     underneath are what actually gets pulled.
-
-     CASCADE MODEL: page order is fixed — Home, Experience, Work,
-     Design, Skills, Contact.
-       - Top row: every page at or after the active one renders
-         normally. Every page before it blanks out (.is-passed) but
-         keeps its column's width reserved, so nothing else shifts.
-       - Bottom row: the mirror image — every page before the active
-         one shows here (.is-shown) as a breadcrumb you can pull back
-         up; everything else is an invisible placeholder, which is
-         what keeps this tray reading as empty until something has
-         actually been passed.
+     SUBNAV — one normal row, pinned under the header. Styled like a
+     strip of folder stock with the section tabs die-cut into it:
+     each .tab is a scrap of coloured paper clipped into a folder-tab
+     trapezoid, pinned down at a slight scrapbook tilt, with a torn
+     kraft strip running underneath and a hand-drawn scribble marking
+     whichever one is open. Clicking a tab just pulls that page's
+     panel down over whatever's showing (see PAGE PANELS + router).
      ------------------------------------------------------------ */
   .subnav{
     position:fixed; left:0; right:0; top:var(--header-h, 49px); z-index:99;
     background:var(--ink);
-    border-bottom:1px solid rgba(255,217,218,.14);
     overflow-x:auto; overflow-y:visible; -webkit-overflow-scrolling:touch;
     scrollbar-width:none;
+    padding-bottom:9px;
   }
   .subnav::-webkit-scrollbar{ display:none; }
+  /* Torn kraft-paper strip the tabs sit on, plus a scatter of tiny
+     scrapbook confetti shapes (circle, triangle, ring) in the page
+     accent colours — decorative only, never blocks clicks. */
+  .subnav::before{
+    content:'';
+    position:absolute; left:0; right:0; bottom:0; height:1px;
+    background:
+      repeating-linear-gradient(110deg, rgba(255,217,218,.22) 0 7px, transparent 7px 15px);
+    opacity:.6;
+  }
+  .subnav::after{
+    content:'';
+    position:absolute; inset:0; pointer-events:none; z-index:0; opacity:.55;
+    background:
+      radial-gradient(circle 3px at 91% 22%, var(--acc-work), transparent 101%),
+      radial-gradient(circle 2px at 96% 68%, var(--acc-skills), transparent 101%),
+      conic-gradient(from 20deg at 87% 78%, transparent 0 60%, var(--acc-experience) 60% 66%, transparent 66%);
+  }
   .subnav-inner{
-    display:grid;
-    grid-auto-flow:column;
-    grid-template-columns:repeat(5, max-content);
-    align-items:start;
+    display:flex;
+    align-items:flex-end;
+    gap:2px;
+    position:relative; z-index:1;
+    padding:15px 18px 0;
   }
   .tab{
-    --accent:var(--rose);
-    grid-row:1;
+    --accent:var(--rose); --tilt:0deg;
     font-family:var(--mono); font-size:11px; letter-spacing:.05em;
     text-transform:uppercase; color:var(--ink);
     background:var(--accent); filter:brightness(.62) saturate(.85);
-    border:1px solid rgba(0,0,0,.4); border-bottom:none;
-    padding:9px 20px 8px;
-    cursor:pointer; position:relative; top:0;
-    transform:translateY(7px);
+    border:1px solid rgba(0,0,0,.4);
+    padding:10px 19px 9px;
+    cursor:pointer; position:relative;
+    /* die-cut folder-tab notch: corners chamfered like a hanging-file tab */
+    clip-path:polygon(9px 0, calc(100% - 9px) 0, 100% 100%, 0 100%);
+    transform:translateY(6px) rotate(var(--tilt));
     opacity:1;
-    transition:filter .25s var(--ease), transform .4s cubic-bezier(.34,1.3,.5,1), box-shadow .25s var(--ease), opacity .3s var(--ease);
+    transition:filter .25s var(--ease), transform .3s cubic-bezier(.34,1.3,.5,1), box-shadow .25s var(--ease), opacity .3s var(--ease);
   }
-  .tab:not(:first-child){ margin-left:-1px; }
+  .tab:not(:first-child){ margin-left:-3px; }
+  .tab:nth-child(5n+1){ --tilt:-1.6deg; }
+  .tab:nth-child(5n+2){ --tilt:1.1deg; }
+  .tab:nth-child(5n+3){ --tilt:-.7deg; }
+  .tab:nth-child(5n+4){ --tilt:1.4deg; }
+  .tab:nth-child(5n+5){ --tilt:-1deg; }
   .tab span{ position:relative; z-index:2; pointer-events:none; font-weight:700; }
-  .tab:hover{ filter:brightness(.85) saturate(1); }
-  .tab:not(.is-active):hover{ transform:translateY(3px); }
+  .tab:hover{ filter:brightness(.85) saturate(1); transform:translateY(2px) rotate(0deg); }
   .tab:focus-visible{ outline:2px solid var(--paper); outline-offset:-3px; }
   .tab.is-active{
     filter:none; z-index:3;
-    transform:translateY(0);
-    box-shadow:0 8px 18px rgba(0,0,0,.35);
-    border-bottom:1px solid var(--accent); /* seams into the wash below */
-    margin-bottom:-1px;
+    transform:translateY(-2px) rotate(0deg);
+    box-shadow:0 10px 20px rgba(0,0,0,.4);
   }
-  /* A page whose slot has cascaded down to the bottom tray: keep its
-     column reserved up top, but blank it out and drop it slightly so
-     it visibly sinks away as its breadcrumb lands below. */
-  .tab.is-passed{
-    opacity:0;
+  /* A little paper "brad" punched through the open tab, like it's
+     pinned to the folder — small scrapbook detail. */
+  .tab.is-active::before{
+    content:'';
+    position:absolute; top:7px; left:50%; transform:translateX(-50%);
+    width:5px; height:5px; border-radius:50%;
+    background:var(--ink);
+    box-shadow:inset 0 1px 1px rgba(0,0,0,.6), 0 1px 0 rgba(255,255,255,.18);
+  }
+  /* Hand-drawn scribble swoosh underlining whichever tab is open. */
+  .tab.is-active::after{
+    content:'';
+    position:absolute; left:10%; right:10%; bottom:-8px; height:7px;
+    background:no-repeat center/100% 100% url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10'%3E%3Cpath d='M2 6 Q20 -2 38 6 T76 5 T98 6' stroke='%231B2021' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
     pointer-events:none;
-    transform:translateY(14px);
-    box-shadow:none;
-    transition:opacity .3s var(--cascade-ease), transform .4s var(--cascade-ease);
   }
   .tab[data-page="home"]{ --accent:var(--acc-home); }
   .tab[data-page="experience"]{ --accent:var(--acc-experience); }
@@ -187,67 +341,9 @@
   .tab[data-page="skills"]{ --accent:var(--acc-skills); }
   .tab[data-page="contact"]{ --accent:var(--acc-contact); }
 
-  /* ------------------------------------------------------------
-     BOTTOM SUBNAV — pinned to the bottom edge of the viewport, like
-     a mobile app's tab bar, rather than stacked under the top row.
-     Always present at a fixed reserved height, so it reads as an
-     empty tray on Home rather than something that pops in later.
-     ------------------------------------------------------------ */
-  .subnav-bottom{
-    position:fixed; left:0; right:0; bottom:0; top:auto; z-index:99;
-    background:var(--ink);
-    border-top:1px solid rgba(255,217,218,.14);
-    box-shadow:0 -12px 30px rgba(0,0,0,.3);
-    overflow-x:auto; overflow-y:visible; -webkit-overflow-scrolling:touch;
-    scrollbar-width:none;
-  }
-  .subnav-bottom::-webkit-scrollbar{ display:none; }
-  /* Left-aligned on the same 6-column grid as the top row (not
-     centred) so a breadcrumb sits in exactly the same horizontal slot
-     as its tab up top — the two are the same tab, seen at the two
-     edges of the same pulled sheet of paper. */
-  .tab-bottom{
-    filter:brightness(.7) saturate(.8);
-    /* Mirrors .tab's base border exactly (1px black, sealed edge
-       omitted) so the row's height matches the top row pixel for
-       pixel — only the sealed edge moves from bottom to top. */
-    border:1px solid rgba(0,0,0,.4); border-top:none;
-    box-shadow:none;
-    transform:translateY(10px);
-    opacity:0;
-    pointer-events:none;
-    cursor:pointer;
-    transition:opacity .35s var(--cascade-ease) .04s, transform .45s var(--cascade-ease) .04s, filter .25s var(--ease);
-  }
-  .tab-bottom:hover{ filter:brightness(.9) saturate(1); }
-  .tab-bottom.is-shown{
-    opacity:1;
-    transform:translateY(0);
-    pointer-events:auto;
-    /* Same trick as .tab.is-active's border-bottom seam, mirrored:
-       adds the coloured edge on the side facing the content above,
-       with a matching negative margin so the added 1px never changes
-       the row's height. */
-    border-top:1px solid var(--accent);
-    margin-top:-1px;
-  }
-
-  /* The clone that actually travels between the two rows (see
-     flyTabGhost in the router script). Pins it to an exact viewport
-     rect regardless of whatever grid/margin rules the row it was
-     cloned from applies, and keeps it clear of every click target. */
-  .tab-ghost{
-    position:fixed !important;
-    margin:0 !important;
-    z-index:300 !important;
-    pointer-events:none !important;
-    opacity:1 !important;
-    box-shadow:0 10px 24px rgba(0,0,0,.4) !important;
-  }
-
-  /* Thin cascade rule spanning the page, directly under the top
-     subnav only, in the active section's colour — the literal thread
-     from tab down into content. */
+  /* Thin cascade rule spanning the page, directly under the subnav,
+     in the active section's colour — the literal thread from tab
+     down into content. */
   .accent-rule{
     position:fixed; left:0; right:0; z-index:98;
     top:calc(var(--header-h, 49px) + var(--subnav-h, 37px));
@@ -255,16 +351,11 @@
     transition:background .35s var(--ease);
   }
   /* In-flow spacer: pushes every page's content clear of the fixed
-     header + top subnav + accent rule, so no per-page padding math
-     needed. The bottom tray is handled separately (see body
-     padding-bottom below) since it's pinned to the viewport's bottom
-     edge, not stacked in the document flow up top. */
+     header + subnav + accent rule, so no per-page padding math
+     needed. */
   .nav-spacer{
     height:calc(var(--header-h, 49px) + var(--subnav-h, 37px) + 3px);
   }
-  /* Keeps page content clear of the fixed bottom tray so its last
-     lines never sit underneath it. */
-  body{ padding-bottom:var(--subnav-bottom-h, 37px); }
 
   /* ============================================================
      PAGE PANELS — each page's scattered sections (hero, summary,
@@ -302,10 +393,6 @@
   .page-panel.is-pulling-down{
     border-top-width:6px;
     box-shadow:0 26px 50px -10px rgba(0,0,0,.5);
-  }
-  .page-panel.is-pulling-up{
-    border-bottom-width:6px;
-    box-shadow:0 -26px 50px -10px rgba(0,0,0,.5);
   }
 
   /* ============================================================
@@ -355,7 +442,7 @@
     /* Home is a one-screen page now: fills exactly the gap between
        the two subnav bars (minus the page-panel's own 3px+3px
        border), so it never needs to scroll. */
-    min-height:calc(100vh - var(--header-h, 49px) - var(--subnav-h, 37px) - var(--subnav-bottom-h, 37px) - 6px);
+    min-height:calc(100vh - var(--header-h, 49px) - var(--subnav-h, 37px) - 6px);
     box-sizing:border-box;
     display:flex; flex-direction:column; justify-content:center;
     position:relative;
@@ -392,6 +479,18 @@
   h1.masthead em{
     font-style:italic; font-weight:500; color:var(--rose);
   }
+  /* The signature treatment: the whole name set in a flowing script,
+     like it's been signed at the bottom of a print, rather than set
+     in the display serif used everywhere else. */
+  h1.masthead.script-name{
+    font-family:var(--script);
+    font-weight:700;
+    font-size:clamp(3.4rem, 7.2vw, 5.6rem);
+    line-height:1.05;
+    letter-spacing:.01em;
+    margin:0 0 22px;
+  }
+  h1.masthead.script-name em{ font-style:normal; color:var(--rose); }
 
   .hero-sub{
     font-size:clamp(1.05rem, 1.6vw, 1.35rem);
@@ -403,11 +502,18 @@
 
   .dateline{
     font-family:var(--mono); font-size:13px; line-height:1.7;
-    color:var(--paper); background:rgba(255,217,218,.05);
-    border-left:2px solid var(--wine);
-    padding:14px 18px; max-width:52ch;
+    color:var(--ink); margin:0;
   }
-  .dateline b{ color:var(--rose); letter-spacing:.05em; }
+  .dateline b{ color:var(--wine); letter-spacing:.05em; }
+  /* A little handwritten aside, like an annotation scribbled at the
+     bottom of a printout — kept safely inside the note's own padding
+     rather than overlapping its torn edge, since anything outside a
+     clip-path's shape (even a child element) gets clipped away too. */
+  .hero-note{ max-width:52ch; transform:rotate(-1deg); }
+  .hero-note-tag{
+    display:block; text-align:right; margin-top:14px;
+    font-family:var(--marker); font-size:1.2rem; color:var(--wine);
+  }
 
   /* ------------------------------------------------------------
      HERO PORTRAIT + LAYOUT SWITCH
@@ -446,6 +552,16 @@
     column-gap:64px;
   }
   .hero-body.hero-body--right .hero-portrait-wrap{ justify-self:end; align-self:center; }
+
+  /* Photo-on-the-left version: one text column stacked on the right,
+     portrait anchored on the left, both vertically centered as a
+     single row — swapped in by adding "hero-body--left" in the HTML. */
+  .hero-body.hero-body--left{
+    grid-template-columns:auto 1fr;
+    grid-template-areas:"photo b";
+    column-gap:64px;
+  }
+  .hero-body.hero-body--left .hero-portrait-wrap{ justify-self:start; align-self:center; }
 
   .hero-portrait-wrap{ position:relative; width:clamp(160px, 20vw, 240px); transform:rotate(-2deg); }
   .hero-portrait-wrap::before{
@@ -507,10 +623,46 @@
      ============================================================ */
   section{ position:relative; padding:130px 0; }
   section.tight{ padding:90px 0; }
-  .section-head{ margin-bottom:64px; max-width:60ch; }
+  /* Decoration layers (.deco-layer, and the hero's own ::before wash)
+     are position:absolute with z-index:0 so they sit behind each
+     section's real content — but a static in-flow element actually
+     paints BEFORE a z-index:0 positioned one per normal CSS stacking
+     order, not after. Forcing the content wrap onto its own stacking
+     level guarantees it always wins regardless of DOM order. */
+  section > .wrap{ position:relative; z-index:1; }
+  .section-head{ position:relative; margin-bottom:64px; max-width:60ch; }
+  /* A blobby sticker of colour behind each section's kicker — a bit
+     of scrapbook confetti carried through in the page's own accent. */
+  .section-head::before{
+    content:'';
+    position:absolute; top:-14px; left:-16px;
+    width:30px; height:30px;
+    background:var(--page-accent);
+    opacity:.16;
+    border-radius:41% 59% 63% 37% / 43% 39% 61% 57%;
+    pointer-events:none;
+  }
+  /* Section labels styled like a newspaper clipping snipped out and
+     pinned above the headline: paper chip, torn edge, slight tilt,
+     a scrap of tape holding it down. */
   .kicker{
-    font-family:var(--mono); font-size:12px; letter-spacing:.15em;
-    color:var(--rose); text-transform:uppercase; display:block; margin-bottom:14px;
+    font-family:var(--mono); font-size:11px; letter-spacing:.13em;
+    color:var(--ink); text-transform:uppercase;
+    display:inline-block; margin-bottom:20px;
+    background:var(--cream);
+    padding:6px 13px 5px;
+    position:relative;
+    transform:rotate(-1.6deg);
+    box-shadow:0 6px 14px rgba(0,0,0,.35);
+    clip-path:polygon(0 3px, 4% 0, 96% 1px, 100% 5px, 99% 95%, 95% 100%, 3% 98%, 1% 93%);
+  }
+  .kicker::before{
+    content:'';
+    position:absolute; top:-8px; left:16px;
+    width:32px; height:12px;
+    background:var(--tape); border:1px solid var(--tape-edge);
+    transform:rotate(-7deg);
+    opacity:.9;
   }
   h2.head{
     font-family:var(--display); font-weight:600;
@@ -580,14 +732,32 @@
     display:grid;
     grid-template-rows:auto 1fr;
     position:relative;
+    cursor:pointer;
+    transition:transform .3s var(--ease), filter .3s var(--ease);
   }
+  .story-panel:hover{ filter:brightness(1.06); }
+  .story-panel:focus-visible{ outline:2px solid var(--rose); outline-offset:6px; }
   .story-panel::before{
     content:''; position:absolute; top:-10px; left:36px; width:60px; height:20px;
     background:var(--tape); border:1px solid var(--tape-edge);
     transform:rotate(-5deg); opacity:.85; z-index:3;
   }
+  /* A small "read the full story" cue that only appears on hover/focus
+     — the whole card is clickable, this just makes that obvious. */
+  .story-panel::after{
+    content:'Read full story →';
+    position:absolute; bottom:14px; right:14px; z-index:2;
+    font-family:var(--mono); font-size:10px; letter-spacing:.05em; text-transform:uppercase;
+    color:var(--cream); background:rgba(27,32,33,.75);
+    padding:5px 10px;
+    opacity:0; transform:translateY(4px);
+    transition:opacity .25s var(--ease), transform .25s var(--ease);
+    pointer-events:none;
+  }
+  .story-panel:hover::after, .story-panel:focus-visible::after{ opacity:1; transform:translateY(0); }
   .story-panel:nth-child(odd){ transform:rotate(-.6deg); }
   .story-panel:nth-child(even){ transform:rotate(.5deg); }
+  .story-panel:hover:nth-child(odd), .story-panel:hover:nth-child(even){ transform:rotate(0deg) translateY(-3px); }
   .story-media{
     aspect-ratio:4/3;
     border-radius:2px;
@@ -716,7 +886,7 @@
     text-align:left;
     /* Fits to one screen too: main content and the footer line sit
        at the top and bottom of the same fixed-height band. */
-    min-height:calc(100vh - var(--header-h, 49px) - var(--subnav-h, 37px) - var(--subnav-bottom-h, 37px) - 6px);
+    min-height:calc(100vh - var(--header-h, 49px) - var(--subnav-h, 37px) - 6px);
     box-sizing:border-box;
     display:flex; flex-direction:column; justify-content:space-between;
     padding:60px 0 30px;
@@ -897,6 +1067,18 @@
   }
   .folder-card .work-pub{ font-family:var(--mono); font-size:10px; letter-spacing:.05em; color:var(--ink-soft); text-transform:uppercase; }
 
+  /* Publication status — a small tag so it's obvious at a glance
+     whether a piece is live or still a draft, on both the folder
+     card and inside its case file. */
+  .status-badge{
+    display:inline-block;
+    font-family:var(--mono); font-size:9px; letter-spacing:.07em; text-transform:uppercase;
+    padding:3px 8px; border-radius:2px; border:1px solid currentColor;
+  }
+  .folder-card .status-badge{ position:absolute; top:12px; right:12px; z-index:2; }
+  .status-badge--published{ color:#4FB68A; background:rgba(79,182,138,.12); }
+  .status-badge--draft{ color:#E0A94C; background:rgba(224,169,76,.12); }
+
   /* ============================================================
      DIALOGS — shared base (case file + filmstrip)
      ------------------------------------------------------------
@@ -924,12 +1106,19 @@
   }
   .dialog-close:hover{ background:var(--wine); border-color:var(--wine); transform:scale(1.08) rotate(90deg); }
 
-  /* Case file modal */
+  /* Case file modal — sized to comfortably hold a lead photo plus a
+     full excerpt, so it reads like an actual case file rather than a
+     cramped popup. The body scrolls internally once content runs
+     past the dialog's own max-height; the media block (when a work
+     has one) stays pinned above it. */
   .case-file-dialog{
-    width:min(560px, 88vw);
+    width:min(720px, 92vw);
+    max-height:min(760px, 88vh);
     background:var(--ink);
     border:1px solid rgba(255,217,218,.22);
     position:fixed; inset:0; margin:auto; height:fit-content;
+    display:flex; flex-direction:column;
+    overflow:hidden;
     opacity:0; transform:translateY(18px) scale(.96);
     transition:opacity .35s var(--ease), transform .35s var(--ease);
     box-shadow:var(--paper-shadow);
@@ -941,17 +1130,96 @@
     opacity:.85; z-index:3;
   }
   .case-file-dialog.is-open{ opacity:1; transform:translateY(0) scale(1); }
-  .case-file-body{ padding:44px 40px; position:relative; }
+  /* Lead photo — only rendered when a work carries an `img`; a
+     mono caption tag sits over its lower corner like a contact-sheet
+     frame label, in the work's own beat colour. */
+  .case-file-media{
+    position:relative; flex:0 0 auto;
+    width:100%; aspect-ratio:16/9; overflow:hidden;
+    background:linear-gradient(165deg, var(--wine), var(--ink) 75%);
+    border-bottom:3px solid var(--case-accent, var(--rose));
+  }
+  .case-file-media img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .case-file-media-tag{
+    position:absolute; left:14px; bottom:12px; z-index:2;
+    font-family:var(--mono); font-size:10px; letter-spacing:.07em; text-transform:uppercase;
+    color:var(--cream); background:rgba(27,32,33,.72);
+    padding:4px 10px;
+  }
+  .case-file-body{
+    padding:44px 40px 48px;
+    position:relative;
+    overflow-y:auto;
+  }
   .case-file-title{
-    font-family:var(--display); font-weight:600; font-size:1.8rem; color:var(--paper);
-    margin:12px 0 14px; line-height:1.2;
+    font-family:var(--display); font-weight:600; font-size:clamp(1.55rem, 3vw, 2.1rem); color:var(--paper);
+    margin:12px 0 18px; line-height:1.18;
   }
+  /* Meta reads as a small dossier strip — labelled fields side by
+     side, rather than one run-on line, so Publication/Year/Beat are
+     each easy to scan on their own. */
   .case-file-meta{
-    font-family:var(--mono); font-size:12px; color:var(--ink-soft);
-    text-transform:uppercase; letter-spacing:.05em; margin-bottom:20px;
-    padding-bottom:20px; border-bottom:1px solid rgba(255,217,218,.14);
+    display:flex; flex-wrap:wrap; gap:24px;
+    margin-bottom:24px; padding-bottom:22px;
+    border-bottom:1px dashed rgba(255,217,218,.2);
   }
+  .cf-field{ display:flex; flex-direction:column; gap:4px; }
+  .cf-label{
+    font-family:var(--mono); font-size:10px; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--rose);
+  }
+  .cf-value{ font-family:var(--mono); font-size:12.5px; letter-spacing:.02em; color:var(--paper); }
   .case-file-dek{ color:var(--ink-soft); line-height:1.75; font-size:.98rem; }
+  .case-file-skills{ margin-top:26px; }
+  .case-file-skills-label{
+    font-family:var(--mono); font-size:10px; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--ink-soft); margin-bottom:9px;
+  }
+
+  /* ------------------------------------------------------------
+     CASE FILE ARTICLE BODY — the full-length read, built from a
+     `body: [...]` array on a worksData entry (paragraph / image /
+     pullquote blocks). Entries without a `body` just show the short
+     `dek` teaser as before; this only renders when one is present.
+     ------------------------------------------------------------ */
+  .case-file-article{
+    margin-top:28px; padding-top:26px;
+    border-top:1px dashed rgba(255,217,218,.2);
+  }
+  .cf-p{
+    color:var(--paper); line-height:1.85; font-size:1.02rem;
+    margin:0 0 22px;
+  }
+  .cf-p:last-child{ margin-bottom:0; }
+  .cf-image-block{ margin:28px 0; }
+  .cf-image-frame{
+    position:relative; overflow:hidden;
+    border:1px solid rgba(255,217,218,.18);
+    background:linear-gradient(150deg, var(--slate), var(--ink) 70%);
+    transform:rotate(-.6deg);
+    box-shadow:var(--paper-shadow);
+  }
+  .cf-image-frame img{ width:100%; display:block; }
+  /* If an image path 404s, this shows in its place instead of a
+     broken-image icon — still reads as a deliberate frame. */
+  .cf-image-frame img.cf-img-missing{ display:none; }
+  .cf-image-fallback{
+    display:none; aspect-ratio:16/10; align-items:center; justify-content:center;
+    font-family:var(--mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+  .cf-image-frame:has(img.cf-img-missing) .cf-image-fallback{ display:flex; }
+  .cf-image-caption{
+    font-family:var(--mono); font-size:11px; color:var(--ink-soft);
+    letter-spacing:.03em; margin-top:10px; padding-left:2px;
+  }
+  .cf-pullquote{
+    position:relative;
+    margin:32px 0; padding:6px 0 6px 26px;
+    border-left:3px solid var(--case-accent, var(--rose));
+    font-family:var(--display); font-style:italic; font-weight:500;
+    font-size:1.35rem; line-height:1.4; color:var(--paper);
+  }
 
   /* ============================================================
      DESIGN GALLERY + FILMSTRIP LIGHTBOX
@@ -1244,16 +1512,19 @@
     .work-row{ grid-template-columns:44px 1fr; }
     .work-pub{ grid-column:2/3; text-align:left; margin-top:2px; }
     .hero-body,
-    .hero-body.hero-body--right{
+    .hero-body.hero-body--right,
+    .hero-body.hero-body--left{
       grid-template-columns:1fr;
       grid-template-areas:"photo" "a" "b";
       row-gap:28px;
       
     }
     .hero-body.hero-body--right .hero-portrait-wrap,
+    .hero-body.hero-body--left .hero-portrait-wrap,
     .hero-portrait-wrap{ justify-self:start; }
-    .case-file-dialog{ width:92vw; }
-    .case-file-body{ padding:32px 24px; }
+    .case-file-dialog{ width:94vw; max-height:92vh; }
+    .case-file-body{ padding:30px 22px 36px; }
+    .case-file-meta{ gap:16px; }
     .filmstrip-dialog{ width:96vw; height:88vh; }
     .scrapbook-spread{ flex-direction:column; max-width:96vw; }
     .scrapbook-spine{
@@ -1292,18 +1563,6 @@
     <button type="button" class="tab" data-page="contact"><span>Contact</span></button>
   </div>
 </nav>
-<!-- Breadcrumb tray: mirrors the row above, column for column. Empty
-     placeholder on Home; fills in left-to-right as pages cascade down
-     out of the top row. -->
-<nav class="subnav subnav-bottom" id="subnavBottom" aria-label="Previously viewed sections">
-  <div class="subnav-inner">
-    <button type="button" class="tab tab-bottom" data-page="home"><span>Home</span></button>
-    <button type="button" class="tab tab-bottom" data-page="experience"><span>Experience</span></button>
-    <button type="button" class="tab tab-bottom" data-page="work"><span>Work</span></button>
-    <button type="button" class="tab tab-bottom" data-page="skills"><span>Skills</span></button>
-    <button type="button" class="tab tab-bottom" data-page="contact"><span>Contact</span></button>
-  </div>
-</nav>
 <div class="accent-rule" id="accentRule" aria-hidden="true"></div>
 <div class="nav-spacer" aria-hidden="true"></div>
 
@@ -1323,11 +1582,29 @@
      between the two subnav bars.
      ============================================================ -->
 <section class="hero" id="top" data-page="home">
+  <div class="deco-layer" aria-hidden="true">
+    <span class="deco-shape deco-ring" style="color:var(--acc-home); width:120px; height:120px; top:8%; right:8%;"></span>
+    <span class="deco-shape deco-disc" style="color:var(--acc-experience); width:60px; height:60px; bottom:14%; right:22%;"></span>
+    <span class="deco-shape deco-triangle" style="color:var(--acc-skills); top:22%; left:4%; --tri-size:18px;"></span>
+    <span class="deco-shape deco-strip" style="color:var(--acc-work); width:140px; bottom:8%; left:6%; transform:rotate(-8deg);"></span>
+    <span class="deco-shape deco-wavy" style="color:var(--rose); width:110px; height:20px; top:16%; left:30%;">
+      <svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 10 Q14 0 26 10 T50 10 T74 10 T98 10" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
+    </span>
+    <span class="deco-shape deco-arrow" style="color:var(--wine); width:52px; height:52px; top:24%; left:56%; transform:rotate(60deg);">
+      <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><path d="M8 12 C10 40 30 50 48 42" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M38 36 L48 42 L44 54" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
+    <span class="washi washi-stripe" style="color:var(--acc-home); width:64px; height:20px; top:4%; left:44%; transform:rotate(-7deg);"></span>
+    <span class="washi washi-dot" style="color:var(--acc-work); width:56px; height:18px; bottom:20%; right:14%; transform:rotate(6deg);"></span>
+    <div class="news-clipping" style="top:6%; right:2%; transform:rotate(4deg);">
+      <div class="nc-photo"></div>
+      <div class="nc-headline">Housing Beat Wins State Press Award</div>
+      <div class="nc-line"></div>
+      <div class="nc-line"></div>
+      <div class="nc-line"></div>
+    </div>
+  </div>
   <div class="wrap">
-    <div class="eyebrow"><span class="rule"></span>Portfolio — Vol. 01, 2026</div>
-    <h1 class="masthead">Kirstien Dominique <em>Santos</em></h1>
-    
-    <div class="hero-body">
+    <div class="hero-body hero-body--left">
 
       <div class="hero-portrait-wrap">
         <span class="hero-portrait-ring" aria-hidden="true"></span>
@@ -1337,7 +1614,12 @@
       </div>
 
       <div class="hero-text-b">
-        <p class="dateline"><b>Pasig City, MNL —</b> BA in Journalism graduate with experience in writing digital news, content writing, graphic design, organizational leadership, research, copyediting, video editing, scriptwriting, social media management and project management.</p>
+        <div class="eyebrow"><span class="rule"></span>Portfolio — Vol. 01, 2026</div>
+        <h1 class="masthead script-name">Kirstien Dominique <em>Santos</em></h1>
+        <div class="paper-scrap hero-note">
+          <p class="dateline"><b>Pasig City, MNL —</b> BA in Journalism graduate with experience in writing digital news, content writing, graphic design, organizational leadership, research, copyediting, video editing, scriptwriting, social media management and project management.</p>
+          <span class="hero-note-tag">est. 2026</span>
+        </div>
       </div>
     </div>
   </div>
@@ -1356,7 +1638,7 @@
 
     <div class="pan-track" id="panTrack">
 
-      <article class="story-panel">
+      <article class="story-panel" data-work-id="secondhand-bookstores" tabindex="0" role="button" aria-label="Open full article: Are second-hand bookstores turning a new, digital page?">
         <div class="story-media">
           <img src="assets/Are second-hand bookstores turning a new, digital page, Santos.png" alt="" loading="lazy">
           <span class="frame-sprocket left"></span>
@@ -1370,7 +1652,7 @@
         </div>
       </article>
 
-      <article class="story-panel">
+      <article class="story-panel" data-work-id="unesco-bohol-asin-tibuok" tabindex="0" role="button" aria-label="Open full article: UNESCO Bohol's Asin Tibuok, need of urgent safeguarding">
         <div class="story-media">
           <img src="images/story-02.jpg" alt="" loading="lazy">
           <span class="frame-sprocket left"></span>
@@ -1384,7 +1666,7 @@
         </div>
       </article>
 
-      <article class="story-panel">
+      <article class="story-panel" data-work-id="closed-doors-open-files" tabindex="0" role="button" aria-label="Open full article: Closed Doors, Open Files">
         <div class="story-media">
           <img src="images/story-03.jpg" alt="" loading="lazy">
           <span class="frame-sprocket left"></span>
@@ -1408,6 +1690,14 @@
      PREVIOUS WORKS — genre folders (inline expand + case-file modal)
      ============================================================ -->
 <section id="works" class="tight" data-page="work">
+  <div class="deco-layer" aria-hidden="true">
+    <span class="deco-shape deco-disc" style="color:var(--acc-work); width:70px; height:70px; top:14px; right:4%;"></span>
+    <span class="deco-shape deco-zigzag" style="color:var(--acc-work); width:80px; height:12px; top:20px; left:2%; transform:rotate(4deg);"></span>
+    <span class="deco-shape deco-wavy" style="color:var(--acc-work); width:80px; height:14px; top:8px; left:38%;">
+      <svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 10 Q14 0 26 10 T50 10 T74 10 T98 10" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
+    </span>
+    <span class="washi washi-dot" style="color:var(--rose); width:52px; height:16px; top:44px; right:22%; transform:rotate(-5deg);"></span>
+  </div>
   <div class="wrap">
     <div class="section-head reveal">
       <span class="kicker">Previous Works</span>
@@ -1442,11 +1732,20 @@
   <form method="dialog" class="dialog-close-form">
     <button class="dialog-close" aria-label="Close case file">✕</button>
   </form>
+  <div class="case-file-media" id="caseFileMedia" hidden>
+    <img id="caseFileImg" alt="">
+    <span class="case-file-media-tag" id="caseFileMediaTag"></span>
+  </div>
   <div class="case-file-body">
     <span class="kicker" id="caseFileGenre">Genre</span>
     <h3 class="case-file-title" id="caseFileTitle">Title</h3>
-    <div class="case-file-meta" id="caseFileMeta">Publication — Year</div>
+    <div class="case-file-meta" id="caseFileMeta"><!-- populated by JS --></div>
     <p class="case-file-dek" id="caseFileDek">Excerpt goes here.</p>
+    <div class="case-file-article" id="caseFileArticle" hidden><!-- populated by JS when a work has a `body` --></div>
+    <div class="case-file-skills" id="caseFileSkills" hidden>
+      <div class="case-file-skills-label">Skills applied</div>
+      <div class="item-skills" id="caseFileSkillsChips"></div>
+    </div>
   </div>
 </dialog>
 
@@ -1455,6 +1754,22 @@
      end of Work now that Work and Design share one tab.
      ============================================================ -->
 <section id="design" class="tight" data-page="work">
+  <div class="deco-layer" aria-hidden="true">
+    <span class="deco-shape deco-ring" style="color:var(--acc-design); width:60px; height:60px; top:10px; left:3%;"></span>
+    <span class="deco-shape deco-triangle" style="color:var(--acc-home); top:16px; right:8%; --tri-size:14px;"></span>
+    <span class="deco-shape deco-strip" style="color:var(--acc-design); width:90px; top:54px; left:40%; transform:rotate(6deg);"></span>
+    <span class="deco-shape deco-arrow" style="color:var(--acc-design); width:44px; height:44px; top:6px; left:20%; transform:rotate(-10deg) scaleX(-1);">
+      <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><path d="M8 12 C10 40 30 50 48 42" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M38 36 L48 42 L44 54" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
+    <span class="washi washi-stripe" style="color:var(--acc-home); width:52px; height:16px; top:22px; right:22%; transform:rotate(5deg);"></span>
+  </div>
+<div class="news-clipping" style="top:25%; left:-1%; transform:rotate(-8deg);">
+      <div class="nc-photo"></div>
+      <div class="nc-headline">Housing Beat Wins State Press Award</div>
+      <div class="nc-line"></div>
+      <div class="nc-line"></div>
+      <div class="nc-line"></div>
+    </div>
   <div class="wrap">
     <div class="section-head reveal">
       <span class="kicker">Creative Work</span>
@@ -1481,6 +1796,16 @@
      alternating left/right of it.
      ============================================================ -->
 <section id="experience" data-page="experience">
+  <div class="deco-layer" aria-hidden="true">
+    <div class="section-glow"></div>
+    <span class="deco-shape deco-disc" style="color:var(--acc-experience); width:100px; height:100px; top:4%; right:6%;"></span>
+    <span class="deco-shape deco-ring" style="color:var(--acc-experience); width:60px; height:60px; bottom:12%; left:3%;"></span>
+    <span class="deco-shape deco-zigzag" style="color:var(--acc-skills); width:80px; height:12px; top:40%; right:2%; transform:rotate(-6deg);"></span>
+    <span class="deco-shape deco-wavy" style="color:var(--acc-experience); width:90px; height:16px; top:15%; left:58%;">
+      <svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 10 Q14 0 26 10 T50 10 T74 10 T98 10" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
+    </span>
+    <span class="washi washi-dot" style="color:var(--acc-skills); width:56px; height:18px; top:5%; left:60%; transform:rotate(-8deg);"></span>
+  </div>
   <div class="wrap">
     <div class="section-head reveal">
       <span class="kicker">Career</span>
@@ -1505,6 +1830,8 @@
       </article>
 
       <article class="vtl-item vtl-right reveal">
+	<span class="vtl-dot" aria-hidden="true"></span>
+        <div class="vtl-date-slot"><span class="exp-year">Jun 2025 — Jun 2026</span></div>
         <div class="vtl-card">
           <h3 class="exp-role">President</h3>
           <div class="exp-org">UST Journalism Society — UST, Manila</div>
@@ -1513,8 +1840,7 @@
             <li>Co-developed a public-facing FOIA tracking tool adopted by three partner newsrooms.</li>
           </ul>
         </div>
-        <span class="vtl-dot" aria-hidden="true"></span>
-        <div class="vtl-date-slot"><span class="exp-year">Jun 2025 — Jun 2026</span></div>
+        
       </article>
 
       <article class="vtl-item vtl-left reveal">
@@ -1531,6 +1857,8 @@
       </article>
 
       <article class="vtl-item vtl-right reveal">
+        <span class="vtl-dot" aria-hidden="true"></span>
+        <div class="vtl-date-slot"><span class="exp-year">Jan 2025 — May 2025</span></div>
         <div class="vtl-card">
           <h3 class="exp-role">Writer and Graphics Design Team</h3>
           <div class="exp-org">The Trilby — UST, Manila</div>
@@ -1539,8 +1867,6 @@
             <li>[Deets].</li>
           </ul>
         </div>
-        <span class="vtl-dot" aria-hidden="true"></span>
-        <div class="vtl-date-slot"><span class="exp-year">Jan 2025 — May 2025</span></div>
       </article>
 
       <article class="vtl-item vtl-left reveal">
@@ -1557,6 +1883,8 @@
       </article>
 
       <article class="vtl-item vtl-right reveal">
+        <span class="vtl-dot" aria-hidden="true"></span>
+        <div class="vtl-date-slot"><span class="exp-year">Oct 2023 — Jun 2025</span></div>
         <div class="vtl-card">
           <h3 class="exp-role">Advocacy Development and Research Head</h3>
           <div class="exp-org">UST Hiraya — UST, Manila</div>
@@ -1565,8 +1893,6 @@
             <li>[Deets].</li>
           </ul>
         </div>
-        <span class="vtl-dot" aria-hidden="true"></span>
-        <div class="vtl-date-slot"><span class="exp-year">Oct 2023 — Jun 2025</span></div>
       </article>
 
       <article class="vtl-item vtl-left reveal">
@@ -1583,6 +1909,8 @@
       </article>
 
       <article class="vtl-item vtl-right reveal">
+        <span class="vtl-dot" aria-hidden="true"></span>
+        <div class="vtl-date-slot"><span class="exp-year">Aug 2020 — Aug 2022</span></div>
         <div class="vtl-card">
           <h3 class="exp-role">Education Committee Member</h3>
           <div class="exp-org">Pagbago Philippines — UST, Manila</div>
@@ -1591,8 +1919,6 @@
             <li>[Deets]</li>
           </ul>
         </div>
-        <span class="vtl-dot" aria-hidden="true"></span>
-        <div class="vtl-date-slot"><span class="exp-year">Aug 2020 — Aug 2022</span></div>
       </article>
       
     </div>
@@ -1604,6 +1930,9 @@
      EDUCATION
      ============================================================ -->
 <section id="education" class="tight" data-page="experience">
+  <div class="deco-layer" aria-hidden="true">
+    <span class="deco-shape deco-zigzag" style="color:var(--acc-experience); width:70px; height:10px; top:10%; right:6%; transform:rotate(3deg);"></span>
+  </div>
   <div class="wrap">
     <div class="section-head reveal">
       <span class="kicker">Education</span>
@@ -1628,6 +1957,16 @@
      TECHNICAL SKILLS / SOFT SKILLS
      ============================================================ -->
 <section id="skills" data-page="skills">
+  <div class="deco-layer" aria-hidden="true">
+    <div class="section-glow"></div>
+    <span class="deco-shape deco-disc" style="color:var(--acc-skills); width:90px; height:90px; top:6%; left:4%;"></span>
+    <span class="deco-shape deco-triangle down" style="color:var(--acc-contact); bottom:16%; right:6%; --tri-size:20px;"></span>
+    <span class="deco-shape deco-ring" style="color:var(--acc-skills); width:50px; height:50px; bottom:6%; left:14%;"></span>
+    <span class="deco-shape deco-arrow" style="color:var(--acc-skills); width:54px; height:54px; top:20%; right:16%; transform:rotate(140deg);">
+      <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><path d="M8 12 C10 40 30 50 48 42" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M38 36 L48 42 L44 54" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
+    <span class="washi washi-stripe" style="color:var(--acc-contact); width:60px; height:18px; top:10%; left:38%; transform:rotate(-4deg);"></span>
+  </div>
   <div class="wrap">
     <div class="section-head reveal">
       <span class="kicker">Skills</span>
@@ -1670,6 +2009,22 @@
      CONTACT
      ============================================================ -->
 <section id="contact" class="contact" data-page="contact">
+  <div class="deco-layer" aria-hidden="true">
+    <span class="deco-shape deco-disc" style="color:var(--acc-contact); width:110px; height:110px; top:8%; right:6%;"></span>
+    <span class="deco-shape deco-strip" style="color:var(--acc-contact); width:130px; top:40%; left:0; transform:rotate(-4deg);"></span>
+    <span class="deco-shape deco-plus" style="color:var(--acc-home); width:22px; height:22px; bottom:18%; right:16%;"></span>
+    <span class="deco-shape deco-wavy" style="color:var(--acc-contact); width:100px; height:18px; bottom:8%; left:8%;">
+      <svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 10 Q14 0 26 10 T50 10 T74 10 T98 10" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
+    </span>
+    <span class="washi washi-dot" style="color:var(--acc-home); width:56px; height:18px; top:14%; left:44%; transform:rotate(6deg);"></span>
+    <div class="news-clipping" style="bottom:6%; right:4%; transform:rotate(-3deg);">
+      <div class="nc-photo"></div>
+      <div class="nc-headline">Reporter Wanted: Bring Your Own Records Requests</div>
+      <div class="nc-line"></div>
+      <div class="nc-line"></div>
+      <div class="nc-line"></div>
+    </div>
+  </div>
   <div class="wrap contact-inner">
     <div>
       <span class="kicker">Get in touch</span>
@@ -1812,20 +2167,30 @@
   /* ---------------------------------------------------------
      PREVIOUS WORKS — genre folders + case-file modal
      --------------------------------------------------------- */
+  /* Add an `img:'path/to/photo.jpg'` property to any work below to
+     give its case file a lead photo (shown at the top of the modal,
+     16:9, cropped to fill) — omit it and that case file stays
+     text-only. */
   var worksData = [
-    { genre:'housing', year:'2025', title:'‘Ang Babae sa Septic Tank’ set for theatrical launch', pub:'Chicago Tribune', dek:'A look at how a proposed citywide landlord registry stalled twice in committee — and who lobbied to keep it that way.', skills:['FOIA / Public Records','Editorial Judgment'] },
-    { genre:'housing', year:'2023', title:'[THE TRILBY] EDSA STORY', pub:'Injustice Watch', dek:'Renters describe discrimination they never reported, and the barriers — language, fear, paperwork — that keep complaints from ever reaching a regulator.', skills:['Interviewing','Source Development'] },
-    { genre:'labor', year:'2025', title:'Are second-hand bookstores turning a new, digital page', pub:'ProPublica Illinois', dek:'Scheduling algorithms and staffing-agency practices quietly filter out applicants long before a human reviewer sees a resume.', skills:['Data Journalism','SQL'] },
-    { genre:'labor', year:'2022', title:'DOLE orders Cebu BPO company to halt operations', pub:'Independent', dek:'A pay-record analysis of three staffing agencies shows temp workers earning 18% less than direct hires for identical shifts.', skills:['Python (pandas)','Data Journalism'] },
-    { genre:'systems', year:'2025', title:'\u2019KPop Demon Hunters\u2019 singer Ejae dropping debut single this October', pub:'The Marshall Project', dek:'Budget documents show a district\u2019s decision to close 12 schools was effectively made a year before it was announced.', skills:['FOIA / Public Records','Fact-Checking Rigor'] },
-    { genre:'systems', year:'2024', title:'Lawyers\u2019 group_ Call for Marcos\u2019 resignation not seditious', pub:'Block Club Chicago', dek:'Mapping route cuts against ridership by ward reveals which neighborhoods lost service first — and never got it back.', skills:['Datawrapper / Flourish','Data Journalism'] },
-    { genre:'data', year:'2024', title:'Records Requests 101: A Reporter\u2019s Toolkit', pub:'Injustice Watch', dek:'A practical walkthrough of the FOIA pipeline built for this newsroom, shared so other reporters can adapt it.', skills:['FOIA / Public Records','CMS Publishing (WordPress)'] },
-    { genre:'data', year:'2023', title:'Mirasol', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'] },
-    { genre:'data', year:'2023', title:'P-Pop boy group Alamat dropping sophomore album in November', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'] },
-    { genre:'data', year:'2023', title:'INCLUSIVITY IN PH BEAUTY', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'] },
-    { genre:'data', year:'2023', title:'UNESCO Bohol\u2019s Asin Tibuok, need of urgent safeguarding', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'] },
-    { genre:'data', year:'2023', title:'Weather systems to bring rains in extended weekend - PAGASA', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'] },
-    { genre:'data', year:'2023', title:'Weather Wednesday story', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'] }
+    { id:'housing-registry', genre:'housing', year:'2025', title:'‘Ang Babae sa Septic Tank’ set for theatrical launch', pub:'Chicago Tribune', dek:'A one-line teaser shown in the case-file preview.', skills:['FOIA / Public Records','Editorial Judgment'], img:'assets/works/housing-registry.jpg', published:true, body:[
+      { type:'p', text:'Full first paragraph of the article...' },
+      { type:'image', src:'assets/works/housing-1.jpg', caption:'Caption text' },
+      { type:'p', text:'Next paragraph...' },
+      { type:'pullquote', text:'A standout line from the piece.' }
+    ] },
+    { id:'edsa-story', genre:'housing', year:'2023', title:'[THE TRILBY] EDSA STORY', pub:'Injustice Watch', dek:'Renters describe discrimination they never reported, and the barriers — language, fear, paperwork — that keep complaints from ever reaching a regulator.', skills:['Interviewing','Source Development'], published:true },
+    { id:'secondhand-bookstores', genre:'labor', year:'2025', title:'Are second-hand bookstores turning a new, digital page', pub:'ProPublica Illinois', dek:'Scheduling algorithms and staffing-agency practices quietly filter out applicants long before a human reviewer sees a resume.', skills:['Data Journalism','SQL'], img:'assets/works/labor-algorithms.jpg', published:true },
+    { id:'dole-cebu-bpo', genre:'labor', year:'2022', title:'DOLE orders Cebu BPO company to halt operations', pub:'Independent', dek:'A pay-record analysis of three staffing agencies shows temp workers earning 18% less than direct hires for identical shifts.', skills:['Python (pandas)','Data Journalism'], published:true },
+    { id:'kpop-demon-hunters-ejae', genre:'systems', year:'2025', title:'\u2019KPop Demon Hunters\u2019 singer Ejae dropping debut single this October', pub:'The Marshall Project', dek:'Budget documents show a district\u2019s decision to close 12 schools was effectively made a year before it was announced.', skills:['FOIA / Public Records','Fact-Checking Rigor'], published:true },
+    { id:'closed-doors-open-files', genre:'systems', year:'2024', title:'Closed Doors, Open Files', pub:'The Marshall Project', dek:'A district shut 12 schools in a single summer. Budget records show the decision was made a year earlier.', skills:['FOIA / Public Records','Fact-Checking Rigor'], published:true },
+    { id:'marcos-resign-not-seditious', genre:'systems', year:'2024', title:'Lawyers\u2019 group_ Call for Marcos\u2019 resignation not seditious', pub:'Block Club Chicago', dek:'Mapping route cuts against ridership by ward reveals which neighborhoods lost service first — and never got it back.', skills:['Datawrapper / Flourish','Data Journalism'], published:true },
+    { id:'records-requests-101', genre:'data', year:'2024', title:'Records Requests 101: A Reporter\u2019s Toolkit', pub:'Injustice Watch', dek:'A practical walkthrough of the FOIA pipeline built for this newsroom, shared so other reporters can adapt it.', skills:['FOIA / Public Records','CMS Publishing (WordPress)'], published:true },
+    { id:'mirasol', genre:'data', year:'2023', title:'Mirasol', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'], published:false },
+    { id:'alamat-sophomore-album', genre:'data', year:'2023', title:'P-Pop boy group Alamat dropping sophomore album in November', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'], published:true },
+    { id:'inclusivity-ph-beauty', genre:'data', year:'2023', title:'INCLUSIVITY IN PH BEAUTY', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'], published:true },
+    { id:'unesco-bohol-asin-tibuok', genre:'data', year:'2023', title:'UNESCO Bohol\u2019s Asin Tibuok, need of urgent safeguarding', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'], published:true },
+    { id:'weather-extended-weekend-pagasa', genre:'data', year:'2023', title:'Weather systems to bring rains in extended weekend - PAGASA', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'], published:true },
+    { id:'weather-wednesday-story', genre:'data', year:'2023', title:'Weather Wednesday story', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'], published:false }
   ];
   var genreLabels = { housing:'Housing', labor:'Labor', systems:'Public Systems', data:'Data & FOIA' };
 
@@ -1833,6 +2198,12 @@
   var folderPanel = document.getElementById('folderPanel');
   var folderGrid = document.getElementById('folderGrid');
   var activeFolder = null;
+
+  function statusBadgeHtml(w){
+    var isDraft = w.published === false;
+    return '<span class="status-badge ' + (isDraft ? 'status-badge--draft' : 'status-badge--published') + '">' +
+      (isDraft ? 'Draft' : 'Published') + '</span>';
+  }
 
   function renderFolder(genre){
     folderGrid.innerHTML = '';
@@ -1842,6 +2213,7 @@
       card.type = 'button';
       card.style.animationDelay = reduceMotion ? '0s' : (i * 0.06) + 's';
       card.innerHTML =
+        statusBadgeHtml(w) +
         '<span class="work-year">' + w.year + '</span>' +
         '<span class="work-title">' + w.title + '</span>' +
         '<span class="work-pub">' + w.pub + '</span>' +
@@ -1934,11 +2306,100 @@
   }
 
   var caseFileDialog = document.getElementById('caseFileDialog');
+  var caseFileMedia = document.getElementById('caseFileMedia');
+  var caseFileImg = document.getElementById('caseFileImg');
+  var caseFileMediaTag = document.getElementById('caseFileMediaTag');
+  var caseFileMeta = document.getElementById('caseFileMeta');
+  var caseFileArticle = document.getElementById('caseFileArticle');
+  var caseFileSkills = document.getElementById('caseFileSkills');
+  var caseFileSkillsChips = document.getElementById('caseFileSkillsChips');
+
+  function cfFieldHtml(label, value){
+    if(!value) return '';
+    return '<div class="cf-field"><span class="cf-label">' + label + '</span><span class="cf-value">' + value + '</span></div>';
+  }
+
+  // Turns a `body: [...]` array into the full article read. Each block
+  // is one of:
+  //   { type:'p', text:'...' }
+  //   { type:'image', src:'...', caption:'...' }   caption optional
+  //   { type:'pullquote', text:'...' }
+  // Unknown/malformed blocks are just skipped rather than breaking the
+  // whole render, so one typo in one article can't blank the dialog.
+  function caseFileBlockHtml(block){
+    if(!block || !block.type) return '';
+    if(block.type === 'p' && block.text){
+      return '<p class="cf-p">' + block.text + '</p>';
+    }
+    if(block.type === 'image' && block.src){
+      return (
+        '<div class="cf-image-block">' +
+          '<div class="cf-image-frame">' +
+            '<img src="' + block.src + '" alt="' + (block.caption || '') + '" onerror="this.classList.add(\'cf-img-missing\')">' +
+            '<div class="cf-image-fallback">Image not found</div>' +
+          '</div>' +
+          (block.caption ? '<div class="cf-image-caption">' + block.caption + '</div>' : '') +
+        '</div>'
+      );
+    }
+    if(block.type === 'pullquote' && block.text){
+      return '<blockquote class="cf-pullquote">' + block.text + '</blockquote>';
+    }
+    return '';
+  }
+
   function openCaseFile(w){
+    // Lead photo is optional — only shown when this work carries an
+    // `img` (or `cover`, same thing under a different name); the media
+    // block is hidden entirely otherwise so text-only case files don't
+    // leave an empty gap up top.
+    var leadImg = w.img || w.cover;
+    if(leadImg){
+      caseFileImg.src = leadImg;
+      caseFileImg.alt = w.title;
+      caseFileMediaTag.textContent = w.pub;
+      caseFileMedia.hidden = false;
+    } else {
+      caseFileImg.removeAttribute('src');
+      caseFileMedia.hidden = true;
+    }
+    var accent = getComputedStyle(document.documentElement).getPropertyValue('--acc-work').trim();
+    if(accent){ caseFileDialog.style.setProperty('--case-accent', accent); }
+
     document.getElementById('caseFileGenre').textContent = genreLabels[w.genre];
     document.getElementById('caseFileTitle').textContent = w.title;
-    document.getElementById('caseFileMeta').textContent = w.pub + ' — ' + w.year;
+    caseFileMeta.innerHTML =
+      cfFieldHtml('Publication', w.pub) +
+      cfFieldHtml('Year', w.year) +
+      cfFieldHtml('Beat', genreLabels[w.genre]) +
+      cfFieldHtml('Status', statusBadgeHtml(w));
     document.getElementById('caseFileDek').textContent = w.dek;
+
+    // Full article body — only rendered when this work carries a
+    // `body` array; otherwise the dek above is all that shows, exactly
+    // as before.
+    if(w.body && w.body.length){
+      caseFileArticle.innerHTML = w.body.map(caseFileBlockHtml).join('');
+      caseFileArticle.hidden = false;
+    } else {
+      caseFileArticle.innerHTML = '';
+      caseFileArticle.hidden = true;
+    }
+
+    if(w.skills && w.skills.length){
+      caseFileSkillsChips.innerHTML = w.skills.map(function(s){
+        return '<span class="item-skill-tag">' + s + '</span>';
+      }).join('');
+      caseFileSkills.hidden = false;
+    } else {
+      caseFileSkills.hidden = true;
+    }
+
+    // Long articles start scrolled to the top, not wherever the
+    // previous case file left its scroll position.
+    var bodyEl = caseFileDialog.querySelector('.case-file-body');
+    if(bodyEl){ bodyEl.scrollTop = 0; }
+
     openDialogAnimated(caseFileDialog);
   }
   wireDialogClose(caseFileDialog);
@@ -2203,6 +2664,26 @@
     });
   }
 
+  /* ---------------------------------------------------------
+     FEATURED STORIES → ARTICLES — each card in the "Featured Stories"
+     reel carries a data-work-id matching an entry in worksData;
+     clicking (or Enter/Space while focused, since these are <article>
+     elements made keyboard-focusable via tabindex) jumps straight to
+     that article's genre folder and opens its case file, the same
+     path a matched skill tag uses.
+     --------------------------------------------------------- */
+  document.querySelectorAll('.story-panel[data-work-id]').forEach(function(panel){
+    var match = worksData.filter(function(w){ return w.id === panel.getAttribute('data-work-id'); })[0];
+    if(!match) return;
+    panel.addEventListener('click', function(){ openWorkItem(match); });
+    panel.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        openWorkItem(match);
+      }
+    });
+  });
+
   function itemsForSkill(label){
     var items = [];
     worksData.forEach(function(w){
@@ -2295,7 +2776,6 @@
      --------------------------------------------------------- */
   var PAGES = ['home', 'experience', 'work', 'skills', 'contact'];
   var subnav = document.getElementById('subnav');
-  var subnavBottom = document.getElementById('subnavBottom');
   var allTabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
 
   /* Group every top-level content section (hero, summary, coverage…
@@ -2309,7 +2789,7 @@
      independently fixed-positioned and toggle instantly with no
      slide of their own. */
   var contentEls = Array.prototype.filter.call(document.querySelectorAll('[data-page]'), function(el){
-    return !el.closest('#subnav') && !el.closest('#subnavBottom') && !el.classList.contains('page-sidebar');
+    return !el.closest('#subnav') && !el.classList.contains('page-sidebar');
   });
   var pageSidebars = Array.prototype.slice.call(document.querySelectorAll('.page-sidebar[data-page]'));
   var pageStage = document.createElement('div');
@@ -2329,14 +2809,13 @@
   });
 
   /* Measures the real header height (brand row can wrap on narrow
-     screens) plus both subnav rows' real heights, so the accent rule,
+     screens) plus the subnav's real height, so the accent rule,
      content spacer, and the sliding panels' resting rect all line up
      exactly instead of relying on guessed pixel values. */
   var siteNav = document.getElementById('siteNav');
   function syncNavMetrics(){
     document.documentElement.style.setProperty('--header-h', siteNav.offsetHeight + 'px');
     document.documentElement.style.setProperty('--subnav-h', subnav.offsetHeight + 'px');
-    document.documentElement.style.setProperty('--subnav-bottom-h', subnavBottom.offsetHeight + 'px');
   }
   syncNavMetrics();
   window.addEventListener('resize', syncNavMetrics);
@@ -2344,32 +2823,31 @@
   /* ---------------------------------------------------------
      THE PULL: a page-panel is normally just a static block in the
      document, scrolled the ordinary way. To "pull" one over the
-     screen, it's lifted out of flow just long enough to slide from
-     off-screen (above the top bar, or below the bottom tray) into
-     the gap between them, covering whatever was showing — then
-     dropped straight back into normal flow once it lands, so the
-     page behind it (including the Work page's horizontal pan rig,
-     which measures window scroll) never notices anything happened.
-     A soft "ease-out" curve (see --cascade-ease) gives it weight and
-     a gentle settle, like a hand pulling a sheet of paper down and
-     letting it fall the last little bit on its own, rather than
-     stopping dead the instant it arrives.
+     screen, it's lifted out of flow just long enough to slide down
+     from behind the subnav into the gap below it, covering whatever
+     was showing — then dropped straight back into normal flow once
+     it lands, so the page behind it (including the Work page's
+     horizontal pan rig, which measures window scroll) never notices
+     anything happened. A soft "ease-out" curve (see --cascade-ease)
+     gives it weight and a gentle settle, like a hand pulling a sheet
+     of paper down and letting it fall the last little bit on its
+     own, rather than stopping dead the instant it arrives.
      --------------------------------------------------------- */
   var CASCADE_MS = 640;
   var activePageId = null;
 
-  function parkAsCurtain(panel, direction){
+  function parkAsCurtain(panel){
     panel.style.position = 'fixed';
     panel.style.left = '0';
     panel.style.right = '0';
     panel.style.top = 'calc(var(--header-h, 49px) + var(--subnav-h, 37px))';
-    panel.style.bottom = 'var(--subnav-bottom-h, 37px)';
+    panel.style.bottom = '0';
     panel.style.overflowY = 'auto';
     panel.style.zIndex = '60';
     panel.style.background = 'var(--ink)';
     panel.style.transition = 'none';
-    panel.classList.add(direction === 'down' ? 'is-pulling-down' : 'is-pulling-up');
-    panel.style.transform = direction === 'down' ? 'translateY(-100%)' : 'translateY(100%)';
+    panel.classList.add('is-pulling-down');
+    panel.style.transform = 'translateY(-100%)';
   }
 
   function releaseFromCurtain(panel){
@@ -2383,7 +2861,7 @@
     panel.style.background = '';
     panel.style.transition = '';
     panel.style.transform = '';
-    panel.classList.remove('is-pulling-down', 'is-pulling-up');
+    panel.classList.remove('is-pulling-down');
   }
 
   function showPage(pageId, animate){
@@ -2410,17 +2888,10 @@
       return pageId;
     }
 
-    // Top-row tabs only ever move forward through PAGES (later pages
-    // are the only ones left clickable up top); bottom-row tabs only
-    // ever move back to an earlier one — so comparing order alone
-    // tells us which bar is "pulling": forward = pulled down from the
-    // top bar, backward = pulled up from the bottom tray.
-    var direction = PAGES.indexOf(pageId) > PAGES.indexOf(oldPageId) ? 'down' : 'up';
-
     window.scrollTo(0, 0);
     document.body.style.overflow = 'hidden';
     newPanel.style.display = '';
-    parkAsCurtain(newPanel, direction);
+    parkAsCurtain(newPanel);
     void newPanel.offsetHeight; // commit the off-screen start position
     newPanel.style.transition = 'transform ' + CASCADE_MS + 'ms var(--cascade-ease)';
     requestAnimationFrame(function(){
@@ -2439,134 +2910,17 @@
     return pageId;
   }
 
-
-
-  /* Marks the current page's tab active (its border seams into the
-     page below it — see .tab.is-active in CSS), cascades that tab's
-     accent colour down through the cascade rule and hero wash so the
-     whole page visibly "belongs" to the tab above it, AND drives the
-     two-row cascade: every page ordered before the active one blanks
-     out up top (.is-passed) and lands as a breadcrumb down in the
-     bottom row (.is-shown); everything from the active page onward
-     stays put, normally, in the top row. */
-  /* ---------------------------------------------------------
-     THE TABS RIDE ALONG: when a tab crosses from the top row to the
-     bottom tray (or back), a temporary "ghost" — a clone of the real
-     tab — is what actually flies between them, timed to match the
-     page-panel's own pull. The real top and bottom tab instances snap
-     to their final state instantly and silently underneath the
-     ghost's flight path, so the moment the ghost lands and is
-     removed, the swap is invisible: it just looks like the one tab
-     travelled all the way from its old slot to its new one.
-     --------------------------------------------------------- */
+  /* Marks the current page's tab active (its scribble underline and
+     paper "brad" — see .tab.is-active in CSS) and cascades that tab's
+     accent colour down through the cascade rule and hero wash, so
+     the whole page visibly "belongs" to the tab open above it. */
   function tabAccent(pageId){
     return getComputedStyle(document.documentElement).getPropertyValue('--acc-' + pageId).trim();
   }
 
-  function flyTabGhost(sourceEl, sourceRect, targetRect, onLand){
-    var ghost = sourceEl.cloneNode(true);
-    ghost.classList.remove('is-active', 'is-passed', 'is-shown');
-    ghost.classList.add('tab-ghost');
-    ghost.style.left = sourceRect.left + 'px';
-    ghost.style.top = sourceRect.top + 'px';
-    ghost.style.width = sourceRect.width + 'px';
-    ghost.style.height = sourceRect.height + 'px';
-    ghost.style.transform = 'translate(0,0)';
-    ghost.style.transition = 'none';
-    document.body.appendChild(ghost);
-    var dx = targetRect.left - sourceRect.left;
-    var dy = targetRect.top - sourceRect.top;
-    void ghost.offsetHeight; // commit the start position
-    ghost.style.transition = 'transform ' + CASCADE_MS + 'ms var(--cascade-ease)';
-    requestAnimationFrame(function(){
-      ghost.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
-    });
-    // The real target stays hidden the whole flight — only revealed
-    // (see onLand) the instant the ghost arrives and is removed, so
-    // there's never a moment where the tab appears to exist in both
-    // places at once.
-    window.setTimeout(function(){
-      if(onLand){ onLand(); }
-      ghost.remove();
-    }, CASCADE_MS + 20);
-  }
-
-  function setCurrentTab(pageId, oldPageId, animate){
-    var activeIndex = PAGES.indexOf(pageId);
-    var oldIndex = oldPageId ? PAGES.indexOf(oldPageId) : -1;
-    var canFly = animate && oldPageId && oldPageId !== pageId && oldIndex !== -1 && !reduceMotion;
-    var toBottom = canFly && activeIndex > oldIndex;
-    var lo = canFly ? Math.min(oldIndex, activeIndex) : -1;
-    var hi = canFly ? Math.max(oldIndex, activeIndex) : -1;
-    var flyingPages = {};
-
-    if(canFly){
-      for(var i = lo; i < hi; i++){
-        var tabPage = PAGES[i];
-        var topEl = allTabs.filter(function(t){ return t.getAttribute('data-page') === tabPage && !t.classList.contains('tab-bottom'); })[0];
-        var bottomEl = allTabs.filter(function(t){ return t.getAttribute('data-page') === tabPage && t.classList.contains('tab-bottom'); })[0];
-        if(!topEl || !bottomEl) continue;
-        flyingPages[tabPage] = true;
-        var sourceEl = toBottom ? topEl : bottomEl;
-        var targetEl = toBottom ? bottomEl : topEl;
-        var willBeActive = (i === activeIndex);
-        var sourceRect = sourceEl.getBoundingClientRect();
-
-        // Hide the source instantly (transition suppressed) — the
-        // ghost is the only thing that visibly moves away from here.
-        var prevSourceTransition = sourceEl.style.transition;
-        sourceEl.style.transition = 'none';
-        if(toBottom){
-          topEl.classList.remove('is-active');
-          topEl.classList.add('is-passed');
-        } else {
-          bottomEl.classList.remove('is-shown');
-        }
-        void sourceEl.offsetHeight;
-        (function(srcEl, prevSrc){
-          requestAnimationFrame(function(){ srcEl.style.transition = prevSrc; });
-        }(sourceEl, prevSourceTransition));
-
-        // Measure where the target WILL sit once revealed, by forcing
-        // its final state just long enough to read the rect, then
-        // reverting it to hidden — it only actually reveals in onLand,
-        // once the ghost has finished travelling there.
-        var prevTargetTransition = targetEl.style.transition;
-        targetEl.style.transition = 'none';
-        if(toBottom){ targetEl.classList.add('is-shown'); }
-        else { targetEl.classList.remove('is-passed'); targetEl.classList.toggle('is-active', willBeActive); }
-        void targetEl.offsetHeight;
-        var targetRect = targetEl.getBoundingClientRect();
-        if(toBottom){ targetEl.classList.remove('is-shown'); }
-        else { targetEl.classList.add('is-passed'); targetEl.classList.remove('is-active'); }
-        void targetEl.offsetHeight;
-        targetEl.style.transition = prevTargetTransition;
-
-        flyTabGhost(sourceEl, sourceRect, targetRect, (function(tgtEl, isBottomTarget, active){
-          return function(){
-            var prevT = tgtEl.style.transition;
-            tgtEl.style.transition = 'none';
-            if(isBottomTarget){ tgtEl.classList.add('is-shown'); }
-            else { tgtEl.classList.remove('is-passed'); tgtEl.classList.toggle('is-active', active); }
-            void tgtEl.offsetHeight;
-            requestAnimationFrame(function(){ tgtEl.style.transition = prevT; });
-          };
-        }(targetEl, toBottom, willBeActive)));
-      }
-    }
-
+  function setCurrentTab(pageId){
     allTabs.forEach(function(t){
-      var tabPage = t.getAttribute('data-page');
-      if(flyingPages[tabPage]) return; // handled by the flight above
-      var tabIndex = PAGES.indexOf(tabPage);
-      var isBottomTab = t.classList.contains('tab-bottom');
-      if(isBottomTab){
-        t.classList.toggle('is-shown', tabIndex < activeIndex);
-        t.classList.remove('is-active');
-      } else {
-        t.classList.toggle('is-active', tabIndex === activeIndex);
-        t.classList.toggle('is-passed', tabIndex < activeIndex);
-      }
+      t.classList.toggle('is-active', t.getAttribute('data-page') === pageId);
     });
     var accent = tabAccent(pageId);
     if(accent){ document.documentElement.style.setProperty('--page-accent', accent); }
@@ -2578,17 +2932,15 @@
     return PAGES.indexOf(pageId) === -1 ? 'home' : pageId;
   }
 
-  // Clicking a subnav tab: pull its page over the screen (top tabs
-  // pull down, bottom tabs pull up — see showPage) and mark it active,
-  // cascading its accent colour down into the page, while its own tab
-  // rides along between the two rows (see setCurrentTab).
+  // Clicking a subnav tab: pull its page down over the screen (see
+  // showPage) and mark it active, cascading its accent colour down
+  // into the page (see setCurrentTab).
   allTabs.forEach(function(tab){
     tab.addEventListener('click', function(){
       var pageId = tab.getAttribute('data-page');
       if(tab.classList.contains('is-active')) return;
-      var oldPageId = activePageId;
       showPage(pageId, true);
-      setCurrentTab(pageId, oldPageId, true);
+      setCurrentTab(pageId);
       if(window.history && history.pushState){
         history.pushState(null, '', '#page-' + pageId);
       }
