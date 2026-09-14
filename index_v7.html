@@ -1,0 +1,2578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kirstien Dominique Santos — Reporter Portfolio</title>
+<meta name="description" content="Investigative & features reporting portfolio — housing, labor, and the systems that shape everyday life.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+  /* ============================================================
+     TOKENS
+     ============================================================ */
+  :root{
+    --cream:#FFD9DA;
+    --rose:#EA638C;
+    --wine:#89023E;
+    --slate:#30343F;
+    --ink:#1B2021;
+
+    --paper:#FFEFEF;      /* tinted white, warmer than pure #fff */
+    --ink-soft:#8b9099;   /* muted text on dark */
+
+    --display:'Fraunces', Georgia, serif;
+    --body:'Inter', -apple-system, sans-serif;
+    --mono:'Space Mono', 'Courier New', monospace;
+    --marker:'Caveat', cursive;
+
+    --tape:rgba(255,217,218,.5);
+    --tape-edge:rgba(27,32,33,.08);
+    --paper-shadow:0 14px 30px rgba(0,0,0,.35), 0 3px 8px rgba(0,0,0,.25);
+
+    --wrap: min(1180px, 92vw);
+    --ease: cubic-bezier(.22,.61,.36,1);
+    --cascade-ease: cubic-bezier(.16,1,.3,1);
+
+    /* Real measured height of the subnav row (JS keeps this in sync
+       with actual layout — see syncNavMetrics) so the accent rule and
+       content spacer always line up. Fallback matches the default tab
+       row so nothing jumps before JS runs. */
+    --subnav-h: 37px;
+
+    /* Section "wire-service" tags — newsrooms colour-code beats
+       (Metro, Business, Sports…); each page gets one tag colour,
+       carried from its subnav tab down into its own hero wash. */
+    --acc-home:#EA638C;
+    --acc-experience:#3FA7D6;
+    --acc-work:#8D7FCB;
+    --acc-design:#4FB68A;
+    --acc-skills:#E0793C;
+    --acc-contact:#D6C33F;
+    --page-accent: var(--acc-home);
+    --header-h: 49px;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; }
+  }
+
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--paper);
+    font-family:var(--body);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  img{ max-width:100%; display:block; }
+  a{ color:inherit; }
+
+  ::selection{ background:var(--wine); color:var(--cream); }
+
+  .wrap{ width:var(--wrap); margin:0 auto; }
+
+  /* ============================================================
+     GRAIN TEXTURE (shared subtle overlay, adds a print feel)
+     ============================================================ */
+  .grain{
+    position:fixed; inset:0; pointer-events:none; z-index:500;
+    opacity:.05; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ============================================================
+     NAV
+     ============================================================ */
+  header.site-nav{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    background:rgba(27,32,33,.92);
+    backdrop-filter:blur(8px);
+    box-shadow:0 12px 30px rgba(0,0,0,.3);
+  }
+  .nav-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 0;
+  }
+  .brand{
+    font-family:var(--mono); font-size:13px; letter-spacing:.08em;
+    text-decoration:none; color:var(--cream); font-weight:700;
+    display:flex; align-items:center; gap:8px;
+  }
+  .brand .dot{ width:7px; height:7px; border-radius:50%; background:var(--rose); transition:transform .3s var(--ease), box-shadow .3s var(--ease); }
+  .brand:hover .dot{ transform:scale(1.5); box-shadow:0 0 0 4px rgba(234,99,140,.2); }
+
+  /* ------------------------------------------------------------
+     SUBNAV — one normal row, pinned under the header. Styled like a
+     strip of folder stock with the section tabs die-cut into it:
+     each .tab is a scrap of coloured paper clipped into a folder-tab
+     trapezoid, pinned down at a slight scrapbook tilt, with a torn
+     kraft strip running underneath and a hand-drawn scribble marking
+     whichever one is open. Clicking a tab just pulls that page's
+     panel down over whatever's showing (see PAGE PANELS + router).
+     ------------------------------------------------------------ */
+  .subnav{
+    position:fixed; left:0; right:0; top:var(--header-h, 49px); z-index:99;
+    background:var(--ink);
+    overflow-x:auto; overflow-y:visible; -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    padding-bottom:9px;
+  }
+  .subnav::-webkit-scrollbar{ display:none; }
+  /* Torn kraft-paper strip the tabs sit on, plus a scatter of tiny
+     scrapbook confetti shapes (circle, triangle, ring) in the page
+     accent colours — decorative only, never blocks clicks. */
+  .subnav::before{
+    content:'';
+    position:absolute; left:0; right:0; bottom:0; height:1px;
+    background:
+      repeating-linear-gradient(110deg, rgba(255,217,218,.22) 0 7px, transparent 7px 15px);
+    opacity:.6;
+  }
+  .subnav::after{
+    content:'';
+    position:absolute; inset:0; pointer-events:none; z-index:0; opacity:.55;
+    background:
+      radial-gradient(circle 3px at 91% 22%, var(--acc-work), transparent 101%),
+      radial-gradient(circle 2px at 96% 68%, var(--acc-skills), transparent 101%),
+      conic-gradient(from 20deg at 87% 78%, transparent 0 60%, var(--acc-experience) 60% 66%, transparent 66%);
+  }
+  .subnav-inner{
+    display:flex;
+    align-items:flex-end;
+    gap:2px;
+    position:relative; z-index:1;
+    padding:15px 18px 0;
+  }
+  .tab{
+    --accent:var(--rose); --tilt:0deg;
+    font-family:var(--mono); font-size:11px; letter-spacing:.05em;
+    text-transform:uppercase; color:var(--ink);
+    background:var(--accent); filter:brightness(.62) saturate(.85);
+    border:1px solid rgba(0,0,0,.4);
+    padding:10px 19px 9px;
+    cursor:pointer; position:relative;
+    /* die-cut folder-tab notch: corners chamfered like a hanging-file tab */
+    clip-path:polygon(9px 0, calc(100% - 9px) 0, 100% 100%, 0 100%);
+    transform:translateY(6px) rotate(var(--tilt));
+    opacity:1;
+    transition:filter .25s var(--ease), transform .3s cubic-bezier(.34,1.3,.5,1), box-shadow .25s var(--ease), opacity .3s var(--ease);
+  }
+  .tab:not(:first-child){ margin-left:-3px; }
+  .tab:nth-child(5n+1){ --tilt:-1.6deg; }
+  .tab:nth-child(5n+2){ --tilt:1.1deg; }
+  .tab:nth-child(5n+3){ --tilt:-.7deg; }
+  .tab:nth-child(5n+4){ --tilt:1.4deg; }
+  .tab:nth-child(5n+5){ --tilt:-1deg; }
+  .tab span{ position:relative; z-index:2; pointer-events:none; font-weight:700; }
+  .tab:hover{ filter:brightness(.85) saturate(1); transform:translateY(2px) rotate(0deg); }
+  .tab:focus-visible{ outline:2px solid var(--paper); outline-offset:-3px; }
+  .tab.is-active{
+    filter:none; z-index:3;
+    transform:translateY(-2px) rotate(0deg);
+    box-shadow:0 10px 20px rgba(0,0,0,.4);
+  }
+  /* A little paper "brad" punched through the open tab, like it's
+     pinned to the folder — small scrapbook detail. */
+  .tab.is-active::before{
+    content:'';
+    position:absolute; top:7px; left:50%; transform:translateX(-50%);
+    width:5px; height:5px; border-radius:50%;
+    background:var(--ink);
+    box-shadow:inset 0 1px 1px rgba(0,0,0,.6), 0 1px 0 rgba(255,255,255,.18);
+  }
+  /* Hand-drawn scribble swoosh underlining whichever tab is open. */
+  .tab.is-active::after{
+    content:'';
+    position:absolute; left:10%; right:10%; bottom:-8px; height:7px;
+    background:no-repeat center/100% 100% url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10'%3E%3Cpath d='M2 6 Q20 -2 38 6 T76 5 T98 6' stroke='%231B2021' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    pointer-events:none;
+  }
+  .tab[data-page="home"]{ --accent:var(--acc-home); }
+  .tab[data-page="experience"]{ --accent:var(--acc-experience); }
+  .tab[data-page="work"]{ --accent:var(--acc-work); }
+  .tab[data-page="skills"]{ --accent:var(--acc-skills); }
+  .tab[data-page="contact"]{ --accent:var(--acc-contact); }
+
+  /* Thin cascade rule spanning the page, directly under the subnav,
+     in the active section's colour — the literal thread from tab
+     down into content. */
+  .accent-rule{
+    position:fixed; left:0; right:0; z-index:98;
+    top:calc(var(--header-h, 49px) + var(--subnav-h, 37px));
+    height:3px; background:var(--page-accent);
+    transition:background .35s var(--ease);
+  }
+  /* In-flow spacer: pushes every page's content clear of the fixed
+     header + subnav + accent rule, so no per-page padding math
+     needed. */
+  .nav-spacer{
+    height:calc(var(--header-h, 49px) + var(--subnav-h, 37px) + 3px);
+  }
+
+  /* ============================================================
+     PAGE PANELS — each page's scattered sections (hero, summary,
+     coverage… for Home; stories, works… for Work, etc.) are grouped
+     at runtime into one wrapper per page (see the router script).
+     A panel always carries a border in its own page's accent colour —
+     the same colour as its tab up in the subnav — so however far you
+     scroll, the page reads as a sheet that belongs to that coloured
+     tab, like the edge of a folder. It normally just sits in the
+     document's natural flow otherwise; the wrapping itself is
+     invisible. It only becomes a fixed, full-bleed slab briefly, while
+     the router pulls it into place: the same coloured edge thickens
+     into the seam it lands on, and a soft shadow rides just ahead of
+     it — under its leading edge going down, over its leading edge
+     going up — as if it's a real sheet being dragged across the page
+     beneath. Once it lands, JS releases it back to normal flow so
+     scrolling (and the Work page's horizontal pan rig) behaves
+     exactly as it always has.
+     ============================================================ */
+  .page-panel{
+    display:block;
+    box-sizing:border-box;
+    border:3px solid var(--panel-accent, var(--rose));
+    transition:border-color .35s var(--ease);
+  }
+  .page-panel[data-page="home"]{ --panel-accent:var(--acc-home); }
+  .page-panel[data-page="experience"]{ --panel-accent:var(--acc-experience); }
+  .page-panel[data-page="work"]{ --panel-accent:var(--acc-work); }
+  .page-panel[data-page="skills"]{ --panel-accent:var(--acc-skills); }
+  .page-panel[data-page="contact"]{ --panel-accent:var(--acc-contact); }
+  /* While being pulled, the resting 3px border thickens on the
+     landing edge only, so the seam visibly "locks in" right as it
+     arrives — then settles back to the same-colour 3px frame once
+     JS releases it back to normal flow. */
+  .page-panel.is-pulling-down{
+    border-top-width:6px;
+    box-shadow:0 26px 50px -10px rgba(0,0,0,.5);
+  }
+
+  /* ============================================================
+     PAGE SIDEBAR — in-page section jump list, shown on the
+     multi-section pages (Home, Experience, Work). Styled as a
+     small pinned index-tab card, echoing the folder-tab nav above
+     it. Hidden by JS on the other pages; only hidden by CSS on
+     truly narrow phone widths where it would overlap content.
+     ============================================================ */
+  .page-sidebar{
+    position:fixed; left:20px; top:50%; transform:translateY(-50%) rotate(-1deg);
+    display:flex; flex-direction:column;
+    z-index:90;
+    background:var(--cream);
+    border:1px solid rgba(27,32,33,.2);
+    padding:10px 4px;
+    box-shadow:var(--paper-shadow);
+    transition:transform .3s var(--ease), left .3s var(--ease);
+  }
+  .page-sidebar:hover{ transform:translateY(-50%) rotate(0deg); }
+  .page-sidebar::before{
+    content:''; position:absolute; top:-10px; left:50%; transform:translateX(-50%) rotate(-4deg);
+    width:44px; height:15px;
+    background:var(--tape); border:1px solid var(--tape-edge);
+    opacity:.85;
+  }
+  .page-sidebar .ps-link{
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.05em; text-transform:uppercase;
+    color:var(--ink); text-decoration:none;
+    padding:8px 12px; white-space:nowrap;
+    border-bottom:1px dashed rgba(27,32,33,.18);
+    transition:color .25s var(--ease), background .25s var(--ease), padding-left .25s var(--ease);
+  }
+  .page-sidebar .ps-link:last-child{ border-bottom:none; }
+  .page-sidebar .ps-link:hover{ color:var(--wine); padding-left:18px; }
+  .page-sidebar .ps-link.active{ color:var(--cream); background:var(--wine); }
+  @media (max-width:860px){
+    .page-sidebar{ left:8px; padding:8px 3px; }
+    .page-sidebar .ps-link{ font-size:9.5px; padding:7px 9px; }
+  }
+  @media (max-width:480px){ .page-sidebar{ display:none !important; } }
+
+  /* ============================================================
+     HERO
+     ============================================================ */
+  .hero{
+    /* Home is a one-screen page now: fills exactly the gap between
+       the two subnav bars (minus the page-panel's own 3px+3px
+       border), so it never needs to scroll. */
+    min-height:calc(100vh - var(--header-h, 49px) - var(--subnav-h, 37px) - 6px);
+    box-sizing:border-box;
+    display:flex; flex-direction:column; justify-content:center;
+    position:relative;
+    padding:20px 0;
+    transition:background .4s var(--ease);
+  }
+  .hero::before{
+    content:'';
+    position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse 60% 50% at 85% 15%, color-mix(in srgb, var(--page-accent) 55%, transparent), transparent 60%),
+      radial-gradient(ellipse 50% 40% at 10% 90%, color-mix(in srgb, var(--page-accent) 40%, var(--wine)), transparent 60%);
+    opacity:.4;
+    transition:background .4s var(--ease);
+    pointer-events:none;
+  }
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:.18em;
+    color:var(--rose); text-transform:uppercase;
+    display:flex; align-items:center; gap:12px; margin-bottom:22px;
+  }
+  .eyebrow .rule{ width:40px; height:1px; background:var(--rose); display:inline-block; }
+
+  h1.masthead{
+    font-family:var(--display);
+    font-optical-sizing:auto;
+    font-weight:600;
+    font-size:clamp(3rem, 9vw, 7.2rem);
+    line-height:.95;
+    margin:0 0 20px;
+    color:var(--paper);
+    letter-spacing:-.01em;
+  }
+  h1.masthead em{
+    font-style:italic; font-weight:500; color:var(--rose);
+  }
+
+  .hero-sub{
+    font-size:clamp(1.05rem, 1.6vw, 1.35rem);
+    color:var(--ink-soft);
+    max-width:36ch;
+    margin:0 0 34px;
+    font-weight:400;
+  }
+
+  .dateline{
+    font-family:var(--mono); font-size:13px; line-height:1.7;
+    color:var(--paper); background:rgba(255,217,218,.05);
+    border-left:2px solid var(--wine);
+    padding:14px 18px; max-width:52ch;
+  }
+  .dateline b{ color:var(--rose); letter-spacing:.05em; }
+
+  /* ------------------------------------------------------------
+     HERO PORTRAIT + LAYOUT SWITCH
+     ------------------------------------------------------------
+     .hero-body has THREE children: .hero-text-a, .hero-portrait-wrap,
+     .hero-text-b. Which layout you get is controlled entirely by
+     whether .hero-body also carries the "hero-body--right" class:
+
+       DEFAULT (no extra class)  -> centered photo, text on both sides
+       + "hero-body--right"      -> photo on the right, both text
+                                     blocks stacked on the left
+
+     To switch versions, edit ONE thing in the HTML: change
+       <div class="hero-body">                     (centered - current)
+     to
+       <div class="hero-body hero-body--right">     (photo on the right)
+     ------------------------------------------------------------ */
+  .hero-body{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    grid-template-areas:"a photo b";
+    column-gap:56px;
+    align-items:center;
+    margin-top:52px;
+  }
+  .hero-text-a{ grid-area:a; }
+  .hero-text-b{ grid-area:b; }
+  .hero-portrait-wrap{ grid-area:photo; justify-self:center; }
+
+  .hero-body.hero-body--right{
+    grid-template-columns:1fr auto;
+    grid-template-areas:
+      "a photo"
+      "b photo";
+    row-gap:26px;
+    column-gap:64px;
+  }
+  .hero-body.hero-body--right .hero-portrait-wrap{ justify-self:end; align-self:center; }
+
+  .hero-portrait-wrap{ position:relative; width:clamp(160px, 20vw, 240px); transform:rotate(-2deg); }
+  .hero-portrait-wrap::before{
+    content:''; position:absolute; top:-8px; left:50%; transform:translateX(-50%) rotate(-5deg);
+    width:64px; height:20px;
+    background:var(--tape); border:1px solid var(--tape-edge);
+    opacity:.85; z-index:3;
+  }
+  .hero-portrait{
+    aspect-ratio:1/1; border-radius:50%; overflow:hidden; position:relative;
+    background:linear-gradient(165deg, var(--wine), var(--ink) 75%);
+    border:1px solid rgba(255,217,218,.22);
+    background-image: url("assets/profile.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition:transform .4s var(--ease);
+  }
+  .hero-portrait-wrap:hover .hero-portrait{ transform:scale(1.04); }
+  .hero-portrait-wrap:hover .hero-portrait-ring{ transform:rotate(18deg) scale(1.03); border-color:rgba(234,99,140,.7); }
+  .hero-portrait::after{
+    content:'K.S.'; position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--display); font-size:2.4rem; font-weight:600;
+    color:rgba(255,217,218,.16);
+  }
+  .hero-portrait-ring{
+    position:absolute; inset:-10px; border:1px dashed rgba(234,99,140,.4);
+    border-radius:50%; pointer-events:none;
+    transition:transform .4s var(--ease), border-color .4s var(--ease);
+  }
+  .hero-portrait-tag{
+    position:absolute; bottom:-12px; left:50%; transform:translateX(-50%);
+    font-family:var(--mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--cream); background:var(--ink);
+    border:1px solid rgba(255,217,218,.25);
+    padding:4px 10px; white-space:nowrap;
+  }
+
+  .scroll-cue{
+    position:absolute; bottom:40px; left:0;
+    display:flex; align-items:center; gap:10px;
+    font-family:var(--mono); font-size:11px; letter-spacing:.1em;
+    color:var(--ink-soft); text-transform:uppercase;
+  }
+  .scroll-cue .line{
+    width:1px; height:34px; background:linear-gradient(var(--rose), transparent);
+    animation:scrollpulse 1.8s infinite var(--ease);
+  }
+  @keyframes scrollpulse{
+    0%{ transform:scaleY(0); transform-origin:top; }
+    50%{ transform:scaleY(1); transform-origin:top; }
+    50.01%{ transform-origin:bottom; }
+    100%{ transform:scaleY(0); transform-origin:bottom; }
+  }
+
+  /* ============================================================
+     SECTION SCAFFOLD
+     ============================================================ */
+  section{ position:relative; padding:130px 0; }
+  section.tight{ padding:90px 0; }
+  .section-head{ position:relative; margin-bottom:64px; max-width:60ch; }
+  /* A blobby sticker of colour behind each section's kicker — a bit
+     of scrapbook confetti carried through in the page's own accent. */
+  .section-head::before{
+    content:'';
+    position:absolute; top:-14px; left:-16px;
+    width:30px; height:30px;
+    background:var(--page-accent);
+    opacity:.16;
+    border-radius:41% 59% 63% 37% / 43% 39% 61% 57%;
+    pointer-events:none;
+  }
+  /* Section labels styled like a newspaper clipping snipped out and
+     pinned above the headline: paper chip, torn edge, slight tilt,
+     a scrap of tape holding it down. */
+  .kicker{
+    font-family:var(--mono); font-size:11px; letter-spacing:.13em;
+    color:var(--ink); text-transform:uppercase;
+    display:inline-block; margin-bottom:20px;
+    background:var(--cream);
+    padding:6px 13px 5px;
+    position:relative;
+    transform:rotate(-1.6deg);
+    box-shadow:0 6px 14px rgba(0,0,0,.35);
+    clip-path:polygon(0 3px, 4% 0, 96% 1px, 100% 5px, 99% 95%, 95% 100%, 3% 98%, 1% 93%);
+  }
+  .kicker::before{
+    content:'';
+    position:absolute; top:-8px; left:16px;
+    width:32px; height:12px;
+    background:var(--tape); border:1px solid var(--tape-edge);
+    transform:rotate(-7deg);
+    opacity:.9;
+  }
+  h2.head{
+    font-family:var(--display); font-weight:600;
+    font-size:clamp(2.1rem, 4vw, 3.2rem);
+    margin:0; line-height:1.05; color:var(--paper);
+  }
+  .lede{ color:var(--ink-soft); font-size:1.05rem; line-height:1.7; margin-top:18px; max-width:56ch; }
+
+  .reveal{ opacity:0; transform:translateY(28px); transition:opacity .8s var(--ease), transform .8s var(--ease); }
+  .reveal.in-view{ opacity:1; transform:translateY(0); }
+
+  /* ============================================================
+     COVERAGE / BEATS — index-style list
+     ============================================================ */
+  .beats{
+    border-top:1px solid rgba(255,217,218,.14);
+  }
+  .beat-row{
+    display:grid;
+    grid-template-columns:70px 1fr 1.4fr;
+    gap:28px;
+    align-items:baseline;
+    padding:30px 0;
+    border-bottom:1px solid rgba(255,217,218,.14);
+    transition:padding-left .35s var(--ease), background .35s var(--ease);
+  }
+  .beat-row:hover{ padding-left:14px; background:rgba(234,99,140,.05); }
+  .beat-num{ font-family:var(--mono); color:var(--wine); font-size:14px; }
+  .beat-name{
+    font-family:var(--display); font-weight:600; font-size:1.5rem; color:var(--paper);
+  }
+  .beat-desc{ color:var(--ink-soft); font-size:.96rem; line-height:1.6; }
+
+  /* ============================================================
+     PAN SECTION — signature element: scroll-linked contact-sheet reel
+     ============================================================ */
+  .pan-section{
+    position:relative;
+    /* height set by JS based on panel count for scroll room */
+  }
+  .pan-sticky{
+    position:sticky; top:0;
+    height:100vh;
+    overflow:hidden;
+    display:flex; align-items:center;
+    /* Explicit cross-browser scrollbar styling for the mobile fallback,
+       where JS sets overflow-x:auto. Without this, each Chromium-based
+       browser (Edge, Opera, Chrome) falls back to its own scrollbar
+       skin, so they visibly differ even on identical markup. */
+    scrollbar-width:thin;
+    scrollbar-color:var(--rose) rgba(255,217,218,.1);
+  }
+  .pan-sticky::-webkit-scrollbar{ height:4px; }
+  .pan-sticky::-webkit-scrollbar-track{ background:rgba(255,217,218,.1); }
+  .pan-sticky::-webkit-scrollbar-thumb{ background:var(--rose); border-radius:4px; }
+  .pan-sticky::-webkit-scrollbar-thumb:hover{ background:var(--wine); }
+  .pan-track{
+    display:flex;
+    gap:4vw;
+    padding:0 6vw;
+    will-change:transform;
+    padding-top: 5%;
+  }
+  .story-panel{
+    flex:0 0 auto;
+    width:min(78vw, 620px);
+    display:grid;
+    grid-template-rows:auto 1fr;
+    position:relative;
+  }
+  .story-panel::before{
+    content:''; position:absolute; top:-10px; left:36px; width:60px; height:20px;
+    background:var(--tape); border:1px solid var(--tape-edge);
+    transform:rotate(-5deg); opacity:.85; z-index:3;
+  }
+  .story-panel:nth-child(odd){ transform:rotate(-.6deg); }
+  .story-panel:nth-child(even){ transform:rotate(.5deg); }
+  .story-media{
+    aspect-ratio:4/3;
+    border-radius:2px;
+    position:relative;
+    overflow:hidden;
+    background:
+      repeating-linear-gradient(135deg, rgba(255,217,218,.06) 0 2px, transparent 2px 6px),
+      linear-gradient(155deg, var(--slate), var(--ink) 70%);
+    border:1px solid rgba(255,217,218,.14);
+    box-shadow:var(--paper-shadow);
+    transition:border-color .3s var(--ease);
+  }
+  .story-media:hover{ border-color:rgba(234,99,140,.5); }
+  .story-media:hover::after{ transform:scale(1.08); }
+  .story-media::after{ transition:transform .5s var(--ease); }
+  .story-media img{
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; z-index:1;
+  }
+  .story-panel:hover .frame-tag{ background:var(--wine); }
+  .story-media::after{
+    content:'';
+    position:absolute; inset:0;
+    background:radial-gradient(circle at 30% 20%, rgba(234,99,140,.35), transparent 55%);
+    mix-blend-mode:screen;
+  }
+  .frame-tag{
+    position:absolute; top:14px; left:14px;
+    font-family:var(--mono); font-size:11px; letter-spacing:.08em;
+    color:var(--cream); background:rgba(27,32,33,.55);
+    padding:4px 8px; border:1px solid rgba(255,217,218,.25);
+    z-index:2;
+    transition:background .3s var(--ease);
+  }
+  .frame-sprocket{
+    position:absolute; top:0; bottom:0; width:16px;
+    background-image:repeating-linear-gradient(180deg, transparent 0 10px, rgba(255,217,218,.18) 10px 14px);
+  }
+  .frame-sprocket.left{ left:0; }
+  .frame-sprocket.right{ right:0; }
+
+  .story-meta{ padding-top:22px; }
+  .story-pub{
+    font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--rose); margin-bottom:8px;
+  }
+  .story-title{
+    font-family:var(--display); font-weight:600; font-size:1.7rem; color:var(--paper);
+    margin:0 0 10px; line-height:1.15;
+  }
+  .story-dek{ color:var(--ink-soft); font-size:.95rem; line-height:1.6; }
+
+  .pan-progress{
+    position:absolute; left:6vw; bottom:56px; right:6vw;
+    height:2px; background:rgba(255,217,218,.14);
+  }
+  .pan-progress-bar{
+    height:100%; width:0%; background:var(--rose);
+  }
+  .pan-hint{
+    position:absolute; right:6vw; top:36px;
+    font-family:var(--mono); font-size:11px; letter-spacing:.08em;
+    color:var(--ink-soft); text-transform:uppercase;
+  }
+
+  /* ============================================================
+     BYLINES
+     ============================================================ */
+  .byline-strip{
+    border-top:1px solid rgba(255,217,218,.14);
+    border-bottom:1px solid rgba(255,217,218,.14);
+    display:flex; flex-wrap:wrap; gap:0;
+  }
+  .byline-item{
+    flex:1 1 200px;
+    padding:34px 24px;
+    border-right:1px solid rgba(255,217,218,.14);
+    font-family:var(--display); font-size:1.15rem; font-weight:500;
+    color:var(--ink-soft);
+    transition:color .3s var(--ease), background .3s var(--ease);
+  }
+  .byline-item:hover{ color:var(--cream); background:rgba(137,2,62,.15); }
+
+  /* ============================================================
+     ABOUT
+     ============================================================ */
+  .about-grid{
+    display:grid; grid-template-columns:.8fr 1.2fr; gap:64px; align-items:start;
+  }
+  .about-portrait {
+    aspect-ratio: 3 / 4;
+    background: linear-gradient(165deg, var(--wine), var(--ink) 75%);
+    border: 1px solid rgba(255, 217, 218, .16);
+    position: relative;
+    overflow: hidden;
+
+    background-image: url("assets/profile.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  .about-portrait::after{
+    content:'K.S.'; position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--display); font-size:5rem; font-weight:600;
+    color:rgba(255,217,218,.14);
+  }
+  .about-copy p{ color:var(--ink-soft); line-height:1.8; font-size:1.02rem; }
+  .about-copy p strong{ color:var(--paper); font-weight:600; }
+
+  .stat-row{ display:flex; gap:40px; margin-top:36px; flex-wrap:wrap; }
+  .stat{ transition:transform .3s var(--ease); }
+  .stat:hover{ transform:translateY(-4px); }
+  .stat b{
+    font-family:var(--display); font-size:2.1rem; color:var(--rose); display:block; font-weight:600;
+    transition:color .3s var(--ease);
+  }
+  .stat:hover b{ color:var(--cream); }
+  .stat span{ font-family:var(--mono); font-size:11px; color:var(--ink-soft); letter-spacing:.06em; text-transform:uppercase; }
+
+  /* ============================================================
+     CONTACT
+     ============================================================ */
+  .contact{
+    background:linear-gradient(180deg, var(--ink), var(--slate));
+    text-align:left;
+    /* Fits to one screen too: main content and the footer line sit
+       at the top and bottom of the same fixed-height band. */
+    min-height:calc(100vh - var(--header-h, 49px) - var(--subnav-h, 37px) - 6px);
+    box-sizing:border-box;
+    display:flex; flex-direction:column; justify-content:space-between;
+    padding:60px 0 30px;
+  }
+  .contact .contact-inner{ padding-top:0; }
+  .contact footer{ padding-bottom:0; }
+  .contact-inner{ display:flex; justify-content:space-between; align-items:flex-end; gap:40px; flex-wrap:wrap; }
+  .contact h2.head{ font-size:clamp(2.4rem, 6vw, 4.4rem); }
+  .contact-links{ display:flex; flex-direction:column; gap:6px; }
+  .contact-links a{
+    font-family:var(--mono); font-size:14px; text-decoration:none; color:var(--ink-soft);
+    border-bottom:1px solid transparent; transition:color .25s var(--ease), border-color .25s var(--ease);
+    width:fit-content;
+  }
+  .contact-links a:hover{ color:var(--rose); border-color:var(--rose); }
+
+  footer{
+    padding:30px 0 50px;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px;
+    font-family:var(--mono); font-size:11px; color:var(--ink-soft); letter-spacing:.04em;
+  }
+
+  /* ============================================================
+     SUMMARY
+     ============================================================ */
+  .summary-text{
+    font-size:1.15rem; line-height:1.85; color:var(--ink-soft); max-width:70ch;
+    border-left:2px solid var(--wine); padding-left:24px;
+  }
+  .summary-text strong{ color:var(--paper); font-weight:600; }
+
+  /* ============================================================
+     EXPERIENCE / EDUCATION — timeline rows
+     ============================================================ */
+  .timeline{ border-top:1px solid rgba(255,217,218,.14); }
+  .tl-row{
+    display:grid;
+    grid-template-columns:160px 1fr;
+    gap:28px;
+    padding:34px 0 34px 22px;
+    border-bottom:1px dashed rgba(255,217,218,.25);
+    position:relative;
+    transition:padding-left .35s var(--ease), background .35s var(--ease);
+  }
+  .tl-row::before{
+    content:''; position:absolute; left:0; top:38px; width:8px; height:8px;
+    border-radius:50%; background:var(--rose);
+    box-shadow:0 0 0 3px rgba(234,99,140,.18);
+  }
+  .tl-row:hover{ padding-left:34px; background:rgba(234,99,140,.05); }
+  .tl-date{
+    font-family:var(--mono); font-size:12px; letter-spacing:.05em;
+    color:var(--rose); text-transform:uppercase; padding-top:4px;
+  }
+  .tl-role{
+    font-family:var(--display); font-weight:600; font-size:1.4rem; color:var(--paper);
+    margin:0 0 4px;
+  }
+  .tl-org{
+    font-family:var(--mono); font-size:12px; letter-spacing:.04em;
+    color:var(--ink-soft); text-transform:uppercase; margin-bottom:14px;
+  }
+  .tl-points{ margin:0; padding-left:18px; color:var(--ink-soft); font-size:.95rem; line-height:1.7; }
+  .tl-points li{ margin-bottom:6px; }
+  .tl-body{ display:flex; align-items:center; gap:16px; }
+  .tl-logo{
+    flex:0 0 auto; width:128px; height:128px; object-fit:contain;
+    background:var(--paper); border:1px solid rgba(255,217,218,.2);
+    border-radius:4px; padding:5px;
+  }
+
+  /* ============================================================
+     SKILLS
+     ============================================================ */
+  .skills-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:56px;
+  }
+  .skills-col > .kicker{ margin-bottom:18px; }
+  .skill-tags{ display:flex; flex-wrap:wrap; gap:10px; }
+  .skill-tag{
+    font-family:var(--mono); font-size:12px; letter-spacing:.03em;
+    color:var(--paper); background:rgba(255,217,218,.06);
+    border:1px solid rgba(255,217,218,.18);
+    padding:8px 14px; border-radius:2px;
+    transition:border-color .25s var(--ease), color .25s var(--ease), background .25s var(--ease), transform .25s var(--ease);
+  }
+  .skill-tag:nth-child(3n){ transform:rotate(-1.5deg); }
+  .skill-tag:nth-child(3n+1){ transform:rotate(1deg); }
+  .skill-tag:hover{ border-color:var(--rose); color:var(--rose); background:rgba(234,99,140,.08); transform:rotate(0deg) translateY(-2px); }
+
+  /* ============================================================
+     PREVIOUS WORKS — resume-style publication list
+     ============================================================ */
+  .works-list{ border-top:1px solid rgba(255,217,218,.14); }
+  .work-row{
+    display:grid;
+    grid-template-columns:70px 1fr auto;
+    gap:24px;
+    align-items:baseline;
+    padding:22px 0;
+    border-bottom:1px solid rgba(255,217,218,.14);
+    transition:padding-left .3s var(--ease), background .3s var(--ease);
+  }
+  .work-row:hover{ padding-left:14px; background:rgba(234,99,140,.05); }
+  .work-year{ font-family:var(--mono); font-size:12px; color:var(--wine); }
+  .work-title{ font-family:var(--display); font-weight:500; font-size:1.15rem; color:var(--paper); }
+  .work-pub{ font-family:var(--mono); font-size:11px; letter-spacing:.05em; color:var(--ink-soft); text-transform:uppercase; text-align:right; }
+
+  /* ============================================================
+     FOLDER TABS + INLINE PANEL (Previous Works)
+     ============================================================ */
+  .folder-tabs{
+    display:flex; flex-wrap:wrap; gap:10px; margin-bottom:0;
+  }
+  .folder-tab{
+    font-family:var(--mono); font-size:12px; letter-spacing:.04em;
+    color:var(--ink-soft); background:rgba(255,217,218,.05);
+    border:1px solid rgba(255,217,218,.18); border-bottom:none;
+    padding:12px 18px 14px; cursor:pointer;
+    display:flex; align-items:center; gap:9px;
+    border-radius:3px 3px 0 0;
+    transition:color .25s var(--ease), background .25s var(--ease);
+  }
+  .folder-tab-icon{
+    width:11px; height:9px; background:var(--rose); display:inline-block;
+    clip-path:polygon(0 0, 40% 0, 50% 20%, 100% 20%, 100% 100%, 0 100%);
+    opacity:.55; transition:opacity .25s var(--ease);
+  }
+  .folder-tab:hover{ color:var(--paper); background:rgba(255,217,218,.09); }
+  .folder-tab:hover .folder-tab-icon{ opacity:.8; }
+  .folder-tab.active{
+    color:var(--paper); background:var(--slate);
+    border-color:rgba(255,217,218,.28);
+  }
+  .folder-tab.active .folder-tab-icon{ background:var(--cream); opacity:1; }
+
+  .folder-panel{
+    max-height:0; overflow:hidden;
+    background:var(--slate);
+    border:1px solid rgba(255,217,218,.28); border-top:none;
+    transition:max-height .5s var(--ease);
+  }
+  .folder-panel-inner{ padding:32px; }
+  .folder-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:18px;
+  }
+  .folder-card{
+    text-align:left; cursor:pointer;
+    background:rgba(255,217,218,.04);
+    border:1px solid rgba(255,217,218,.14);
+    padding:18px; border-radius:2px;
+    position:relative;
+    transition:border-color .25s var(--ease), transform .25s var(--ease), background .25s var(--ease), box-shadow .25s var(--ease);
+    animation:cardIn .5s var(--ease) backwards;
+    box-shadow:var(--paper-shadow);
+  }
+  .folder-card:nth-child(3n){ transform:rotate(-1.1deg); }
+  .folder-card:nth-child(3n+1){ transform:rotate(.8deg); }
+  .folder-card:nth-child(3n+2){ transform:rotate(-.4deg); }
+  .folder-card::before{
+    content:''; position:absolute; top:-9px; left:22px; width:52px; height:18px;
+    background:var(--tape); border:1px solid var(--tape-edge);
+    transform:rotate(-6deg); opacity:.85; z-index:2;
+  }
+  @keyframes cardIn{
+    from{ opacity:0; transform:translateY(16px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  .folder-card:hover{
+    border-color:var(--rose); transform:translateY(-3px) rotate(0deg);
+    background:rgba(234,99,140,.06);
+    box-shadow:0 10px 24px rgba(137,2,62,.18);
+  }
+  .folder-card .work-year{ font-family:var(--mono); font-size:11px; color:var(--wine); display:block; margin-bottom:8px; }
+  .folder-card .work-title{
+    font-family:var(--display); font-weight:500; font-size:1.05rem; color:var(--paper);
+    display:block; line-height:1.3; margin-bottom:8px;
+  }
+  .folder-card .work-pub{ font-family:var(--mono); font-size:10px; letter-spacing:.05em; color:var(--ink-soft); text-transform:uppercase; }
+
+  /* ============================================================
+     DIALOGS — shared base (case file + filmstrip)
+     ------------------------------------------------------------
+     Close buttons live inside <form method="dialog">, which the
+     browser closes natively on submit — no JS required, so the
+     close control can never silently fail even if something else
+     on the page throws a script error.
+     ============================================================ */
+  dialog{
+    border:none; padding:0; background:transparent; color:inherit;
+    max-width:none; max-height:none;
+  }
+  dialog::backdrop{
+    background:rgba(27,32,33,0); backdrop-filter:blur(0px);
+    transition:background .35s var(--ease), backdrop-filter .35s var(--ease);
+  }
+  dialog.is-open::backdrop{ background:rgba(27,32,33,.82); backdrop-filter:blur(4px); }
+  .dialog-close-form{ position:absolute; top:18px; right:18px; z-index:5; margin:0; }
+  .dialog-close{
+    width:38px; height:38px; border-radius:50%;
+    background:rgba(27,32,33,.6); border:1px solid rgba(255,217,218,.3);
+    color:var(--cream); font-size:16px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:background .25s var(--ease), border-color .25s var(--ease), transform .25s var(--ease);
+  }
+  .dialog-close:hover{ background:var(--wine); border-color:var(--wine); transform:scale(1.08) rotate(90deg); }
+
+  /* Case file modal — sized to comfortably hold a lead photo plus a
+     full excerpt, so it reads like an actual case file rather than a
+     cramped popup. The body scrolls internally once content runs
+     past the dialog's own max-height; the media block (when a work
+     has one) stays pinned above it. */
+  .case-file-dialog{
+    width:min(680px, 92vw);
+    max-height:min(760px, 88vh);
+    background:var(--ink);
+    border:1px solid rgba(255,217,218,.22);
+    position:fixed; inset:0; margin:auto; height:fit-content;
+    display:flex; flex-direction:column;
+    overflow:hidden;
+    opacity:0; transform:translateY(18px) scale(.96);
+    transition:opacity .35s var(--ease), transform .35s var(--ease);
+    box-shadow:var(--paper-shadow);
+  }
+  .case-file-dialog::before{
+    content:''; position:absolute; top:-11px; left:50%; transform:translateX(-50%) rotate(-3deg);
+    width:80px; height:22px;
+    background:var(--tape); border:1px solid var(--tape-edge);
+    opacity:.85; z-index:3;
+  }
+  .case-file-dialog.is-open{ opacity:1; transform:translateY(0) scale(1); }
+  /* Lead photo — only rendered when a work carries an `img`; a
+     mono caption tag sits over its lower corner like a contact-sheet
+     frame label, in the work's own beat colour. */
+  .case-file-media{
+    position:relative; flex:0 0 auto;
+    width:100%; aspect-ratio:16/9; overflow:hidden;
+    background:linear-gradient(165deg, var(--wine), var(--ink) 75%);
+    border-bottom:3px solid var(--case-accent, var(--rose));
+  }
+  .case-file-media img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .case-file-media-tag{
+    position:absolute; left:14px; bottom:12px; z-index:2;
+    font-family:var(--mono); font-size:10px; letter-spacing:.07em; text-transform:uppercase;
+    color:var(--cream); background:rgba(27,32,33,.72);
+    padding:4px 10px;
+  }
+  .case-file-body{
+    padding:44px 40px 48px;
+    position:relative;
+    overflow-y:auto;
+  }
+  .case-file-title{
+    font-family:var(--display); font-weight:600; font-size:clamp(1.55rem, 3vw, 2.1rem); color:var(--paper);
+    margin:12px 0 18px; line-height:1.18;
+  }
+  /* Meta reads as a small dossier strip — labelled fields side by
+     side, rather than one run-on line, so Publication/Year/Beat are
+     each easy to scan on their own. */
+  .case-file-meta{
+    display:flex; flex-wrap:wrap; gap:24px;
+    margin-bottom:24px; padding-bottom:22px;
+    border-bottom:1px dashed rgba(255,217,218,.2);
+  }
+  .cf-field{ display:flex; flex-direction:column; gap:4px; }
+  .cf-label{
+    font-family:var(--mono); font-size:10px; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--rose);
+  }
+  .cf-value{ font-family:var(--mono); font-size:12.5px; letter-spacing:.02em; color:var(--paper); }
+  .case-file-dek{ color:var(--ink-soft); line-height:1.75; font-size:.98rem; }
+  .case-file-skills{ margin-top:26px; }
+  .case-file-skills-label{
+    font-family:var(--mono); font-size:10px; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--ink-soft); margin-bottom:9px;
+  }
+
+  /* ============================================================
+     DESIGN GALLERY + FILMSTRIP LIGHTBOX
+     ============================================================ */
+  .design-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:22px;
+  }
+  .design-card{
+    cursor:pointer; text-align:left; padding:0; border:none; background:none;
+    display:block; width:100%; position:relative;
+    transition:transform .3s var(--ease);
+  }
+  .design-card:nth-child(4n){ transform:rotate(-1deg); }
+  .design-card:nth-child(4n+1){ transform:rotate(.9deg); }
+  .design-card:nth-child(4n+2){ transform:rotate(-.5deg); }
+  .design-card:nth-child(4n+3){ transform:rotate(.4deg); }
+  .design-card:hover{ transform:rotate(0deg); }
+  .design-card::before{
+    content:''; position:absolute; top:-9px; left:50%; transform:translateX(-50%) rotate(-4deg);
+    width:56px; height:18px;
+    background:var(--tape); border:1px solid var(--tape-edge);
+    opacity:.85; z-index:3;
+  }
+  .design-thumb{
+    aspect-ratio:4/3; position:relative; overflow:hidden;
+    border:1px solid rgba(255,217,218,.16);
+    background:linear-gradient(150deg, var(--slate), var(--ink) 70%);
+    transition:border-color .25s var(--ease), transform .25s var(--ease);
+    box-shadow:var(--paper-shadow);
+  }
+  .design-thumb::after{
+    content:''; position:absolute; inset:0;
+    background:radial-gradient(circle at 25% 25%, rgba(234,99,140,.32), transparent 55%);
+    mix-blend-mode:screen;
+  }
+  .design-thumb img, .design-thumb video{
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; z-index:1;
+  }
+  .design-card:hover .design-thumb{ border-color:var(--rose); transform:translateY(-3px); }
+  .design-tag{
+    position:absolute; top:12px; left:12px; z-index:2;
+    font-family:var(--mono); font-size:10px; letter-spacing:.06em;
+    color:var(--cream); background:rgba(27,32,33,.6);
+    border:1px solid rgba(255,217,218,.25); padding:3px 8px;
+  }
+  .design-info{ padding-top:12px; }
+  .design-title{ font-family:var(--display); font-weight:500; font-size:1.02rem; color:var(--paper); margin-bottom:4px; }
+  .design-type{ font-family:var(--mono); font-size:10px; letter-spacing:.05em; color:var(--ink-soft); text-transform:uppercase; }
+
+  /* Skill chips on a folder-card or design-card — same small tag
+     look, shared between both grids and matched against the Skills
+     page's own tag text (see the hover-preview script). */
+  .item-skills{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  .item-skill-tag{
+    font-family:var(--mono); font-size:9px; letter-spacing:.04em; text-transform:uppercase;
+    color:var(--ink-soft); border:1px solid rgba(255,217,218,.18);
+    padding:3px 7px; border-radius:2px; line-height:1.4;
+  }
+  .folder-card .item-skills{ margin-top:10px; }
+
+  /* Hovering (or tabbing to) a skill tag on the Skills page: the tag
+     itself gets a subtle "has matches" glow, and this floating panel
+     lists whichever stories or design pieces carry that tag. Clicking
+     an item jumps to Work and opens that item's case file / frame. */
+  .skill-tag.has-matches{ box-shadow:inset 0 0 0 1px rgba(234,99,140,.35); }
+  .skill-preview{
+    position:fixed; z-index:400; width:min(320px, 86vw);
+    background:var(--ink); border:1px solid rgba(255,217,218,.22);
+    box-shadow:var(--paper-shadow);
+    opacity:0; transform:translateY(6px); pointer-events:none;
+    transition:opacity .2s var(--ease), transform .2s var(--ease);
+  }
+  .skill-preview.is-visible{ opacity:1; transform:translateY(0); pointer-events:auto; }
+  .skill-preview-head{
+    font-family:var(--mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--rose); padding:12px 14px 6px;
+  }
+  .skill-preview-item{
+    display:flex; flex-direction:column; gap:2px; width:100%;
+    text-align:left; background:none; border:none; cursor:pointer;
+    padding:8px 14px; border-top:1px solid rgba(255,217,218,.1);
+    transition:background .2s var(--ease);
+  }
+  .skill-preview-item:hover{ background:rgba(234,99,140,.08); }
+  .skill-preview-title{ font-family:var(--display); font-size:.92rem; color:var(--paper); }
+  .skill-preview-sub{ font-family:var(--mono); font-size:10px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; }
+
+  .filmstrip-dialog{
+    width:min(1000px, 94vw); height:min(620px, 86vh);
+    position:fixed; inset:0; margin:auto;
+    background:var(--ink); border:1px solid rgba(255,217,218,.2);
+    opacity:0; transform:translateY(18px) scale(.96);
+    transition:opacity .35s var(--ease), transform .35s var(--ease);
+    box-shadow:var(--paper-shadow);
+  }
+  .filmstrip-dialog::before{
+    content:''; position:absolute; top:-11px; left:50%; transform:translateX(-50%) rotate(3deg);
+    width:80px; height:22px;
+    background:var(--tape); border:1px solid var(--tape-edge);
+    opacity:.85; z-index:3;
+  }
+  .filmstrip-dialog[open]{
+    display:flex; flex-direction:column;
+  }
+  .filmstrip-dialog.is-open{ opacity:1; transform:translateY(0) scale(1); }
+  .filmstrip-viewer{
+    flex:1; display:flex; align-items:center; overflow:hidden; position:relative;
+    padding:34px 4%;
+    perspective:2200px;
+  }
+
+  /* ============================================================
+     SCRAPBOOK SPREAD — an open two-page spread. Left page carries
+     the pinned "photo", right page carries the handwritten-style
+     caption. Navigating clones ONLY the page that's actually turning
+     (right page going forward, left page going back) and pivots that
+     single leaf on its spine-side edge — the same way a real page
+     lifts off the binding — while the opposite page just soft-
+     crossfades to its next content, since it isn't the one turning.
+     ============================================================ */
+  .scrapbook-spread{
+    position:relative; flex:1; height:100%; max-width:820px; margin:0 auto;
+    display:flex;
+    box-shadow:0 24px 60px rgba(0,0,0,.55);
+    transform-style:preserve-3d;
+  }
+  .scrapbook-page{
+    flex:1; min-width:0; box-sizing:border-box;
+    background:
+      repeating-linear-gradient(rgba(27,32,33,0) 0 27px, rgba(27,32,33,.05) 27px 28px),
+      var(--paper);
+    color:var(--ink);
+    position:relative; overflow:hidden;
+    padding:36px 32px;
+    backface-visibility:hidden;
+  }
+  .scrapbook-page-left{ border-radius:3px 0 0 3px; box-shadow:inset -16px 0 26px -22px rgba(0,0,0,.6); }
+  .scrapbook-page-right{ border-radius:0 3px 3px 0; box-shadow:inset 16px 0 26px -22px rgba(0,0,0,.6); }
+  .scrapbook-spine{
+    width:12px; flex:0 0 auto; z-index:2;
+    background:#FFEFEF;
+  }
+  .scrap-tape{
+    position:absolute; top:14px; left:50%; transform:translateX(-50%) rotate(-4deg);
+    width:56px; height:18px; background:var(--tape); border:1px solid var(--tape-edge);
+    opacity:.85; z-index:2;
+  }
+  .scrap-photo{
+    position:relative; margin-top:26px; aspect-ratio:4/3;
+    background:linear-gradient(150deg, var(--slate), var(--ink) 70%);
+    border:6px solid #fff; box-shadow:0 12px 26px rgba(0,0,0,.4);
+    transform:rotate(-1.6deg);
+  }
+  .scrap-photo::after{
+    content:''; position:absolute; inset:0;
+    background:radial-gradient(circle at 30% 20%, rgba(234,99,140,.35), transparent 55%);
+    mix-blend-mode:screen;
+  }
+  .scrap-photo img, .scrap-photo video{
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; z-index:1;
+  }
+  .scrap-photo-tag{
+    position:absolute; top:10px; left:10px; z-index:2;
+    font-family:var(--mono); font-size:10px; letter-spacing:.06em;
+    color:var(--cream); background:rgba(27,32,33,.6);
+    border:1px solid rgba(255,217,218,.25); padding:3px 8px;
+  }
+  .scrap-kicker{ font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--wine); }
+  .scrap-title{
+    font-family:var(--marker); font-weight:400; font-size:2.2rem; line-height:1.05;
+    color:var(--ink); margin:12px 0 6px;
+  }
+  .scrap-type{ font-family:var(--mono); font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:rgba(27,32,33,.55); margin-bottom:20px; }
+  .scrap-skills{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+  .scrap-skill-tag{
+    font-family:var(--mono); font-size:9px; letter-spacing:.04em; text-transform:uppercase;
+    color:rgba(27,32,33,.7); border:1px solid rgba(27,32,33,.28);
+    padding:3px 7px; border-radius:2px;
+  }
+  .scrap-page-num{
+    position:absolute; bottom:16px; right:20px;
+    font-family:var(--mono); font-size:10px; color:rgba(27,32,33,.45); letter-spacing:.04em;
+  }
+
+  /* The clone of whichever single page is turning. It's positioned
+     with position:fixed to exactly overlay that one page (not the
+     whole spread), and pivots on the spine-side edge — left edge for
+     the right page turning forward, right edge for the left page
+     turning back — so it swings like an actual leaf lifting off the
+     spine, not a card spinning around its own middle. */
+  .scrapbook-leaf{
+    position:absolute; z-index:400; pointer-events:none;
+    transform-style:preserve-3d;
+  }
+  .scrapbook-leaf-face{
+    position:absolute; inset:0; backface-visibility:hidden; box-sizing:border-box;
+  }
+  .scrapbook-leaf-back{
+    background:var(--paper);
+  }
+  .leaf-right .scrapbook-leaf-face.scrapbook-page{ border-radius:0 3px 3px 0; }
+  .leaf-left .scrapbook-leaf-face.scrapbook-page{ border-radius:3px 0 0 3px; }
+  .leaf-right .scrapbook-leaf-back{ border-radius:0 3px 3px 0; }
+  .leaf-left .scrapbook-leaf-back{ border-radius:3px 0 0 3px; }
+
+  .filmstrip-nav{
+    flex:0 0 auto; width:52px; height:52px; border-radius:50%;
+    background:rgba(255,217,218,.06); border:1px solid rgba(255,217,218,.25);
+    color:var(--cream); font-size:22px; cursor:pointer; z-index:6;
+    margin:0 18px;
+    transition:background .25s var(--ease), border-color .25s var(--ease), transform .25s var(--ease);
+  }
+  .filmstrip-nav:hover{ background:var(--wine); border-color:var(--wine); transform:scale(1.08); }
+
+  /* ============================================================
+     EXPERIENCE — vertical timeline. A single spine runs down the
+     centre; each role is a 3-column grid row (card | dot | date, or
+     the mirror of that), so the card and its date hang off opposite
+     sides of the spine and only the dot actually touches it.
+     ============================================================ */
+  .vtimeline{
+    position:relative;
+    margin-top:8px;
+  }
+  .vtimeline::before{
+    content:'';
+    position:absolute; left:50%; top:6px; bottom:6px; width:2px;
+    background:linear-gradient(180deg, transparent, rgba(255,217,218,.35) 6%, rgba(255,217,218,.35) 94%, transparent);
+    transform:translateX(-50%);
+    z-index:0;
+  }
+  .vtl-item{
+    position:relative; z-index:1;
+    display:grid;
+    grid-template-columns:1fr 32px 1fr;
+    column-gap:28px;
+    align-items:start;
+    margin-bottom:44px;
+  }
+  .vtl-item:last-child{ margin-bottom:0; }
+  .vtl-dot{
+    grid-column:2; justify-self:center; margin-top:6px;
+    width:14px; height:14px; border-radius:50%;
+    background:var(--ink); border:3px solid var(--rose);
+    box-shadow:0 0 0 4px var(--ink);
+  }
+  .vtl-date-slot{ padding-top:8px; }
+  .vtl-date-slot .exp-year{ font-family:var(--mono); font-size:12px; letter-spacing:.06em; color:var(--rose); text-transform:uppercase; }
+  .vtl-card{
+    background:rgba(255,217,218,.03);
+    border:1px solid rgba(255,217,218,.16); border-top:2px solid var(--wine);
+    padding:26px 28px;
+  }
+  .exp-role{ font-family:var(--display); font-weight:600; font-size:1.5rem; color:var(--paper); margin:0 0 4px; }
+  .exp-org{ font-family:var(--mono); font-size:12px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; margin-bottom:14px; }
+  .exp-points{ margin:0; padding-left:18px; color:var(--ink-soft); font-size:.95rem; line-height:1.7; }
+  .exp-points li{ margin-bottom:6px; }
+
+  /* Left item: card in column 1 (hugging the spine on its right
+     edge), date in column 3. Right item: mirrored. */
+  .vtl-left .vtl-card{ grid-column:1; justify-self:end; max-width:560px; }
+  .vtl-left .vtl-date-slot{ grid-column:3; text-align:left; }
+  .vtl-right .vtl-date-slot{ grid-column:1; text-align:right; }
+  .vtl-right .vtl-card{ grid-column:3; justify-self:start; max-width:560px; }
+
+  @media (max-width:700px){
+    .vtimeline::before{ left:6px; }
+    .vtl-item, .vtl-left .vtl-card, .vtl-right .vtl-card, .vtl-left .vtl-date-slot, .vtl-right .vtl-date-slot{
+      grid-template-columns:1fr; grid-column:1 !important; justify-self:stretch !important;
+      max-width:none; text-align:left !important;
+    }
+    .vtl-item{ display:block; padding-left:28px; }
+    .vtl-dot{ position:absolute; left:6px; top:6px; transform:translateX(-50%); }
+    .vtl-date-slot{ margin-bottom:8px; }
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width:860px){
+    .tab{ font-size:10px; padding:9px 14px 8px; }
+    .about-grid{ grid-template-columns:1fr; }
+    .beat-row{ grid-template-columns:40px 1fr; }
+    .beat-desc{ grid-column:2/3; }
+    .contact-inner{ flex-direction:column; align-items:flex-start; }
+    .tl-row{ grid-template-columns:1fr; gap:8px; }
+    .skills-grid{ grid-template-columns:1fr; gap:36px; }
+    .work-row{ grid-template-columns:44px 1fr; }
+    .work-pub{ grid-column:2/3; text-align:left; margin-top:2px; }
+    .hero-body,
+    .hero-body.hero-body--right{
+      grid-template-columns:1fr;
+      grid-template-areas:"photo" "a" "b";
+      row-gap:28px;
+      
+    }
+    .hero-body.hero-body--right .hero-portrait-wrap,
+    .hero-portrait-wrap{ justify-self:start; }
+    .case-file-dialog{ width:94vw; max-height:92vh; }
+    .case-file-body{ padding:30px 22px 36px; }
+    .case-file-meta{ gap:16px; }
+    .filmstrip-dialog{ width:96vw; height:88vh; }
+    .scrapbook-spread{ flex-direction:column; max-width:96vw; }
+    .scrapbook-spine{
+      width:auto; height:10px;
+      background:linear-gradient(180deg, rgba(0,0,0,.4), rgba(0,0,0,.05) 35%, rgba(0,0,0,.05) 65%, rgba(0,0,0,.4));
+    }
+    .scrapbook-page-left{ border-radius:3px 3px 0 0; box-shadow:inset 0 -16px 26px -22px rgba(0,0,0,.6); }
+    .scrapbook-page-right{ border-radius:0 0 3px 3px; box-shadow:inset 0 16px 26px -22px rgba(0,0,0,.6); }
+    .scrap-title{ font-size:1.6rem; }
+    .filmstrip-nav{ width:40px; height:40px; margin:0 8px; }
+    .exp-stop{ padding:26px 22px; }
+    .exp-scrub{ display:none; }
+  }
+  @media (max-width:640px){
+    .story-panel{ width:82vw; }
+    .pan-hint{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="site-nav" id="siteNav">
+  <div class="wrap nav-inner">
+    <a href="#page-home" class="brand"><span class="dot"></span>Kirstien Dominique Santos</a>
+  </div>
+</header>
+
+<nav class="subnav" id="subnav" aria-label="Sections">
+  <div class="subnav-inner">
+    <button type="button" class="tab" data-page="home"><span>Home</span></button>
+    <button type="button" class="tab" data-page="experience"><span>Experience</span></button>
+    <button type="button" class="tab" data-page="work"><span>Work</span></button>
+    <button type="button" class="tab" data-page="skills"><span>Skills</span></button>
+    <button type="button" class="tab" data-page="contact"><span>Contact</span></button>
+  </div>
+</nav>
+<div class="accent-rule" id="accentRule" aria-hidden="true"></div>
+<div class="nav-spacer" aria-hidden="true"></div>
+
+<aside class="page-sidebar" data-page="experience" aria-label="Experience section navigation">
+  <a href="#experience" class="ps-link" data-target="experience">Experience</a>
+  <a href="#education" class="ps-link" data-target="education">Education</a>
+</aside>
+<aside class="page-sidebar" data-page="work" aria-label="Work section navigation">
+  <a href="#stories" class="ps-link" data-target="stories">Featured Stories</a>
+  <a href="#works" class="ps-link" data-target="works">Previous Works</a>
+  <a href="#design" class="ps-link" data-target="design">Design &amp; Visual</a>
+</aside>
+
+<!-- ============================================================
+     HERO — Home is just this one screen now: no scroll, no
+     sidebar (nothing to jump to), sized to exactly fill the gap
+     between the two subnav bars.
+     ============================================================ -->
+<section class="hero" id="top" data-page="home">
+  <div class="wrap">
+    <div class="eyebrow"><span class="rule"></span>Portfolio — Vol. 01, 2026</div>
+    <h1 class="masthead">Kirstien Dominique <em>Santos</em></h1>
+    
+    <div class="hero-body">
+
+      <div class="hero-portrait-wrap">
+        <span class="hero-portrait-ring" aria-hidden="true"></span>
+        <!-- Swap this div for <img src="your-photo.jpg" alt="Kirstien Dominique Santos" class="hero-portrait"> when ready -->
+        <div class="hero-portrait" role="img" aria-label="Portrait of Kirstien Dominique Santos"></div>
+        <span class="hero-portrait-tag">Kirstien Santos</span>
+      </div>
+
+      <div class="hero-text-b">
+        <p class="dateline"><b>Pasig City, MNL —</b> BA in Journalism graduate with experience in writing digital news, content writing, graphic design, organizational leadership, research, copyediting, video editing, scriptwriting, social media management and project management.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FEATURED STORIES — scroll-panning contact-sheet reel (signature)
+     ============================================================ -->
+<section id="stories" class="pan-section" data-page="work">
+  <div class="pan-sticky">
+    <div class="wrap" style="position:absolute; top:64px; left:50%; transform:translateX(-50%); width:var(--wrap);">
+      <span class="kicker reveal in-view">Selected Work</span>
+      <h2 class="head reveal in-view">Featured stories</h2>
+    </div>
+    <span class="pan-hint">Keep scrolling →</span>
+
+    <div class="pan-track" id="panTrack">
+
+      <article class="story-panel">
+        <div class="story-media">
+          <img src="assets/Are second-hand bookstores turning a new, digital page, Santos.png" alt="" loading="lazy">
+          <span class="frame-sprocket left"></span>
+          <span class="frame-sprocket right"></span>
+          <span class="frame-tag">FRAME 01</span>
+        </div>
+        <div class="story-meta">
+          <div class="story-pub">The Trilby · Lifestyle</div>
+          <h3 class="story-title">Are second-hand bookstores turning a new, digital page?</h3>
+          <p class="story-dek">Typically found in Recto, second-hand bookstores have served as an avenue for affordable books of various genres.</p>
+        </div>
+      </article>
+
+      <article class="story-panel">
+        <div class="story-media">
+          <img src="images/story-02.jpg" alt="" loading="lazy">
+          <span class="frame-sprocket left"></span>
+          <span class="frame-sprocket right"></span>
+          <span class="frame-tag">FRAME 02</span>
+        </div>
+        <div class="story-meta">
+          <div class="story-pub">NewsWatch Plus</div>
+          <h3 class="story-title">UNESCO Bohol's Asin Tibuok, need of urgent safeguarding</h3>
+          <p class="story-dek">Warehouse workers describe scheduling algorithms that erase hours worked — and the paper trail that proves it.</p>
+        </div>
+      </article>
+
+      <article class="story-panel">
+        <div class="story-media">
+          <img src="images/story-03.jpg" alt="" loading="lazy">
+          <span class="frame-sprocket left"></span>
+          <span class="frame-sprocket right"></span>
+          <span class="frame-tag">FRAME 03</span>
+        </div>
+        <div class="story-meta">
+          <div class="story-pub">The Marshall Project</div>
+          <h3 class="story-title">Closed Doors, Open Files</h3>
+          <p class="story-dek">A district shut 12 schools in a single summer. Budget records show the decision was made a year earlier.</p>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="pan-progress"><div class="pan-progress-bar" id="panProgressBar"></div></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     PREVIOUS WORKS — genre folders (inline expand + case-file modal)
+     ============================================================ -->
+<section id="works" class="tight" data-page="work">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Previous Works</span>
+      <h2 class="head">Browse by beat</h2>
+      <p class="lede">Click a folder to open every clip filed under that beat. Click a clip inside to open the full case file.</p>
+    </div>
+
+    <div class="folder-tabs" id="folderTabs" role="tablist" aria-label="Article genres">
+      <button class="folder-tab" data-folder="housing" role="tab" aria-selected="false" aria-controls="folderPanel" type="button">
+        <span class="folder-tab-icon" aria-hidden="true"></span>Housing
+      </button>
+      <button class="folder-tab" data-folder="labor" role="tab" aria-selected="false" aria-controls="folderPanel" type="button">
+        <span class="folder-tab-icon" aria-hidden="true"></span>Labor
+      </button>
+      <button class="folder-tab" data-folder="systems" role="tab" aria-selected="false" aria-controls="folderPanel" type="button">
+        <span class="folder-tab-icon" aria-hidden="true"></span>Public Systems
+      </button>
+      <button class="folder-tab" data-folder="data" role="tab" aria-selected="false" aria-controls="folderPanel" type="button">
+        <span class="folder-tab-icon" aria-hidden="true"></span>Data &amp; FOIA
+      </button>
+    </div>
+
+    <div class="folder-panel" id="folderPanel">
+      <div class="folder-panel-inner">
+        <div class="folder-grid" id="folderGrid"><!-- populated by JS --></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<dialog id="caseFileDialog" class="case-file-dialog" aria-labelledby="caseFileTitle">
+  <form method="dialog" class="dialog-close-form">
+    <button class="dialog-close" aria-label="Close case file">✕</button>
+  </form>
+  <div class="case-file-media" id="caseFileMedia" hidden>
+    <img id="caseFileImg" alt="">
+    <span class="case-file-media-tag" id="caseFileMediaTag"></span>
+  </div>
+  <div class="case-file-body">
+    <span class="kicker" id="caseFileGenre">Genre</span>
+    <h3 class="case-file-title" id="caseFileTitle">Title</h3>
+    <div class="case-file-meta" id="caseFileMeta"><!-- populated by JS --></div>
+    <p class="case-file-dek" id="caseFileDek">Excerpt goes here.</p>
+    <div class="case-file-skills" id="caseFileSkills" hidden>
+      <div class="case-file-skills-label">Skills applied</div>
+      <div class="item-skills" id="caseFileSkillsChips"></div>
+    </div>
+  </div>
+</dialog>
+
+<!-- ============================================================
+     CREATIVE DESIGN GALLERY — filmstrip lightbox. Appended onto the
+     end of Work now that Work and Design share one tab.
+     ============================================================ -->
+<section id="design" class="tight" data-page="work">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Creative Work</span>
+      <h2 class="head">Design &amp; visual work</h2>
+      <p class="lede">Graphic design, layout, and video work alongside the reporting. Click any frame to open the filmstrip.</p>
+    </div>
+    <div class="design-grid" id="designGrid"><!-- populated by JS --></div>
+  </div>
+</section>
+
+<dialog id="filmstripDialog" class="filmstrip-dialog scrapbook-dialog" aria-label="Design work scrapbook">
+  <form method="dialog" class="dialog-close-form">
+    <button class="dialog-close" aria-label="Close">✕</button>
+  </form>
+  <div class="filmstrip-viewer">
+    <button class="filmstrip-nav prev" id="filmstripPrev" aria-label="Previous page" type="button">‹</button>
+    <div class="scrapbook-spread" id="scrapbookSpread"><!-- populated by JS --></div>
+    <button class="filmstrip-nav next" id="filmstripNext" aria-label="Next page" type="button">›</button>
+  </div>
+</dialog>
+
+<!-- ============================================================
+     WORK EXPERIENCE — vertical timeline, centered spine, entries
+     alternating left/right of it.
+     ============================================================ -->
+<section id="experience" data-page="experience">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Career</span>
+      <h2 class="head">Experience</h2>
+      <p class="lede">Academic leadership and internships</p>
+    </div>
+
+    <div class="vtimeline" id="expTimeline">
+      <article class="vtl-item vtl-left reveal">
+        <div class="vtl-date-slot"><span class="exp-year">Sep 2026 — Dec 2026</span></div>
+        <span class="vtl-dot" aria-hidden="true"></span>
+        <div class="vtl-card">
+          <h3 class="exp-role">Digital and Graphics Intern</h3>
+          <div class="exp-org">NewsWatch Plus Philippines — Ortigas Center, Pasig City</div>
+          <ul class="exp-points">
+            <li>Wrote digital news articles covering weather, entertainment, politics and current affairs.</li>
+            <li>Created graphics and social media content to support news coverage.</li>
+            <li>Wrote broadcast scripts for <em>NewsWatch Now</em>.</li>
+            <li>Transcribed interviews and news broadcasts.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="vtl-item vtl-right reveal">
+        <div class="vtl-card">
+          <h3 class="exp-role">President</h3>
+          <div class="exp-org">UST Journalism Society — UST, Manila</div>
+          <ul class="exp-points">
+            <li>Covered municipal budgets, transit policy, and school board decisions on a daily deadline.</li>
+            <li>Co-developed a public-facing FOIA tracking tool adopted by three partner newsrooms.</li>
+          </ul>
+        </div>
+        <span class="vtl-dot" aria-hidden="true"></span>
+        <div class="vtl-date-slot"><span class="exp-year">Jun 2025 — Jun 2026</span></div>
+      </article>
+
+      <article class="vtl-item vtl-left reveal">
+        <div class="vtl-date-slot"><span class="exp-year">Aug 2025 — May 2025</span></div>
+        <span class="vtl-dot" aria-hidden="true"></span>
+        <div class="vtl-card">
+          <h3 class="exp-role">Video and Creative Direction, Voice Actor</h3>
+          <div class="exp-org">Cut To The CHase — UST, Manila</div>
+          <ul class="exp-points">
+            <li>[Deets].</li>
+            <li>[Deets].</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="vtl-item vtl-right reveal">
+        <div class="vtl-card">
+          <h3 class="exp-role">Writer and Graphics Design Team</h3>
+          <div class="exp-org">The Trilby — UST, Manila</div>
+          <ul class="exp-points">
+            <li>[Deets].</li>
+            <li>[Deets].</li>
+          </ul>
+        </div>
+        <span class="vtl-dot" aria-hidden="true"></span>
+        <div class="vtl-date-slot"><span class="exp-year">Jan 2025 — May 2025</span></div>
+      </article>
+
+      <article class="vtl-item vtl-left reveal">
+        <div class="vtl-date-slot"><span class="exp-year">Jun 2024 — June 2025</span></div>
+        <span class="vtl-dot" aria-hidden="true"></span>
+        <div class="vtl-card">
+          <h3 class="exp-role">Chief-of-Staff</h3>
+          <div class="exp-org">UST Journalism Society — UST, Manila</div>
+          <ul class="exp-points">
+            <li>[Deets].</li>
+            <li>[Deets].</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="vtl-item vtl-right reveal">
+        <div class="vtl-card">
+          <h3 class="exp-role">Advocacy Development and Research Head</h3>
+          <div class="exp-org">UST Hiraya — UST, Manila</div>
+          <ul class="exp-points">
+            <li>[Deets].</li>
+            <li>[Deets].</li>
+          </ul>
+        </div>
+        <span class="vtl-dot" aria-hidden="true"></span>
+        <div class="vtl-date-slot"><span class="exp-year">Oct 2023 — Jun 2025</span></div>
+      </article>
+
+      <article class="vtl-item vtl-left reveal">
+        <div class="vtl-date-slot"><span class="exp-year">June 2023 — June 2024</span></div>
+        <span class="vtl-dot" aria-hidden="true"></span>
+        <div class="vtl-card">
+          <h3 class="exp-role">Public Relations Officer</h3>
+          <div class="exp-org">UST Journalism Society — UST, Manila</div>
+          <ul class="exp-points">
+            <li>[Deets].</li>
+            <li>[Deets].</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="vtl-item vtl-right reveal">
+        <div class="vtl-card">
+          <h3 class="exp-role">Education Committee Member</h3>
+          <div class="exp-org">Pagbago Philippines — UST, Manila</div>
+          <ul class="exp-points">
+            <li>[Deets]</li>
+            <li>[Deets]</li>
+          </ul>
+        </div>
+        <span class="vtl-dot" aria-hidden="true"></span>
+        <div class="vtl-date-slot"><span class="exp-year">Aug 2020 — Aug 2022</span></div>
+      </article>
+      
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     EDUCATION
+     ============================================================ -->
+<section id="education" class="tight" data-page="experience">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Education</span>
+      <h2 class="head">Education</h2>
+    </div>
+    <div class="timeline">
+      <div class="tl-row reveal">
+        <span class="tl-date">2022 — 2026</span>
+        <div class="tl-body">
+          <img src="assets/educlogo.png" alt="University of Santo Tomas logo" class="tl-logo" loading="lazy">
+          <div>
+            <h3 class="tl-role">B.A. in Journalism</h3>
+            <div class="tl-org">University of Santo Tomas — Manila</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TECHNICAL SKILLS / SOFT SKILLS
+     ============================================================ -->
+<section id="skills" data-page="skills">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Skills</span>
+      <h2 class="head">Technical &amp; Soft Skills</h2>
+      <p class="lede">Hover — or tab to — any tag to see which stories or design pieces it was used on.</p>
+    </div>
+    <div class="skills-grid">
+      <div class="skills-col reveal">
+        <span class="kicker">Technical</span>
+        <div class="skill-tags">
+          <span class="skill-tag">FOIA / Public Records</span>
+          <span class="skill-tag">Data Journalism</span>
+          <span class="skill-tag">SQL</span>
+          <span class="skill-tag">Python (pandas)</span>
+          <span class="skill-tag">Datawrapper / Flourish</span>
+          <span class="skill-tag">Adobe Premiere</span>
+          <span class="skill-tag">AP Style</span>
+          <span class="skill-tag">CMS Publishing (WordPress)</span>
+          <span class="skill-tag">Graphic Design</span>
+          <span class="skill-tag">Layout &amp; Typography</span>
+        </div>
+      </div>
+      <div class="skills-col reveal">
+        <span class="kicker">Soft Skills</span>
+        <div class="skill-tags">
+          <span class="skill-tag">Source Development</span>
+          <span class="skill-tag">Deadline Management</span>
+          <span class="skill-tag">Editorial Judgment</span>
+          <span class="skill-tag">Interviewing</span>
+          <span class="skill-tag">Fact-Checking Rigor</span>
+          <span class="skill-tag">Cross-Team Collaboration</span>
+          <span class="skill-tag">Mentorship</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CONTACT
+     ============================================================ -->
+<section id="contact" class="contact" data-page="contact">
+  <div class="wrap contact-inner">
+    <div>
+      <span class="kicker">Get in touch</span>
+      <h2 class="head">Got a tip,<br>or a story to assign?</h2>
+    </div>
+    <div class="contact-links">
+      <a href="mailto:kirstiendsantos.work@gmail.com">kirstiendsantos.work@gmail.com</a>
+      <a href="https://www.linkedin.com/in/kirstiensantos03/">LinkedIn</a>
+    </div>
+  </div>
+  <div class="wrap">
+    <footer>
+      <span>© 2026 Kirstien Dominique Santos. All rights reserved.</span>
+      <span>Pasig City, MNL — Vol. 01</span>
+    </footer>
+  </div>
+</section>
+
+<script>
+(function(){
+  "use strict";
+
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------------------------------------------------------
+     Reveal-on-scroll for titles / rows
+     --------------------------------------------------------- */
+  var revealEls = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window && !reduceMotion){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        // Toggle both ways so elements re-play their entrance animation
+        // every time they're scrolled back into view, up or down.
+        if(entry.isIntersecting){
+          entry.target.classList.add('in-view');
+        } else {
+          entry.target.classList.remove('in-view');
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(function(el){ io.observe(el); });
+  } else {
+    revealEls.forEach(function(el){ el.classList.add('in-view'); });
+  }
+
+  /* ---------------------------------------------------------
+     Scroll-linked horizontal pan for the featured stories reel.
+     The .pan-section is tall (panelCount * viewport height-ish);
+     while it's in view, its sticky child pins to the viewport
+     and the inner track translates horizontally in step with
+     vertical scroll progress through the section.
+     --------------------------------------------------------- */
+  var panSection = document.querySelector('.pan-section');
+  var panTrack = document.getElementById('panTrack');
+  var progressBar = document.getElementById('panProgressBar');
+  var isDesktopPan = window.matchMedia('(min-width: 641px)').matches;
+
+  function sizePanSection(){
+    if(!panSection || !panTrack) return;
+    if(!isDesktopPan){
+      // Mobile: let it become a natural swipe-scroll strip, no scroll-jacking
+      panSection.style.height = 'auto';
+      panTrack.parentElement.style.position = 'relative';
+      panTrack.parentElement.style.overflowX = 'auto';
+      panTrack.parentElement.style.height = 'auto';
+      panTrack.parentElement.style.padding = '120px 0 80px';
+      panTrack.style.transform = 'none';
+      if(progressBar) progressBar.parentElement.style.display = 'none';
+      return;
+    }
+    var trackWidth = panTrack.scrollWidth;
+    var viewport = window.innerWidth;
+    var scrollRoom = Math.max(trackWidth - viewport, 0);
+    // Extra vertical scroll distance so the pan has room to play out
+    panSection.style.height = (window.innerHeight + scrollRoom) + 'px';
+  }
+
+  function updatePan(){
+    if(!panSection || !panTrack || !isDesktopPan) return;
+    var rect = panSection.getBoundingClientRect();
+    var total = panSection.offsetHeight - window.innerHeight;
+    if(total <= 0) return;
+    var scrolled = -rect.top;
+    var progress = Math.min(Math.max(scrolled / total, 0), 1);
+
+    var trackWidth = panTrack.scrollWidth;
+    var viewport = window.innerWidth;
+    var maxTranslate = Math.max(trackWidth - viewport, 0);
+
+    var x = -progress * maxTranslate;
+    panTrack.style.transform = reduceMotion ? 'none' : 'translate3d(' + x + 'px,0,0)';
+    if(progressBar) progressBar.style.width = (progress * 100) + '%';
+  }
+
+  var ticking = false;
+  function onScroll(){
+    if(!ticking){
+      window.requestAnimationFrame(function(){
+        updatePan();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive:true });
+  window.addEventListener('resize', function(){
+    isDesktopPan = window.matchMedia('(min-width: 641px)').matches;
+    sizePanSection();
+    updatePan();
+  });
+
+  window.addEventListener('load', function(){
+    sizePanSection();
+    updatePan();
+  });
+  sizePanSection();
+  updatePan();
+
+  // Font files (Fraunces / Space Mono) can finish loading after the
+  // `load` event fires — especially when a browser's ad blocker, VPN,
+  // or battery saver delays the request. Until they swap in, panel
+  // widths are measured with fallback fonts, so the scroll room
+  // calculated above can be wrong. Recompute once webfonts are
+  // confirmed ready, and again if panel content ever resizes.
+  if(document.fonts && document.fonts.ready){
+    document.fonts.ready.then(function(){
+      sizePanSection();
+      updatePan();
+    });
+  }
+  if('ResizeObserver' in window && panTrack){
+    var ro = new ResizeObserver(function(){
+      sizePanSection();
+      updatePan();
+    });
+    ro.observe(panTrack);
+  }
+
+  /* ---------------------------------------------------------
+     PREVIOUS WORKS — genre folders + case-file modal
+     --------------------------------------------------------- */
+  /* Add an `img:'path/to/photo.jpg'` property to any work below to
+     give its case file a lead photo (shown at the top of the modal,
+     16:9, cropped to fill) — omit it and that case file stays
+     text-only. */
+  var worksData = [
+    { genre:'housing', year:'2025', title:'‘Ang Babae sa Septic Tank’ set for theatrical launch', pub:'Chicago Tribune', dek:'A look at how a proposed citywide landlord registry stalled twice in committee — and who lobbied to keep it that way.', skills:['FOIA / Public Records','Editorial Judgment'], img:'assets/works/housing-registry.jpg' },
+    { genre:'housing', year:'2023', title:'[THE TRILBY] EDSA STORY', pub:'Injustice Watch', dek:'Renters describe discrimination they never reported, and the barriers — language, fear, paperwork — that keep complaints from ever reaching a regulator.', skills:['Interviewing','Source Development'] },
+    { genre:'labor', year:'2025', title:'Are second-hand bookstores turning a new, digital page', pub:'ProPublica Illinois', dek:'Scheduling algorithms and staffing-agency practices quietly filter out applicants long before a human reviewer sees a resume.', skills:['Data Journalism','SQL'], img:'assets/works/labor-algorithms.jpg' },
+    { genre:'labor', year:'2022', title:'DOLE orders Cebu BPO company to halt operations', pub:'Independent', dek:'A pay-record analysis of three staffing agencies shows temp workers earning 18% less than direct hires for identical shifts.', skills:['Python (pandas)','Data Journalism'] },
+    { genre:'systems', year:'2025', title:'\u2019KPop Demon Hunters\u2019 singer Ejae dropping debut single this October', pub:'The Marshall Project', dek:'Budget documents show a district\u2019s decision to close 12 schools was effectively made a year before it was announced.', skills:['FOIA / Public Records','Fact-Checking Rigor'] },
+    { genre:'systems', year:'2024', title:'Lawyers\u2019 group_ Call for Marcos\u2019 resignation not seditious', pub:'Block Club Chicago', dek:'Mapping route cuts against ridership by ward reveals which neighborhoods lost service first — and never got it back.', skills:['Datawrapper / Flourish','Data Journalism'] },
+    { genre:'data', year:'2024', title:'Records Requests 101: A Reporter\u2019s Toolkit', pub:'Injustice Watch', dek:'A practical walkthrough of the FOIA pipeline built for this newsroom, shared so other reporters can adapt it.', skills:['FOIA / Public Records','CMS Publishing (WordPress)'] },
+    { genre:'data', year:'2023', title:'Mirasol', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'] },
+    { genre:'data', year:'2023', title:'P-Pop boy group Alamat dropping sophomore album in November', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'] },
+    { genre:'data', year:'2023', title:'INCLUSIVITY IN PH BEAUTY', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'] },
+    { genre:'data', year:'2023', title:'UNESCO Bohol\u2019s Asin Tibuok, need of urgent safeguarding', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'] },
+    { genre:'data', year:'2023', title:'Weather systems to bring rains in extended weekend - PAGASA', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'] },
+    { genre:'data', year:'2023', title:'Weather Wednesday story', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'] }
+  ];
+  var genreLabels = { housing:'Housing', labor:'Labor', systems:'Public Systems', data:'Data & FOIA' };
+
+  var folderTabs = document.querySelectorAll('.folder-tab');
+  var folderPanel = document.getElementById('folderPanel');
+  var folderGrid = document.getElementById('folderGrid');
+  var activeFolder = null;
+
+  function renderFolder(genre){
+    folderGrid.innerHTML = '';
+    worksData.filter(function(w){ return w.genre === genre; }).forEach(function(w, i){
+      var card = document.createElement('button');
+      card.className = 'folder-card';
+      card.type = 'button';
+      card.style.animationDelay = reduceMotion ? '0s' : (i * 0.06) + 's';
+      card.innerHTML =
+        '<span class="work-year">' + w.year + '</span>' +
+        '<span class="work-title">' + w.title + '</span>' +
+        '<span class="work-pub">' + w.pub + '</span>' +
+        skillChipsHtml(w.skills);
+      card.addEventListener('click', function(){ openCaseFile(w); });
+      folderGrid.appendChild(card);
+    });
+  }
+
+  function closeFolder(){
+    folderPanel.style.maxHeight = null;
+    folderPanel.classList.remove('open');
+    folderTabs.forEach(function(t){ t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+    activeFolder = null;
+  }
+
+  folderTabs.forEach(function(tab){
+    tab.addEventListener('click', function(){
+      var genre = tab.getAttribute('data-folder');
+      if(activeFolder === genre){ closeFolder(); return; }
+
+      folderTabs.forEach(function(t){ t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected','true');
+      activeFolder = genre;
+
+      renderFolder(genre);
+      folderPanel.classList.add('open');
+      requestAnimationFrame(function(){
+        folderPanel.style.maxHeight = folderPanel.scrollHeight + 'px';
+      });
+    });
+  });
+
+  /* ---------------------------------------------------------
+     Shared animated open/close for <dialog> elements.
+     Opening: showModal() first (so display flips + it's in the
+     top layer), then add .is-open a frame later so the CSS
+     transition actually has something to animate from.
+     Closing: the native <form method="dialog"> submit, a click
+     on the backdrop, and the Escape key all normally close the
+     dialog instantly. We intercept all three, play the reverse
+     transition by removing .is-open, and only call .close() once
+     that transition finishes (or after a fallback timeout).
+     --------------------------------------------------------- */
+  function openDialogAnimated(dialog){
+    if(!dialog.showModal) return;
+    dialog.showModal();
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){ dialog.classList.add('is-open'); });
+    });
+  }
+  function closeDialogAnimated(dialog){
+    if(!dialog.open || dialog.classList.contains('is-closing')) return;
+    dialog.classList.remove('is-open');
+    if(reduceMotion){ dialog.close(); return; }
+    dialog.classList.add('is-closing');
+    var finished = false;
+    function finish(){
+      if(finished) return;
+      finished = true;
+      dialog.classList.remove('is-closing');
+      dialog.removeEventListener('transitionend', onEnd);
+      dialog.close();
+    }
+    function onEnd(e){ if(e.target === dialog) finish(); }
+    dialog.addEventListener('transitionend', onEnd);
+    setTimeout(finish, 400);
+  }
+  function wireDialogClose(dialog){
+    if(!dialog) return;
+    // The close button lives in <form method="dialog">, which would
+    // otherwise close the dialog natively/instantly on submit.
+    var form = dialog.querySelector('.dialog-close-form');
+    if(form){
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        closeDialogAnimated(dialog);
+      });
+    }
+    // Click on the backdrop (the dialog element itself, outside its content).
+    dialog.addEventListener('click', function(e){
+      if(e.target === dialog){ closeDialogAnimated(dialog); }
+    });
+    // Escape key fires 'cancel' before the dialog closes.
+    dialog.addEventListener('cancel', function(e){
+      e.preventDefault();
+      closeDialogAnimated(dialog);
+    });
+  }
+
+  var caseFileDialog = document.getElementById('caseFileDialog');
+  var caseFileMedia = document.getElementById('caseFileMedia');
+  var caseFileImg = document.getElementById('caseFileImg');
+  var caseFileMediaTag = document.getElementById('caseFileMediaTag');
+  var caseFileMeta = document.getElementById('caseFileMeta');
+  var caseFileSkills = document.getElementById('caseFileSkills');
+  var caseFileSkillsChips = document.getElementById('caseFileSkillsChips');
+
+  function cfFieldHtml(label, value){
+    if(!value) return '';
+    return '<div class="cf-field"><span class="cf-label">' + label + '</span><span class="cf-value">' + value + '</span></div>';
+  }
+
+  function openCaseFile(w){
+    // Lead photo is optional — only shown when this work carries an
+    // `img`; the media block is hidden entirely otherwise so text-only
+    // case files don't leave an empty gap up top.
+    if(w.img){
+      caseFileImg.src = w.img;
+      caseFileImg.alt = w.title;
+      caseFileMediaTag.textContent = w.pub;
+      caseFileMedia.hidden = false;
+    } else {
+      caseFileImg.removeAttribute('src');
+      caseFileMedia.hidden = true;
+    }
+    var accent = getComputedStyle(document.documentElement).getPropertyValue('--acc-work').trim();
+    if(accent){ caseFileDialog.style.setProperty('--case-accent', accent); }
+
+    document.getElementById('caseFileGenre').textContent = genreLabels[w.genre];
+    document.getElementById('caseFileTitle').textContent = w.title;
+    caseFileMeta.innerHTML =
+      cfFieldHtml('Publication', w.pub) +
+      cfFieldHtml('Year', w.year) +
+      cfFieldHtml('Beat', genreLabels[w.genre]);
+    document.getElementById('caseFileDek').textContent = w.dek;
+
+    if(w.skills && w.skills.length){
+      caseFileSkillsChips.innerHTML = w.skills.map(function(s){
+        return '<span class="item-skill-tag">' + s + '</span>';
+      }).join('');
+      caseFileSkills.hidden = false;
+    } else {
+      caseFileSkills.hidden = true;
+    }
+
+    openDialogAnimated(caseFileDialog);
+  }
+  wireDialogClose(caseFileDialog);
+
+  /* ---------------------------------------------------------
+     CREATIVE DESIGN GALLERY — grid + filmstrip lightbox
+     --------------------------------------------------------- */
+  var designData = [
+    { title:'Miss Universe 2025', type:'Editorial Design \u00b7 2025', skills:['Graphic Design','Editorial Judgment'], img:'assets/missuniv.png' },
+    { title:'[THE TRILBY] INTRO-Trilby Asks (Horizontal)', type:'Motion / Video \u00b7 2023', skills:['Graphic Design','Layout & Typography'], video:'assets/[THE TRILBY] INTRO-Trilby Asks (Horizontal).mp4' },
+    { title:'[THE TRILBY] INTRO-Trilby Asks (Vertical)', type:'Motion / Video \u00b7 2022', skills:['Adobe Premiere','Graphic Design'], video:'assets/[THE TRILBY] INTRO-Trilby Asks (Vertical).mp4' },
+    { title:'Trillby', type:'Logo \u00b7 2025', skills:['Layout & Typography','Graphic Design'], img:'assets/Trilby t logo.png' },
+    { title:'LTR-PRICE-HIKE-PUBMAT THE TRILBY', type:'Infographics \u00b7 2024', skills:['Data Journalism','Datawrapper / Flourish','Graphic Design'], img:'assets/LTR-PRICE-HIKE-PUBMAT_THE TRILBY.png' }
+  ];
+
+  // Small skill-tag chips shared by both the folder cards (Previous
+  // Works) and the design cards — same markup, same class, so the
+  // hover-preview wiring below can treat every tagged item the same way.
+  function skillChipsHtml(skills){
+    if(!skills || !skills.length) return '';
+    return '<div class="item-skills">' + skills.map(function(s){
+      return '<span class="item-skill-tag">' + s + '</span>';
+    }).join('') + '</div>';
+  }
+
+  // Shared media renderer for a designData item — used by both the grid
+  // thumbnail (silent looping preview, no controls, so a click on the
+  // media still bubbles up to open the filmstrip) and the scrapbook
+  // modal (a real player with controls, since that's a deliberate
+  // click and autoplaying sound there would need to be muted anyway).
+  function designMediaHtml(d, opts){
+    opts = opts || {};
+    if(d.video){
+      return '<video src="' + d.video + '"' +
+        (d.poster ? ' poster="' + d.poster + '"' : '') +
+        (opts.controls ? ' controls playsinline' : ' autoplay muted loop playsinline') +
+        '></video>';
+    }
+    if(d.img){
+      return '<img src="' + d.img + '" alt="' + d.title + '" loading="lazy">';
+    }
+    return '';
+  }
+
+  var designGrid = document.getElementById('designGrid');
+
+  designData.forEach(function(d, i){
+    var card = document.createElement('button');
+    card.className = 'design-card';
+    card.type = 'button';
+    var thumbMedia = designMediaHtml(d);
+    card.innerHTML =
+      '<div class="design-thumb">' + thumbMedia + '<span class="design-tag">FRAME 0' + (i+1) + '</span></div>' +
+      '<div class="design-info">' +
+        '<div class="design-title">' + d.title + '</div>' +
+        '<div class="design-type">' + d.type + '</div>' +
+        skillChipsHtml(d.skills) +
+      '</div>';
+    card.addEventListener('click', function(){ openFilmstrip(i); });
+    designGrid.appendChild(card);
+  });
+
+  /* ---------------------------------------------------------
+     SCRAPBOOK PAGE FLIP — only the page that's actually turning gets
+     cloned and animated: the right page when moving forward, the
+     left page when moving back. That single leaf pivots on its
+     spine-side edge (not the spread's centre), so it lifts off the
+     binding and swings over exactly like turning one page of a real
+     book — landing flat on top of the opposite page, back-face-up,
+     which is why its back is a blank sheet rather than any content.
+     The page NOT turning has no reason to move at all in a real
+     book, so it just quietly cross-fades to its next content instead
+     of hard-cutting.
+     --------------------------------------------------------- */
+  function scrapSkillChipsHtml(skills){
+    if(!skills || !skills.length) return '';
+    return '<div class="scrap-skills">' + skills.map(function(s){
+      return '<span class="scrap-skill-tag">' + s + '</span>';
+    }).join('') + '</div>';
+  }
+
+  function scrapbookSpreadHtml(index){
+    var d = designData[index];
+    var photoMedia = designMediaHtml(d, { controls: true });
+    return (
+      '<div class="scrapbook-page scrapbook-page-left">' +
+        '<span class="scrap-tape" aria-hidden="true"></span>' +
+        '<div class="scrap-photo">' + photoMedia + '<span class="scrap-photo-tag">FRAME 0' + (index + 1) + '</span></div>' +
+      '</div>' +
+      '<div class="scrapbook-spine" aria-hidden="true"></div>' +
+      '<div class="scrapbook-page scrapbook-page-right">' +
+        '<span class="scrap-kicker">Design &amp; Visual</span>' +
+        '<h3 class="scrap-title">' + d.title + '</h3>' +
+        '<div class="scrap-type">' + d.type + '</div>' +
+        scrapSkillChipsHtml(d.skills) +
+        '<span class="scrap-page-num">' + (index + 1) + ' / ' + designData.length + '</span>' +
+      '</div>'
+    );
+  }
+
+  var filmstripDialog = document.getElementById('filmstripDialog');
+  var filmstripPrev = document.getElementById('filmstripPrev');
+  var filmstripNext = document.getElementById('filmstripNext');
+  var filmstripViewer = document.querySelector('.filmstrip-viewer');
+  var scrapbookSpread = document.getElementById('scrapbookSpread');
+  var filmstripIndex = 0;
+  var FLIP_MS = 700;
+  // The static (non-turning) page — the one carrying the photo when
+  // the text page is turning forward — used to swap to its new
+  // content well before the flip finished, so the picture visibly
+  // changed before the page had actually "turned." Instead, swap it
+  // at the flip's midpoint (when the turning leaf is edge-on and
+  // thinnest, so the swap is naturally masked) and let the fade run
+  // the rest of the flip's duration, so both pages settle together.
+  var SWAP_DELAY_MS = FLIP_MS * .5;
+  var FADE_IN_MS = FLIP_MS - SWAP_DELAY_MS;
+  var isFlipping = false;
+
+  function renderScrapbookSpread(index){
+    scrapbookSpread.innerHTML = scrapbookSpreadHtml(index);
+  }
+
+  function flipScrapbook(newIndex, direction){
+    if(isFlipping || !scrapbookSpread || !filmstripViewer) return;
+    isFlipping = true;
+
+    // Below 860px the spread stacks top/bottom instead of side by
+    // side (see the media query), so the spine runs horizontally —
+    // the "turning" page there is the one nearer the bottom of the
+    // stack, pivoting on a horizontal edge (rotateX) instead of a
+    // vertical one (rotateY).
+    var stacked = window.matchMedia('(max-width:860px)').matches;
+    var leftEl = scrapbookSpread.querySelector('.scrapbook-page-left');
+    var rightEl = scrapbookSpread.querySelector('.scrapbook-page-right');
+    var turningEl = direction > 0 ? rightEl : leftEl;
+    var staticEl = direction > 0 ? leftEl : rightEl;
+    var turningRect = turningEl.getBoundingClientRect();
+    // filmstripViewer has no transform of its own, so it's a stable
+    // containing block — position the leaf relative to IT (not the
+    // viewport) so the dialog's own open/close transform never throws
+    // the maths off.
+    var viewerRect = filmstripViewer.getBoundingClientRect();
+
+    // Build the leaf: front face is a snapshot of the turning page as
+    // it looks right now; back face is a blank sheet, since that's
+    // what you'd actually see on the underside of a page as it lands.
+    var leaf = document.createElement('div');
+    leaf.className = 'scrapbook-leaf ' + (direction > 0 ? 'leaf-right' : 'leaf-left');
+    leaf.style.left = (turningRect.left - viewerRect.left) + 'px';
+    leaf.style.top = (turningRect.top - viewerRect.top) + 'px';
+    leaf.style.width = turningRect.width + 'px';
+    leaf.style.height = turningRect.height + 'px';
+    leaf.style.transformOrigin = stacked
+      ? (direction > 0 ? 'center top' : 'center bottom')
+      : (direction > 0 ? 'left center' : 'right center');
+
+    var front = turningEl.cloneNode(true);
+    front.classList.add('scrapbook-leaf-face');
+    var back = document.createElement('div');
+    back.className = 'scrapbook-leaf-face scrapbook-leaf-back';
+    back.style.transform = stacked ? 'rotateX(180deg)' : 'rotateY(180deg)';
+    leaf.appendChild(front);
+    leaf.appendChild(back);
+    filmstripViewer.appendChild(leaf);
+
+    // The opposite page isn't turning, so a real page-turn wouldn't
+    // move it at all — but leaving it showing the OLD item right next
+    // to the leaf's new item reads as broken, so it gets a quick
+    // cross-fade instead of either a hard pop or an animated turn.
+    staticEl.style.transition = 'opacity ' + SWAP_DELAY_MS + 'ms var(--ease)';
+    staticEl.style.opacity = '0';
+
+    window.setTimeout(function(){
+      renderScrapbookSpread(newIndex);
+      var freshStatic = scrapbookSpread.querySelector(direction > 0 ? '.scrapbook-page-left' : '.scrapbook-page-right');
+      freshStatic.style.transition = 'none';
+      freshStatic.style.opacity = '0';
+      void freshStatic.offsetHeight;
+      requestAnimationFrame(function(){
+        freshStatic.style.transition = 'opacity ' + FADE_IN_MS + 'ms var(--ease)';
+        freshStatic.style.opacity = '1';
+      });
+    }, SWAP_DELAY_MS);
+
+    var axis = stacked ? 'X' : 'Y';
+    // Stacked (top/bottom): the top page tips forward and down, so it
+    // needs the opposite sign convention from the side-by-side rotateY
+    // case to still read as "forward" turning away from the viewer.
+    var target = stacked
+      ? (direction > 0 ? 180 : -180)
+      : (direction > 0 ? -180 : 180);
+    leaf.style.transform = 'rotate' + axis + '(0deg)';
+    void leaf.offsetHeight; // commit the start position
+    leaf.style.transition = 'transform ' + FLIP_MS + 'ms cubic-bezier(.45,.05,.35,1)';
+    requestAnimationFrame(function(){
+      leaf.style.transform = 'rotate' + axis + '(' + target + 'deg)';
+    });
+
+    filmstripIndex = newIndex;
+    window.setTimeout(function(){
+      leaf.remove();
+      isFlipping = false;
+    }, FLIP_MS + 30);
+  }
+
+  function goToFrame(i){
+    var newIndex = Math.max(0, Math.min(designData.length - 1, i));
+    if(newIndex === filmstripIndex || isFlipping) return;
+    var direction = newIndex > filmstripIndex ? 1 : -1;
+    if(reduceMotion){
+      filmstripIndex = newIndex;
+      renderScrapbookSpread(filmstripIndex);
+    } else {
+      flipScrapbook(newIndex, direction);
+    }
+  }
+
+  function openFilmstrip(i){
+    filmstripIndex = Math.max(0, Math.min(designData.length - 1, i));
+    renderScrapbookSpread(filmstripIndex);
+    openDialogAnimated(filmstripDialog);
+  }
+  wireDialogClose(filmstripDialog);
+  if(filmstripDialog){
+    filmstripDialog.addEventListener('keydown', function(e){
+      if(e.key === 'ArrowRight'){ goToFrame(filmstripIndex + 1); }
+      if(e.key === 'ArrowLeft'){ goToFrame(filmstripIndex - 1); }
+    });
+  }
+  if(filmstripPrev){ filmstripPrev.addEventListener('click', function(){ goToFrame(filmstripIndex - 1); }); }
+  if(filmstripNext){ filmstripNext.addEventListener('click', function(){ goToFrame(filmstripIndex + 1); }); }
+
+  /* ---------------------------------------------------------
+     SKILLS ↔ WORK/DESIGN — hovering (or tabbing to) a skill tag on
+     the Skills page shows which Previous-Works items or design
+     pieces carry that exact tag text. Clicking one of the matches
+     switches to the Work tab (via the same click path a real subnav
+     click would take, so the pull-animation plays normally) and then
+     opens that item's case file or filmstrip frame.
+     --------------------------------------------------------- */
+  function goToWorkPage(afterShown){
+    var workTab = document.querySelector('.tab[data-page="work"]');
+    if(!workTab){ afterShown(); return; }
+    if(workTab.classList.contains('is-active')){ afterShown(); return; }
+    workTab.click();
+    window.setTimeout(afterShown, (typeof CASCADE_MS === 'number' ? CASCADE_MS : 640) + 60);
+  }
+  function openWorkItem(w){
+    goToWorkPage(function(){
+      var folderTab = document.querySelector('.folder-tab[data-folder="' + w.genre + '"]');
+      if(folderTab && activeFolder !== w.genre){ folderTab.click(); }
+      var target = document.getElementById('works');
+      if(target){ target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' }); }
+      window.setTimeout(function(){ openCaseFile(w); }, reduceMotion ? 0 : 350);
+    });
+  }
+  function openDesignItem(i){
+    goToWorkPage(function(){
+      var target = document.getElementById('design');
+      if(target){ target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' }); }
+      window.setTimeout(function(){ openFilmstrip(i); }, reduceMotion ? 0 : 350);
+    });
+  }
+
+  function itemsForSkill(label){
+    var items = [];
+    worksData.forEach(function(w){
+      if((w.skills || []).indexOf(label) !== -1){
+        items.push({ title: w.title, sub: 'Previous Works · ' + w.pub + ' — ' + w.year, action: function(){ openWorkItem(w); } });
+      }
+    });
+    designData.forEach(function(d, i){
+      if((d.skills || []).indexOf(label) !== -1){
+        items.push({ title: d.title, sub: 'Design · ' + d.type, action: function(){ openDesignItem(i); } });
+      }
+    });
+    return items;
+  }
+
+  var skillPreviewEl = document.createElement('div');
+  skillPreviewEl.className = 'skill-preview';
+  skillPreviewEl.setAttribute('role', 'note');
+  document.body.appendChild(skillPreviewEl);
+
+  var skillHideTimer = null;
+  function cancelSkillHide(){ if(skillHideTimer){ window.clearTimeout(skillHideTimer); skillHideTimer = null; } }
+  function scheduleSkillHide(){ skillHideTimer = window.setTimeout(function(){ skillPreviewEl.classList.remove('is-visible'); }, 150); }
+
+  function positionSkillPreview(tagEl){
+    var rect = tagEl.getBoundingClientRect();
+    var left = Math.min(rect.left, window.innerWidth - 320 - 12);
+    skillPreviewEl.style.top = (rect.bottom + 8) + 'px';
+    skillPreviewEl.style.left = Math.max(12, left) + 'px';
+  }
+  function showSkillPreview(tagEl){
+    var items = itemsForSkill(tagEl.textContent.trim());
+    if(!items.length){ skillPreviewEl.classList.remove('is-visible'); return; }
+    skillPreviewEl.innerHTML = '<div class="skill-preview-head">Used in</div>';
+    items.forEach(function(it){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'skill-preview-item';
+      btn.innerHTML = '<span class="skill-preview-title">' + it.title + '</span><span class="skill-preview-sub">' + it.sub + '</span>';
+      btn.addEventListener('click', it.action);
+      skillPreviewEl.appendChild(btn);
+    });
+    positionSkillPreview(tagEl);
+    skillPreviewEl.classList.add('is-visible');
+  }
+
+  document.querySelectorAll('.skill-tag').forEach(function(tag){
+    tag.setAttribute('tabindex', '0');
+    var label = tag.textContent.trim();
+    tag.classList.toggle('has-matches', itemsForSkill(label).length > 0);
+    tag.addEventListener('mouseenter', function(){ cancelSkillHide(); showSkillPreview(tag); });
+    tag.addEventListener('mouseleave', scheduleSkillHide);
+    tag.addEventListener('focus', function(){ cancelSkillHide(); showSkillPreview(tag); });
+    tag.addEventListener('blur', scheduleSkillHide);
+  });
+  skillPreviewEl.addEventListener('mouseenter', cancelSkillHide);
+  skillPreviewEl.addEventListener('mouseleave', scheduleSkillHide);
+
+  /* Work Experience is now a plain static vertical timeline (see
+     .vtimeline) — no drag/scrub JS needed; the ".reveal" class on
+     each .vtl-item already gets its fade-in from the observer below. */
+
+  /* ---------------------------------------------------------
+     Smooth-scroll for in-page nav links (respects reduced motion
+     via the global CSS rule on html { scroll-behavior }).
+     --------------------------------------------------------- */
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      var id = a.getAttribute('href');
+      if(id.length > 1){
+        var target = document.querySelector(id);
+        if(target){
+          e.preventDefault();
+          target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+        }
+      }
+    });
+  });
+
+  /* ---------------------------------------------------------
+     SINGLE-FILE PAGE ROUTER
+     Turns the site into a "multi-page" experience without any
+     extra HTML files: every top-level section/sidebar already
+     carries data-page="home|experience|work|design|skills|contact".
+     Switching pages just toggles which of those are visible.
+     Routes live in the URL hash as "#page-<name>" (distinct from
+     the in-page anchor hashes like "#summary" used above, so the
+     two systems never collide) — this keeps pages bookmarkable
+     and back/forward-button friendly.
+     --------------------------------------------------------- */
+  var PAGES = ['home', 'experience', 'work', 'skills', 'contact'];
+  var subnav = document.getElementById('subnav');
+  var allTabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+
+  /* Group every top-level content section (hero, summary, coverage…
+     for Home; stories, works… for Work; and so on — several loose
+     sections per page) into one wrapper <div class="page-panel"> per
+     page. This gives the router a single element per page to slide,
+     instead of five, without touching any section's own markup,
+     styling, or ID — they're just relocated into their page's panel,
+     in their original relative order. Page sidebars (the little
+     in-page jump lists) are left where they are; they're already
+     independently fixed-positioned and toggle instantly with no
+     slide of their own. */
+  var contentEls = Array.prototype.filter.call(document.querySelectorAll('[data-page]'), function(el){
+    return !el.closest('#subnav') && !el.classList.contains('page-sidebar');
+  });
+  var pageSidebars = Array.prototype.slice.call(document.querySelectorAll('.page-sidebar[data-page]'));
+  var pageStage = document.createElement('div');
+  pageStage.id = 'pageStage';
+  contentEls[0].parentNode.insertBefore(pageStage, contentEls[0]);
+  var pagePanels = {};
+  PAGES.forEach(function(pageId){
+    var panel = document.createElement('div');
+    panel.className = 'page-panel';
+    panel.setAttribute('data-page', pageId);
+    pageStage.appendChild(panel);
+    pagePanels[pageId] = panel;
+  });
+  contentEls.forEach(function(el){
+    var pageId = el.getAttribute('data-page');
+    if(pagePanels[pageId]){ pagePanels[pageId].appendChild(el); }
+  });
+
+  /* Measures the real header height (brand row can wrap on narrow
+     screens) plus the subnav's real height, so the accent rule,
+     content spacer, and the sliding panels' resting rect all line up
+     exactly instead of relying on guessed pixel values. */
+  var siteNav = document.getElementById('siteNav');
+  function syncNavMetrics(){
+    document.documentElement.style.setProperty('--header-h', siteNav.offsetHeight + 'px');
+    document.documentElement.style.setProperty('--subnav-h', subnav.offsetHeight + 'px');
+  }
+  syncNavMetrics();
+  window.addEventListener('resize', syncNavMetrics);
+
+  /* ---------------------------------------------------------
+     THE PULL: a page-panel is normally just a static block in the
+     document, scrolled the ordinary way. To "pull" one over the
+     screen, it's lifted out of flow just long enough to slide down
+     from behind the subnav into the gap below it, covering whatever
+     was showing — then dropped straight back into normal flow once
+     it lands, so the page behind it (including the Work page's
+     horizontal pan rig, which measures window scroll) never notices
+     anything happened. A soft "ease-out" curve (see --cascade-ease)
+     gives it weight and a gentle settle, like a hand pulling a sheet
+     of paper down and letting it fall the last little bit on its
+     own, rather than stopping dead the instant it arrives.
+     --------------------------------------------------------- */
+  var CASCADE_MS = 640;
+  var activePageId = null;
+
+  function parkAsCurtain(panel){
+    panel.style.position = 'fixed';
+    panel.style.left = '0';
+    panel.style.right = '0';
+    panel.style.top = 'calc(var(--header-h, 49px) + var(--subnav-h, 37px))';
+    panel.style.bottom = '0';
+    panel.style.overflowY = 'auto';
+    panel.style.zIndex = '60';
+    panel.style.background = 'var(--ink)';
+    panel.style.transition = 'none';
+    panel.classList.add('is-pulling-down');
+    panel.style.transform = 'translateY(-100%)';
+  }
+
+  function releaseFromCurtain(panel){
+    panel.style.position = '';
+    panel.style.left = '';
+    panel.style.right = '';
+    panel.style.top = '';
+    panel.style.bottom = '';
+    panel.style.overflowY = '';
+    panel.style.zIndex = '';
+    panel.style.background = '';
+    panel.style.transition = '';
+    panel.style.transform = '';
+    panel.classList.remove('is-pulling-down');
+  }
+
+  function showPage(pageId, animate){
+    if(PAGES.indexOf(pageId) === -1){ pageId = 'home'; }
+    var oldPageId = activePageId;
+    var newPanel = pagePanels[pageId];
+    var oldPanel = oldPageId ? pagePanels[oldPageId] : null;
+
+    pageSidebars.forEach(function(el){
+      el.style.display = (el.getAttribute('data-page') === pageId) ? '' : 'none';
+    });
+
+    var canAnimate = animate && oldPanel && oldPageId !== pageId && !reduceMotion;
+
+    if(!canAnimate){
+      PAGES.forEach(function(p){
+        pagePanels[p].style.display = (p === pageId) ? '' : 'none';
+      });
+      window.scrollTo(0, 0);
+      activePageId = pageId;
+      if(pageId === 'work'){
+        requestAnimationFrame(function(){ sizePanSection(); updatePan(); });
+      }
+      return pageId;
+    }
+
+    window.scrollTo(0, 0);
+    document.body.style.overflow = 'hidden';
+    newPanel.style.display = '';
+    parkAsCurtain(newPanel);
+    void newPanel.offsetHeight; // commit the off-screen start position
+    newPanel.style.transition = 'transform ' + CASCADE_MS + 'ms var(--cascade-ease)';
+    requestAnimationFrame(function(){
+      newPanel.style.transform = 'translateY(0)';
+    });
+
+    activePageId = pageId;
+    window.setTimeout(function(){
+      oldPanel.style.display = 'none';
+      releaseFromCurtain(newPanel);
+      document.body.style.overflow = '';
+      window.scrollTo(0, 0);
+      if(pageId === 'work'){ sizePanSection(); updatePan(); }
+    }, CASCADE_MS + 30);
+
+    return pageId;
+  }
+
+  /* Marks the current page's tab active (its scribble underline and
+     paper "brad" — see .tab.is-active in CSS) and cascades that tab's
+     accent colour down through the cascade rule and hero wash, so
+     the whole page visibly "belongs" to the tab open above it. */
+  function tabAccent(pageId){
+    return getComputedStyle(document.documentElement).getPropertyValue('--acc-' + pageId).trim();
+  }
+
+  function setCurrentTab(pageId){
+    allTabs.forEach(function(t){
+      t.classList.toggle('is-active', t.getAttribute('data-page') === pageId);
+    });
+    var accent = tabAccent(pageId);
+    if(accent){ document.documentElement.style.setProperty('--page-accent', accent); }
+  }
+
+  function pageIdFromHash(){
+    var h = location.hash.replace('#', '');
+    var pageId = h.indexOf('page-') === 0 ? h.slice(5) : 'home';
+    return PAGES.indexOf(pageId) === -1 ? 'home' : pageId;
+  }
+
+  // Clicking a subnav tab: pull its page down over the screen (see
+  // showPage) and mark it active, cascading its accent colour down
+  // into the page (see setCurrentTab).
+  allTabs.forEach(function(tab){
+    tab.addEventListener('click', function(){
+      var pageId = tab.getAttribute('data-page');
+      if(tab.classList.contains('is-active')) return;
+      showPage(pageId, true);
+      setCurrentTab(pageId);
+      if(window.history && history.pushState){
+        history.pushState(null, '', '#page-' + pageId);
+      }
+    });
+  });
+
+  // Back/forward navigation (or a hand-typed #page-… URL): jump straight
+  // to the right page and place its tab directly — no flight, since
+  // there's no click gesture to tie the motion to.
+  function routeFromNavigation(){
+    var pageId = pageIdFromHash();
+    showPage(pageId);
+    setCurrentTab(pageId);
+  }
+  window.addEventListener('hashchange', routeFromNavigation);
+  window.addEventListener('popstate', routeFromNavigation);
+
+  // Initial load: show the right page and place its tab in the header
+  // slot directly — no flying in on first paint.
+  (function initialRoute(){
+    var pageId = pageIdFromHash();
+    showPage(pageId);
+    setCurrentTab(pageId);
+  })();
+
+  /* ---------------------------------------------------------
+     Sidebar scrollspy — highlights whichever section a given
+     page-sidebar is currently scrolled past. Safe to observe every
+     sidebar's targets up front: elements on hidden pages simply
+     never intersect, so nothing needs re-wiring on page switch.
+     --------------------------------------------------------- */
+  if('IntersectionObserver' in window){
+    document.querySelectorAll('.page-sidebar').forEach(function(sidebar){
+      var links = sidebar.querySelectorAll('.ps-link');
+      var targets = [];
+      links.forEach(function(link){
+        var el = document.getElementById(link.getAttribute('data-target'));
+        if(el){ targets.push({ el: el, link: link }); }
+      });
+      if(!targets.length) return;
+      var spy = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(!entry.isIntersecting) return;
+          var match = targets.filter(function(t){ return t.el === entry.target; })[0];
+          if(!match) return;
+          links.forEach(function(l){ l.classList.remove('active'); });
+          match.link.classList.add('active');
+        });
+      }, { rootMargin: '-40% 0px -50% 0px', threshold: 0 });
+      targets.forEach(function(t){ spy.observe(t.el); });
+    });
+  }
+
+})();
+</script>
+
+</body>
+</html>
