@@ -38,15 +38,8 @@
     --ease: cubic-bezier(.22,.61,.36,1);
     --cascade-ease: cubic-bezier(.16,1,.3,1);
 
-    /* Real measured height of the subnav row (JS keeps this in sync
-       with actual layout — see syncNavMetrics) so the accent rule and
-       content spacer always line up. Fallback matches the default tab
-       row so nothing jumps before JS runs. */
     --subnav-h: 37px;
 
-    /* Section "wire-service" tags — newsrooms colour-code beats
-       (Metro, Business, Sports…); each page gets one tag colour,
-       carried from its subnav tab down into its own hero wash. */
     --acc-home:#EA638C;
     --acc-experience:#3FA7D6;
     --acc-work:#8D7FCB;
@@ -189,12 +182,18 @@
   /* A torn/pinked scrap of paper — used for pull-quotes, annotations,
      little sticky-note asides. Deckle edge via clip-path, a strip of
      tape holding down the top corner. */
-  .paper-scrap{
-    position:relative;
-    background:var(--paper); color:var(--ink);
-    padding:22px 26px;
-    box-shadow:var(--paper-shadow);
-    clip-path:polygon(0 5px, 3% 0, 97% 1px, 100% 6px, 99% 95%, 96% 100%, 4% 99%, 1% 93%);
+  .paper-scrap {
+    position: relative;
+    margin-top: -25px;
+
+    background: var(--paper);
+    color: var(--ink);
+    padding: 22px 26px;
+    box-shadow: var(--paper-shadow);
+    clip-path: polygon(
+      0 5px, 3% 0, 97% 1px, 100% 6px,
+      99% 95%, 96% 100%, 4% 99%, 1% 93%
+    );
   }
   .paper-scrap::before{
     content:'';
@@ -465,9 +464,22 @@
     display:flex; align-items:center; gap:12px; margin-bottom:22px;
   }
   .eyebrow .rule{ width:40px; height:1px; background:var(--rose); display:inline-block; }
-
+  @font-face {
+    font-family: "Vogue";
+    src: url("./assets/font/Vogue.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Halimun";
+    src: url("./assets/font/Halimun.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
   h1.masthead{
-    font-family:var(--display);
+    
     font-optical-sizing:auto;
     font-weight:600;
     font-size:clamp(3rem, 9vw, 7.2rem);
@@ -482,16 +494,23 @@
   /* The signature treatment: the whole name set in a flowing script,
      like it's been signed at the bottom of a print, rather than set
      in the display serif used everywhere else. */
+ 
   h1.masthead.script-name{
-    font-family:var(--script);
+    font-family:"Vogue", cursive;
     font-weight:700;
     font-size:clamp(3.4rem, 7.2vw, 5.6rem);
     line-height:1.05;
     letter-spacing:.01em;
     margin:0 0 22px;
   }
-  h1.masthead.script-name em{ font-style:normal; color:var(--rose); }
+  h1.masthead.script-name em {
+    font-family: "Halimun", cursive;
+    font-style: normal;
+    color: var(--rose);
 
+    position: relative;
+    top: -0.3em;
+  }
   .hero-sub{
     font-size:clamp(1.05rem, 1.6vw, 1.35rem);
     color:var(--ink-soft);
@@ -1654,7 +1673,7 @@
 
       <article class="story-panel" data-work-id="unesco-bohol-asin-tibuok" tabindex="0" role="button" aria-label="Open full article: UNESCO Bohol's Asin Tibuok, need of urgent safeguarding">
         <div class="story-media">
-          <img src="images/story-02.jpg" alt="" loading="lazy">
+          <img src="assets/Asin-Tibuok.png" alt="" loading="lazy">
           <span class="frame-sprocket left"></span>
           <span class="frame-sprocket right"></span>
           <span class="frame-tag">FRAME 02</span>
@@ -1662,21 +1681,24 @@
         <div class="story-meta">
           <div class="story-pub">NewsWatch Plus</div>
           <h3 class="story-title">UNESCO Bohol's Asin Tibuok, need of urgent safeguarding</h3>
-          <p class="story-dek">Warehouse workers describe scheduling algorithms that erase hours worked — and the paper trail that proves it.</p>
+          <p class="story-dek"><span style="font-weight: 700;">Metro Manila, Philippines -</span> The United Nations Educational, Scientific and Cultural 
+Organization (UNESCO) inscribed the making of Asin Tibuok, the artisanal sea salt of 
+Bohol, into the List of Intangible Cultural Heritage in Need of Urgent Safeguarding on 
+Tuesday, Dec. 10. </p>
         </div>
       </article>
 
-      <article class="story-panel" data-work-id="closed-doors-open-files" tabindex="0" role="button" aria-label="Open full article: Closed Doors, Open Files">
+      <article class="story-panel" data-work-id="kpop-demon-hunters-ejae" tabindex="0" role="button" aria-label="Open full article: Closed Doors, Open Files">
         <div class="story-media">
-          <img src="images/story-03.jpg" alt="" loading="lazy">
+          <img src="assets/ejae.png" alt="" loading="lazy">
           <span class="frame-sprocket left"></span>
           <span class="frame-sprocket right"></span>
           <span class="frame-tag">FRAME 03</span>
         </div>
         <div class="story-meta">
           <div class="story-pub">The Marshall Project</div>
-          <h3 class="story-title">Closed Doors, Open Files</h3>
-          <p class="story-dek">A district shut 12 schools in a single summer. Budget records show the decision was made a year earlier.</p>
+          <h3 class="story-title">'KPop Demon Hunters' singer Ejae dropping debut single this October</h3>
+          <p class="story-dek"><span style="font-weight: 700;"> Metro Manila, Philippines –</span> EJAE, one of the singers in the animated film “KPop Demon Hunters,” will drop a new single on Oct. 24. </p>
         </div>
       </article>
 
@@ -1706,17 +1728,23 @@
     </div>
 
     <div class="folder-tabs" id="folderTabs" role="tablist" aria-label="Article genres">
-      <button class="folder-tab" data-folder="housing" role="tab" aria-selected="false" aria-controls="folderPanel" type="button">
-        <span class="folder-tab-icon" aria-hidden="true"></span>Housing
+      <button class="folder-tab" data-folder="Local" role="tab" aria-selected="false" aria-controls="folderPanel" type="button">
+        <span class="folder-tab-icon" aria-hidden="true"></span>Local
       </button>
-      <button class="folder-tab" data-folder="labor" role="tab" aria-selected="false" aria-controls="folderPanel" type="button">
-        <span class="folder-tab-icon" aria-hidden="true"></span>Labor
+      <button class="folder-tab" data-folder="Lifestyle" role="tab" aria-selected="false" aria-controls="folderPanel" type="button">
+        <span class="folder-tab-icon" aria-hidden="true"></span>Lifestyle
       </button>
-      <button class="folder-tab" data-folder="systems" role="tab" aria-selected="false" aria-controls="folderPanel" type="button">
-        <span class="folder-tab-icon" aria-hidden="true"></span>Public Systems
+      <button class="folder-tab" data-folder="Entertainment" role="tab" aria-selected="false" aria-controls="folderPanel" type="button">
+        <span class="folder-tab-icon" aria-hidden="true"></span>Entertainment
       </button>
-      <button class="folder-tab" data-folder="data" role="tab" aria-selected="false" aria-controls="folderPanel" type="button">
-        <span class="folder-tab-icon" aria-hidden="true"></span>Data &amp; FOIA
+      <button class="folder-tab" data-folder="Weather" role="tab" aria-selected="false" aria-controls="folderPanel" type="button">
+        <span class="folder-tab-icon" aria-hidden="true"></span>Weather
+      </button>
+      <button class="folder-tab" data-folder="Affairs" role="tab" aria-selected="false" aria-controls="folderPanel" type="button">
+        <span class="folder-tab-icon" aria-hidden="true"></span>Current Affairs
+      </button>
+      <button class="folder-tab" data-folder="Culture" role="tab" aria-selected="false" aria-controls="folderPanel" type="button">
+        <span class="folder-tab-icon" aria-hidden="true"></span>Culture
       </button>
     </div>
 
@@ -1850,8 +1878,9 @@
           <h3 class="exp-role">Video and Creative Direction, Voice Actor</h3>
           <div class="exp-org">Cut To The CHase — UST, Manila</div>
           <ul class="exp-points">
-            <li>[Deets].</li>
-            <li>[Deets].</li>
+            <li>Led the creative direction of the page from its branding to its publication materials.</li>
+            <li>Voiced and edited the teaser materials.</li>
+            <li>Created video templates and motion graphics for all short-form content.</li>
           </ul>
         </div>
       </article>
@@ -1863,8 +1892,9 @@
           <h3 class="exp-role">Writer and Graphics Design Team</h3>
           <div class="exp-org">The Trilby — UST, Manila</div>
           <ul class="exp-points">
-            <li>[Deets].</li>
-            <li>[Deets].</li>
+            <li>Initiated the branding design from the logo to the color scheme.</li>
+            <li>Became an Associate Editor during the first fortnight, assisted the Editor-in-Chief and edited and proofread the articles for publishing.</li>
+            <li>Wrote digital news articles for local (Manila City) and national issues.</li>
           </ul>
         </div>
       </article>
@@ -1876,8 +1906,11 @@
           <h3 class="exp-role">Chief-of-Staff</h3>
           <div class="exp-org">UST Journalism Society — UST, Manila</div>
           <ul class="exp-points">
-            <li>[Deets].</li>
-            <li>[Deets].</li>
+            <li>Acted as the events organizing head and managed committee teams and volunteers to plan, coordinate and execute successful events and program initiatives.</li>
+            <li>Acted as the human resources head and spearheaded better systems for the welfare of student volunteers.</li>
+            <li>Led alignment meetings, volunteer pooling, scriptwriting and logistical aspects of initiatives .</li>
+            <li>Overhauled the recruitment and event coordination systems for better efficiency and productivity.</li>
+            <li>Rewrote script and slide templates for easier accessibility and coordination.</li>
           </ul>
         </div>
       </article>
@@ -1889,8 +1922,10 @@
           <h3 class="exp-role">Advocacy Development and Research Head</h3>
           <div class="exp-org">UST Hiraya — UST, Manila</div>
           <ul class="exp-points">
-            <li>[Deets].</li>
-            <li>[Deets].</li>
+            <li>Led the committee to its purpose of ensuring content and events being done were in line with the organization’s objectives and advocacies, namely Anti-VAW, Mental Health, Gender Equity and Cultural Diversity.</li>
+            <li>Served as additional safeguard for editing and proofreading content.</li>
+            <li>Assisted in project coordination and execution.</li>
+            <li>Wrote and designed related content.</li>
           </ul>
         </div>
       </article>
@@ -1902,8 +1937,11 @@
           <h3 class="exp-role">Public Relations Officer</h3>
           <div class="exp-org">UST Journalism Society — UST, Manila</div>
           <ul class="exp-points">
-            <li>[Deets].</li>
-            <li>[Deets].</li>
+            <li>Led the creative direction of the organization, from its publication materials to its branding.</li>
+            <li>Managed the organization’s social media accounts: Facebook, Instagram, X and drove higher engagement towards posts.</li>
+            <li>Designed merch items such as lanyards, t-shirts and stickers.</li>
+            <li>Supervised group chats dedicated to students and created internal and external announcements.</li>
+            <li>Created new systems that elevated the Office of the Public Relations Officers’ duties and responsibilities.</li>
           </ul>
         </div>
       </article>
@@ -1915,8 +1953,7 @@
           <h3 class="exp-role">Education Committee Member</h3>
           <div class="exp-org">Pagbago Philippines — UST, Manila</div>
           <ul class="exp-points">
-            <li>[Deets]</li>
-            <li>[Deets]</li>
+            <li>Pitched, researched and wrote sociopolitical content that was relevant to Pagbago’s advocacies</li>
           </ul>
         </div>
       </article>
@@ -1950,6 +1987,30 @@
         </div>
       </div>
     </div>
+    <div class="timeline">
+      <div class="tl-row reveal">
+        <span class="tl-date">2020 — 2022</span>
+        <div class="tl-body">
+          <img src="assets/educlogo2.png" alt="College of San Benildo-Rizal logo" class="tl-logo" loading="lazy">
+          <div>
+            <h3 class="tl-role">Senior High School Humanities and Social Sciences (HUMSS) strand </h3>
+            <div class="tl-org">College of San Benildo-Rizal — Rizal</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="tl-row reveal">
+        <span class="tl-date">2017 — 2020</span>
+        <div class="tl-body">
+          <img src="assets/educlogo3.png" alt="Our Lady of Perpetual Succor College logo" class="tl-logo" loading="lazy">
+          <div>
+            <h3 class="tl-role">Junior High School</h3>
+            <div class="tl-org">Our Lady of Perpetual Succor College — Marikina</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1977,28 +2038,31 @@
       <div class="skills-col reveal">
         <span class="kicker">Technical</span>
         <div class="skill-tags">
-          <span class="skill-tag">FOIA / Public Records</span>
-          <span class="skill-tag">Data Journalism</span>
-          <span class="skill-tag">SQL</span>
-          <span class="skill-tag">Python (pandas)</span>
-          <span class="skill-tag">Datawrapper / Flourish</span>
-          <span class="skill-tag">Adobe Premiere</span>
-          <span class="skill-tag">AP Style</span>
-          <span class="skill-tag">CMS Publishing (WordPress)</span>
-          <span class="skill-tag">Graphic Design</span>
-          <span class="skill-tag">Layout &amp; Typography</span>
+          <span class="skill-tag">News Writing</span>
+          <span class="skill-tag">Copyediting</span>
+          <span class="skill-tag">Copywriting</span>
+          <span class="skill-tag">Video Editing</span>
+          <span class="skill-tag">Social Media</span>
+          <span class="skill-tag">Canva</span>
+          <span class="skill-tag">Affinity</span>
+          <span class="skill-tag">Adobe Illustrator</span>
+          <span class="skill-tag">Adobe Lightroom</span>
+          <span class="skill-tag">DaVinci Resolve</span>
+          <span class="skill-tag">Google Workspace</span>
+          <span class="skill-tag">MS Office</span>
         </div>
       </div>
       <div class="skills-col reveal">
         <span class="kicker">Soft Skills</span>
         <div class="skill-tags">
-          <span class="skill-tag">Source Development</span>
-          <span class="skill-tag">Deadline Management</span>
-          <span class="skill-tag">Editorial Judgment</span>
-          <span class="skill-tag">Interviewing</span>
-          <span class="skill-tag">Fact-Checking Rigor</span>
-          <span class="skill-tag">Cross-Team Collaboration</span>
-          <span class="skill-tag">Mentorship</span>
+          <span class="skill-tag">Project Management</span>
+          <span class="skill-tag">Teamwork</span>
+          <span class="skill-tag">Conflict Resolution</span>
+          <span class="skill-tag">Leadership</span>
+          <span class="skill-tag">Communication</span>
+          <span class="skill-tag">Adaptability</span>
+          <span class="skill-tag">Empathy</span>
+          <span class="skill-tag">Willingness to learn</span>
         </div>
       </div>
     </div>
@@ -2172,25 +2236,152 @@
      16:9, cropped to fill) — omit it and that case file stays
      text-only. */
   var worksData = [
-    { id:'housing-registry', genre:'housing', year:'2025', title:'‘Ang Babae sa Septic Tank’ set for theatrical launch', pub:'Chicago Tribune', dek:'A one-line teaser shown in the case-file preview.', skills:['FOIA / Public Records','Editorial Judgment'], img:'assets/works/housing-registry.jpg', published:true, body:[
+    { id:'housing-registry', genre:'Entertainment', year:'2025', 
+    title:'‘Ang Babae sa Septic Tank’ set for theatrical launch', 
+    pub:'NewsWatch Plus Philippines', dek:'A one-line teaser shown in the case-file preview.', 
+    skills:['News Writing'], 
+    published:true, 
+    body:[
       { type:'p', text:'Full first paragraph of the article...' },
       { type:'image', src:'assets/works/housing-1.jpg', caption:'Caption text' },
       { type:'p', text:'Next paragraph...' },
       { type:'pullquote', text:'A standout line from the piece.' }
     ] },
-    { id:'edsa-story', genre:'housing', year:'2023', title:'[THE TRILBY] EDSA STORY', pub:'Injustice Watch', dek:'Renters describe discrimination they never reported, and the barriers — language, fear, paperwork — that keep complaints from ever reaching a regulator.', skills:['Interviewing','Source Development'], published:true },
-    { id:'secondhand-bookstores', genre:'labor', year:'2025', title:'Are second-hand bookstores turning a new, digital page', pub:'ProPublica Illinois', dek:'Scheduling algorithms and staffing-agency practices quietly filter out applicants long before a human reviewer sees a resume.', skills:['Data Journalism','SQL'], img:'assets/works/labor-algorithms.jpg', published:true },
-    { id:'dole-cebu-bpo', genre:'labor', year:'2022', title:'DOLE orders Cebu BPO company to halt operations', pub:'Independent', dek:'A pay-record analysis of three staffing agencies shows temp workers earning 18% less than direct hires for identical shifts.', skills:['Python (pandas)','Data Journalism'], published:true },
-    { id:'kpop-demon-hunters-ejae', genre:'systems', year:'2025', title:'\u2019KPop Demon Hunters\u2019 singer Ejae dropping debut single this October', pub:'The Marshall Project', dek:'Budget documents show a district\u2019s decision to close 12 schools was effectively made a year before it was announced.', skills:['FOIA / Public Records','Fact-Checking Rigor'], published:true },
-    { id:'closed-doors-open-files', genre:'systems', year:'2024', title:'Closed Doors, Open Files', pub:'The Marshall Project', dek:'A district shut 12 schools in a single summer. Budget records show the decision was made a year earlier.', skills:['FOIA / Public Records','Fact-Checking Rigor'], published:true },
-    { id:'marcos-resign-not-seditious', genre:'systems', year:'2024', title:'Lawyers\u2019 group_ Call for Marcos\u2019 resignation not seditious', pub:'Block Club Chicago', dek:'Mapping route cuts against ridership by ward reveals which neighborhoods lost service first — and never got it back.', skills:['Datawrapper / Flourish','Data Journalism'], published:true },
-    { id:'records-requests-101', genre:'data', year:'2024', title:'Records Requests 101: A Reporter\u2019s Toolkit', pub:'Injustice Watch', dek:'A practical walkthrough of the FOIA pipeline built for this newsroom, shared so other reporters can adapt it.', skills:['FOIA / Public Records','CMS Publishing (WordPress)'], published:true },
-    { id:'mirasol', genre:'data', year:'2023', title:'Mirasol', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'], published:false },
-    { id:'alamat-sophomore-album', genre:'data', year:'2023', title:'P-Pop boy group Alamat dropping sophomore album in November', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'], published:true },
-    { id:'inclusivity-ph-beauty', genre:'data', year:'2023', title:'INCLUSIVITY IN PH BEAUTY', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'], published:true },
-    { id:'unesco-bohol-asin-tibuok', genre:'data', year:'2023', title:'UNESCO Bohol\u2019s Asin Tibuok, need of urgent safeguarding', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'], published:true },
-    { id:'weather-extended-weekend-pagasa', genre:'data', year:'2023', title:'Weather systems to bring rains in extended weekend - PAGASA', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'], published:true },
-    { id:'weather-wednesday-story', genre:'data', year:'2023', title:'Weather Wednesday story', pub:'Independent', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', skills:['SQL','Python (pandas)'], published:false }
+    { id:'edsa-story', genre:'Local', year:'2023', 
+    title:'EDSA STORY', 
+    pub:'The Trilby', dek:'Renters describe discrimination they never reported, and the barriers — language, fear, paperwork — that keep complaints from ever reaching a regulator.', 
+    skills:['Interviewing','Source Development'], 
+    published:true, 
+    body:[
+      { type:'p', text:'Full first paragraph of the article...' },
+      { type:'image', src:'assets/works/housing-1.jpg', caption:'Caption text' },
+      { type:'p', text:'Next paragraph...' },
+      { type:'pullquote', text:'A standout line from the piece.' }
+    ] },
+
+    { id:'secondhand-bookstores', genre:'Lifestyle', year:'2025', 
+    title:'Are second-hand bookstores turning a new, digital page', 
+    pub:'The Trilby', dek:'Scheduling algorithms and staffing-agency practices quietly filter out applicants long before a human reviewer sees a resume.', 
+    skills:['Data Journalism','SQL'], 
+    published:true, 
+    body:[
+      { type:'p', text:'Full first paragraph of the article...' },
+      { type:'image', src:'assets/works/housing-1.jpg', caption:'Caption text' },
+      { type:'p', text:'Next paragraph...' },
+      { type:'pullquote', text:'A standout line from the piece.' }
+    ] },
+
+    { id:'dole-cebu-bpo', genre:'Affairs', year:'2022', 
+    title:'DOLE orders Cebu BPO company to halt operations', 
+    pub:'NewsWatch Plus Philippines', dek:'A pay-record analysis of three staffing agencies shows temp workers earning 18% less than direct hires for identical shifts.', 
+    skills:['Python (pandas)','Data Journalism'], 
+    published:true, 
+    body:[
+      { type:'p', text:'Full first paragraph of the article...' },
+      { type:'image', src:'assets/works/housing-1.jpg', caption:'Caption text' },
+      { type:'p', text:'Next paragraph...' },
+      { type:'pullquote', text:'A standout line from the piece.' }
+    ] },
+
+  { id: 'kpop-demon-hunters-ejae',
+    genre: 'Entertainment',
+    year: '2025',
+    title: '‘KPop Demon Hunters’ singer Ejae dropping debut single this October',    
+    link: 'https://www.newswatchplus.ph/2025/10/07/kpop-demon-hunters-singer-ejae-to-drop-debut-single/',
+    pub: 'NewsWatch Plus Philippines',
+    dek: 'Budget documents show a district’s decision to close 12 schools was effectively made a year before it was announced.',
+    skills: ['FOIA / Public Records', 'Fact-Checking Rigor'],
+    published: true,
+    body: [
+      { type: 'p', text: 'Full first paragraph of the article...' },
+      { type: 'image', src: 'assets/works/housing-1.jpg', caption: 'Caption text' },
+      { type: 'p', text: 'Next paragraph...' },
+      { type: 'pullquote', text: 'A standout line from the piece.' }
+  ] },
+
+
+    { id:'marcos-resign-not-seditious', genre:'Affairs', year:'2024', 
+      title:'Lawyers\u2019 group_ Call for Marcos\u2019 resignation not seditious', 
+      pub:'NewsWatch Plus Philippines', dek:'Mapping route cuts against ridership by ward reveals which neighborhoods lost service first — and never got it back.', 
+      skills:['Datawrapper / Flourish','Data Journalism'], 
+      published:true, 
+      body:[
+      { type:'p', text:'Full first paragraph of the article...' },
+      { type:'image', src:'assets/works/housing-1.jpg', caption:'Caption text' },
+      { type:'p', text:'Next paragraph...' },
+      { type:'pullquote', text:'A standout line from the piece.' }
+    ] },
+
+    { id:'mirasol', genre:'Weather', year:'2023', title:'Mirasol', 
+    pub:'NewsWatch Plus Philippines', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', 
+    skills:['SQL','Python (pandas)'], 
+    published:false, 
+    body:[
+      { type:'p', text:'Full first paragraph of the article...' },
+      { type:'image', src:'assets/works/housing-1.jpg', caption:'Caption text' },
+      { type:'p', text:'Next paragraph...' },
+      { type:'pullquote', text:'A standout line from the piece.' }
+    ] },
+
+    { id:'alamat-sophomore-album', genre:'Entertainment', year:'2023', 
+    title:'P-Pop boy group Alamat dropping sophomore album in November', 
+    pub:'NewsWatch Plus Philippines', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', 
+    skills:['SQL','Python (pandas)'], 
+    published:true, 
+    body:[
+      { type:'p', text:'Full first paragraph of the article...' },
+      { type:'image', src:'assets/works/housing-1.jpg', caption:'Caption text' },
+      { type:'p', text:'Next paragraph...' },
+      { type:'pullquote', text:'A standout line from the piece.' }
+    ] },
+
+    { id:'inclusivity-ph-beauty', genre:'Lifestyle', year:'2023', 
+    title:'INCLUSIVITY IN PH BEAUTY',
+    pub:'NewsWatch Plus Philippines', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', 
+    skills:['SQL','Python (pandas)'], 
+    published:true, 
+    body:[
+      { type:'p', text:'Full first paragraph of the article...' },
+      { type:'image', src:'assets/works/housing-1.jpg', caption:'Caption text' },
+      { type:'p', text:'Next paragraph...' },
+      { type:'pullquote', text:'A standout line from the piece.' }
+    ] },
+
+    { id:'unesco-bohol-asin-tibuok', genre:'Culture', year:'2023', 
+    title:'UNESCO Bohol\u2019s Asin Tibuok, need of urgent safeguarding', 
+    pub:'NewsWatch Plus Philippines', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', 
+    skills:['SQL','Python (pandas)'], 
+    published:true, 
+    body:[
+      { type:'p', text:'Full first paragraph of the article...' },
+      { type:'image', src:'assets/works/housing-1.jpg', caption:'Caption text' },
+      { type:'p', text:'Next paragraph...' },
+      { type:'pullquote', text:'A standout line from the piece.' }
+    ] },
+
+    { id:'weather-extended-weekend-pagasa', genre:'Weather', year:'2023', 
+    title:'Weather systems to bring rains in extended weekend - PAGASA', 
+    pub:'NewsWatch Plus Philippines', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', 
+    skills:['SQL','Python (pandas)'], 
+    published:true, 
+    body:[
+      { type:'p', text:'Full first paragraph of the article...' },
+      { type:'image', src:'assets/works/housing-1.jpg', caption:'Caption text' },
+      { type:'p', text:'Next paragraph...' },
+      { type:'pullquote', text:'A standout line from the piece.' }
+    ] },
+
+    { id:'weather-wednesday-story', genre:'Weather', year:'2023', 
+    title:'Weather Wednesday story', 
+    pub:'NewsWatch Plus Philippines', dek:'A FOIA-built database of state labor complaints becomes the spine of a three-part accountability series.', 
+    skills:['SQL','Python (pandas)'], 
+    published:false, 
+    body:[
+      { type:'p', text:'Full first paragraph of the article...' },
+      { type:'image', src:'assets/works/housing-1.jpg', caption:'Caption text' },
+      { type:'p', text:'Next paragraph...' },
+      { type:'pullquote', text:'A standout line from the piece.' }
+    ] }
   ];
   var genreLabels = { housing:'Housing', labor:'Labor', systems:'Public Systems', data:'Data & FOIA' };
 
@@ -2372,6 +2563,9 @@
       cfFieldHtml('Publication', w.pub) +
       cfFieldHtml('Year', w.year) +
       cfFieldHtml('Beat', genreLabels[w.genre]) +
+      cfFieldHtml('Source', w.link
+      ? '<a href="' + w.link + '" target="_blank" rel="noopener noreferrer">Read the original ↗</a>'
+      : '') +
       cfFieldHtml('Status', statusBadgeHtml(w));
     document.getElementById('caseFileDek').textContent = w.dek;
 
